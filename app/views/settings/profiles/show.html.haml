@@ -29,6 +29,9 @@
   .fields-group
     = f.input :bot, as: :boolean, wrapper: :with_label, hint: t('simple_form.hints.defaults.bot')
 
+  .fields-group
+    = f.input :cat, as: :boolean, wrapper: :with_label, hint: t('simple_form.hints.defaults.cat')
+
   - if Setting.profile_directory
     .fields-group
       = f.input :discoverable, as: :boolean, wrapper: :with_label, hint: t('simple_form.hints.defaults.discoverable'), recommended: true

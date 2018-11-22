@@ -129,7 +129,10 @@ class Status < ApplicationRecord
                    ],
                    thread: { account: :account_stat }
 
-  delegate :domain, to: :account, prefix: true
+  delegate :domain,
+           :cat,
+           to: :account,
+           prefix: true
 
   REAL_TIME_WINDOW = 6.hours
 
