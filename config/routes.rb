@@ -22,13 +22,22 @@ Rails.application.routes.draw do
   get '.well-known/host-meta', to: 'well_known/host_meta#show', as: :host_meta, defaults: { format: 'xml' }
   get '.well-known/webfinger', to: 'well_known/webfinger#show', as: :webfinger
   get '.well-known/change-password', to: redirect('/auth/edit')
+  get '.well-known/keybase-proof-config', to: 'well_known/keybase_proof_config#show'
+
   get 'manifest', to: 'manifests#show', defaults: { format: 'json' }
   get 'intent', to: 'intents#show'
   get 'custom.css', to: 'custom_css#show', as: :custom_css
 
+  resource :instance_actor, path: 'actor', only: [:show] do
+    resource :inbox, only: [:create], module: :activitypub
+  end
+
   devise_scope :user do
     get '/invite/:invite_code', to: 'auth/registrations#new', as: :public_invite
-    match '/auth/finish_signup' => 'auth/confirmations#finish_signup', via: [:get, :patch], as: :finish_signup
+
+    namespace :auth do
+      resource :setup, only: [:show, :update], controller: :setup
+    end
   end
 
   devise_for :users, path: 'auth', controllers: {
@@ -43,12 +52,6 @@ Rails.application.routes.draw do
   get '/authorize_follow', to: redirect { |_, request| "/authorize_interaction?#{request.params.to_query}" }
 
   resources :accounts, path: 'users', only: [:show], param: :username do
-    resources :stream_entries, path: 'updates', only: [:show] do
-      member do
-        get :embed
-      end
-    end
-
     get :remote_follow,  to: 'remote_follow#new'
     post :remote_follow, to: 'remote_follow#create'
 
@@ -57,6 +60,8 @@ Rails.application.routes.draw do
         get :activity
         get :embed
       end
+
+      resources :replies, only: [:index], module: :activitypub
     end
 
     resources :followers, only: [:index], controller: :follower_accounts
@@ -74,6 +79,7 @@ Rails.application.routes.draw do
   get '/@:username', to: 'accounts#show', as: :short_account
   get '/@:username/with_replies', to: 'accounts#show', as: :short_account_with_replies
   get '/@:username/media', to: 'accounts#show', as: :short_account_media
+  get '/@:username/tagged/:tag', to: 'accounts#show', as: :short_account_tag
   get '/@:account_username/:id', to: 'statuses#show', as: :short_account_status
   get '/@:account_username/:id/embed', to: 'statuses#embed', as: :embed_short_account_status
 
@@ -83,13 +89,22 @@ Rails.application.routes.draw do
   get '/explore', to: 'directories#index', as: :explore
   get '/explore/:id', to: 'directories#show', as: :explore_hashtag
 
+  get '/settings', to: redirect('/settings/profile')
+
   namespace :settings do
     resource :profile, only: [:show, :update]
-    resource :preferences, only: [:show, :update]
-    resource :notifications, only: [:show, :update]
-    resource :import, only: [:show, :create]
 
+    get :preferences, to: redirect('/settings/preferences/appearance')
+
+    namespace :preferences do
+      resource :appearance, only: [:show, :update], controller: :appearance
+      resource :notifications, only: [:show, :update]
+      resource :other, only: [:show, :update], controller: :other
+    end
+
+    resource :import, only: [:show, :create]
     resource :export, only: [:show, :create]
+
     namespace :exports, constraints: { format: :csv } do
       resources :follows, only: :index, controller: :following_accounts
       resources :blocks, only: :index, controller: :blocked_accounts
@@ -99,12 +114,13 @@ Rails.application.routes.draw do
     end
 
     resource :two_factor_authentication, only: [:show, :create, :destroy]
+
     namespace :two_factor_authentication do
       resources :recovery_codes, only: [:create]
       resource :confirmation, only: [:new, :create]
     end
 
-    resource :follower_domains, only: [:show, :update]
+    resources :identity_proofs, only: [:index, :show, :new, :create, :update]
 
     resources :applications, except: [:edit] do
       member do
@@ -116,6 +132,7 @@ Rails.application.routes.draw do
     resource :migration, only: [:show, :update]
 
     resources :sessions, only: [:destroy]
+    resources :featured_tags, only: [:index, :create, :destroy]
   end
 
   resources :media, only: [:show] do
@@ -126,19 +143,23 @@ Rails.application.routes.draw do
   resources :emojis, only: [:show]
   resources :invites, only: [:index, :create, :destroy]
   resources :filters, except: [:show]
+  resource :relationships, only: [:show, :update]
 
+  get '/public', to: 'public_timelines#show', as: :public_timeline
   get '/media_proxy/:id/(*any)', to: 'media_proxy#show', as: :media_proxy
 
-  # Remote follow
-  resource :remote_unfollow, only: [:create]
   resource :authorize_interaction, only: [:show, :create]
   resource :share, only: [:show, :create]
 
   namespace :admin do
     get '/dashboard', to: 'dashboard#index'
 
-    resources :subscriptions, only: [:index]
-    resources :domain_blocks, only: [:new, :create, :show, :destroy]
+    resources :domain_allows, only: [:new, :create, :show, :destroy]
+    resources :domain_blocks, only: [:new, :create, :show, :destroy, :update] do
+      member do
+        get :edit
+      end
+    end
     resources :email_domain_blocks, only: [:index, :new, :create, :destroy]
     resources :action_logs, only: [:index]
     resources :warning_presets, except: [:new]
@@ -174,8 +195,6 @@ Rails.application.routes.draw do
 
     resources :accounts, only: [:index, :show] do
       member do
-        post :subscribe
-        post :unsubscribe
         post :enable
         post :unsilence
         post :unsuspend
@@ -183,6 +202,8 @@ Rails.application.routes.draw do
         post :remove_avatar
         post :remove_header
         post :memorialize
+        post :approve
+        post :reject
       end
 
       resource :change_email, only: [:show, :update]
@@ -205,6 +226,14 @@ Rails.application.routes.draw do
       end
     end
 
+    resources :pending_accounts, only: [:index] do
+      collection do
+        post :approve_all
+        post :reject_all
+        post :batch
+      end
+    end
+
     resources :users, only: [] do
       resource :two_factor_authentication, only: [:destroy]
     end
@@ -218,30 +247,17 @@ Rails.application.routes.draw do
     end
 
     resources :account_moderation_notes, only: [:create, :destroy]
-
-    resources :tags, only: [:index] do
-      member do
-        post :hide
-        post :unhide
-      end
-    end
+    resources :tags, only: [:index, :show, :update]
   end
 
   get '/admin', to: redirect('/admin/dashboard', status: 302)
 
   namespace :api do
-    # PubSubHubbub outgoing subscriptions
-    resources :subscriptions, only: [:show]
-    post '/subscriptions/:id', to: 'subscriptions#update'
-
-    # PubSubHubbub incoming subscriptions
-    post '/push', to: 'push#update', as: :push
-
-    # Salmon
-    post '/salmon/:id', to: 'salmon#update', as: :salmon
-
     # OEmbed
     get '/oembed', to: 'oembed#show', as: :oembed
+
+    # Identity proofs
+    get :proofs, to: 'proofs#index'
 
     # JSON / REST API
     namespace :v1 do
@@ -267,12 +283,10 @@ Rails.application.routes.draw do
 
         member do
           get :context
-          get :card
         end
       end
 
       namespace :timelines do
-        resource :direct, only: :show, controller: :direct
         resource :home, only: :show, controller: :home
         resource :public, only: :show, controller: :public
         resources :tag, only: :show
@@ -283,6 +297,7 @@ Rails.application.routes.draw do
       resources :custom_emojis, only: [:index]
       resources :suggestions, only: [:index, :destroy]
       resources :scheduled_statuses, only: [:index, :show, :update, :destroy]
+      resources :preferences, only: [:index]
 
       resources :conversations, only: [:index, :destroy] do
         member do
@@ -292,13 +307,13 @@ Rails.application.routes.draw do
 
       get '/search', to: 'search#index', as: :search
 
-      resources :follows,      only: [:create]
       resources :media,        only: [:create, :update]
       resources :blocks,       only: [:index]
       resources :mutes,        only: [:index]
       resources :favourites,   only: [:index]
       resources :bookmarks,    only: [:index]
       resources :reports,      only: [:create]
+      resources :trends,       only: [:index]
       resources :filters,      only: [:index, :create, :show, :update, :destroy]
       resources :endorsements, only: [:index]
 
@@ -325,7 +340,6 @@ Rails.application.routes.draw do
       resources :notifications, only: [:index, :show] do
         collection do
           post :clear
-          post :dismiss # Deprecated
         end
 
         member do
@@ -345,6 +359,7 @@ Rails.application.routes.draw do
         resources :followers, only: :index, controller: 'accounts/follower_accounts'
         resources :following, only: :index, controller: 'accounts/following_accounts'
         resources :lists, only: :index, controller: 'accounts/lists'
+        resources :identity_proofs, only: :index, controller: 'accounts/identity_proofs'
 
         member do
           post :follow
@@ -363,8 +378,35 @@ Rails.application.routes.draw do
         resource :accounts, only: [:show, :create, :destroy], controller: 'lists/accounts'
       end
 
+      resources :polls, only: [:create, :show] do
+        resources :votes, only: :create, controller: 'polls/votes'
+      end
+
       namespace :push do
         resource :subscription, only: [:create, :show, :update, :destroy]
+      end
+
+      namespace :admin do
+        resources :accounts, only: [:index, :show] do
+          member do
+            post :enable
+            post :unsilence
+            post :unsuspend
+            post :approve
+            post :reject
+          end
+
+          resource :action, only: [:create], controller: 'account_actions'
+        end
+
+        resources :reports, only: [:index, :show] do
+          member do
+            post :assign_to_self
+            post :unassign
+            post :reopen
+            post :resolve
+          end
+        end
       end
     end
 
