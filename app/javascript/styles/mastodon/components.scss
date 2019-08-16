@@ -1875,7 +1875,7 @@ a.account__display-name {
       }
 
       &__inner {
-        position: fixed;
+        position: static;
         width: 285px;
         pointer-events: auto;
         height: 100%;
