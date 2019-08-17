@@ -9,7 +9,6 @@
 	margin: 0;
 	background: $column-header-color;
 	position: relative;
-	z-index: 2;
 
 	.tabs-bar {
 		&__link {
@@ -81,8 +80,11 @@
 			}
 		}
 
+		&__warning {
+			background-color: $warning-card-color;
+		}
+
 		&__publish { border-top: 1px solid $base-separation-color }
-		&__publish-button-wrapper { @include button-shadow }
 		&__modifiers { background-color: $base-lighter1-color }
 	}
 
@@ -100,7 +102,6 @@
 	.column-header {
 		@include column-shadow;
 		background: $column-header-color;
-		z-index: 1;
 
 		&.active {
 			.column-header__icon {
@@ -151,6 +152,9 @@
 	}
 
 	.column-back-button {
+		background-color: $column-header-color;
+		color: $secondary-text-color;
+
 		&__icon {
 			@include material-icon-large;
 			vertical-align: bottom;
@@ -228,11 +232,10 @@
 	}
 }
 
-// v2.9.0以降
+// v2.9.0以降に対応
 .column-header {
 	@include column-shadow;
 	background: $column-header-color;
-	z-index: 1;
 
 	&.active {
 		.column-header__icon {
@@ -279,6 +282,16 @@
 		border-bottom: 1px solid $base-separation-color;
 
 		&-inner { background: $column-header-color }
+	}
+}
+.column-back-button {
+	background-color: $column-header-color;
+	color: $secondary-text-color;
+
+	&__icon {
+		@include material-icon-large;
+		vertical-align: bottom;
+		margin-right: 8px;
 	}
 }
 
