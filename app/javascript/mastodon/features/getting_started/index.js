@@ -109,7 +109,7 @@ class GettingStarted extends ImmutablePureComponent {
 
       if (profile_directory) {
         navItems.push(
-          <ColumnLink key={i++} icon='address-book' text={intl.formatMessage(messages.profile_directory)} href='/explore' />,
+          <ColumnLink key={i++} icon='address-book' text={intl.formatMessage(messages.profile_directory)} to='/directory' />,
           <ColumnLink key={i++} icon='bullhorn' text={intl.formatMessage(messages.admin_notifications)} to='/timelines/tag/Yづinfo' />,
 	);
 
@@ -123,7 +123,7 @@ class GettingStarted extends ImmutablePureComponent {
       height += 34;
     } else if (profile_directory) {
       navItems.push(
-        <ColumnLink key={i++} icon='address-book' text={intl.formatMessage(messages.profile_directory)} href='/explore' />,
+        <ColumnLink key={i++} icon='address-book' text={intl.formatMessage(messages.profile_directory)} to='/directory' />,
         <ColumnLink key={i++} icon='bullhorn' text={intl.formatMessage(messages.admin_notifications)} to='/timelines/tag/Yづinfo' />,
       );
 
