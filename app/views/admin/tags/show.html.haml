@@ -3,7 +3,7 @@
 
 .dashboard__counters
   %div
-    = link_to web_url("timelines/tag/#{@tag.name}") do
+    = link_to tag_url(@tag), target: '_blank', rel: 'noopener' do
       .dashboard__counters__num= number_with_delimiter @accounts_today
       .dashboard__counters__label= t 'admin.tags.accounts_today'
   %div
@@ -38,7 +38,7 @@
 .table-wrapper
   %table.table
     %tbody
-      - total = @usage_by_domain.sum(&:statuses_count).to_f
+      - total = @usage_by_domain.sum(&:last).to_f
 
       - @usage_by_domain.each do |(domain, count)|
         %tr
