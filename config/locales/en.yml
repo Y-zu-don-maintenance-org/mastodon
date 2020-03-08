@@ -1192,7 +1192,8 @@ en:
     contrast: Mastodon (High contrast)
     default: Mastodon (Dark)
     mastodon-light: Mastodon (Light)
-
+    # additional theme
+    mastodon-material-dev: Material Dev (Light)
   time:
     formats:
       default: "%b %d, %Y, %H:%M"
