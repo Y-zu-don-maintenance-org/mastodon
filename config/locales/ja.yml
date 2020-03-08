@@ -1173,6 +1173,8 @@ ja:
     contrast: Mastodon (ハイコントラスト)
     default: Mastodon (ダーク)
     mastodon-light: Mastodon (ライト)
+    # 追加テーマ
+    mastodon-material: Material Dev (ライト)
   time:
     formats:
       default: "%Y年%m月%d日 %H:%M"

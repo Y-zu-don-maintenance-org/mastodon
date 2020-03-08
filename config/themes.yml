@@ -1,3 +1,6 @@
 default: styles/application.scss
 contrast: styles/contrast.scss
 mastodon-light: styles/mastodon-light.scss
+
+# 追加テーマ
+mastodon-material: styles/mastodon-material-dev.scss

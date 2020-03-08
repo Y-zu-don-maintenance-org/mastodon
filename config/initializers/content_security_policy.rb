@@ -10,8 +10,6 @@ base_host = Rails.configuration.x.web_domain
 
 assets_host   = Rails.configuration.action_controller.asset_host
 assets_host ||= "http#{Rails.configuration.x.use_https ? 's' : ''}://#{base_host}"
-google_font_host = "https://fonts.gstatic.com"
-gplus_theme_host = "https://raw.githubusercontent.com"
 assets_host ||= host_to_url(base_host)
 
 media_host   = host_to_url(ENV['S3_ALIAS_HOST'])
