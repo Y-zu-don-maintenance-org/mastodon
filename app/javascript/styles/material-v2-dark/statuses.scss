@@ -73,6 +73,8 @@
         }
     }
 
+    &__prepend { color: $secondary-text-color }
+
     &.status-direct:not(.read) {
         background: transparent;
         border-bottom-color: $border-color;
@@ -99,9 +101,25 @@
 
     &__description { color: $secondary-text-color }
 
+    &__actions {
+        &>div {
+            background: $media-icon-background-color;
+            border-radius: $button-radius;
+        }
+
+        button,
+        a {
+            color: $media-icon-color;
+            font-size: 20px;
+        }
+
+        a { bottom: auto }
+    }
+
     &.compact {
         border-color: $border-color;
         outline: none;
+        background: transparent;
         
         .status-card {
             &__content { padding: 12px }
@@ -114,8 +132,16 @@
     &:hover { background-color: $card-background-color }
 }
 
+// Detailed status in mobile
 .status.light {
-    .display-name span { color: $info-text-color }
+    .status {
+        &__display-name { color: $primary-text-color }
+        &__relative-time { color: $info-text-color }
+        &__content { color: $primary-text-color }
+    }
+
+    .display-name { color: $secondary-text-color }
+    .display-name strong { color: $primary-text-color }
 }
 
 .detailed-status {

@@ -7,3 +7,5 @@ material-v1-dark: styles/material-v1-dark.scss
 material-v1-light: styles/material-v1-light.scss
 material-v2-dark: styles/material-v2-dark.scss
 material-v2-light: styles/material-v2-light.scss
+mastodon-material-dark: styles/mastodon-material-dark.scss
+mastodon-material-light: styles/mastodon-material-light.scss

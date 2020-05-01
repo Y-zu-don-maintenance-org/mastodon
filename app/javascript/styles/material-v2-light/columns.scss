@@ -22,6 +22,8 @@
         color: $top-bar-text-color;
     }
 
+    &>.column-header__back-button { color: $top-bar-icon-color }
+
     &.active {
         .column-header__icon {
             color: $secondary-color;
@@ -62,14 +64,29 @@
 
     &__setting-btn {
         color: $icon-button-color;
+        padding: 8px 0;
 
         &:hover {
             color: $icon-button-hover-color;
-            background: $icon-background-hover-color;
+            text-decoration: none;
         }
+
+        .fa { font-size: 20px }
+
+        span { vertical-align: middle }
     }
 
-    &__setting-arrows { font-size: 16px }
+    &__setting-arrows {
+        font-size: 16px;
+        border-bottom: 8px;
+
+        .column-header__setting-btn {
+            padding: 8px;
+            border-radius: 50%;
+
+            &:last-child { padding-right: 8px }
+        }
+    }
 
     &__wrapper {
         @include shadow-4dp;
@@ -80,12 +97,13 @@
         &.active {
             @include shadow-4dp;
 
-            &:before { background: transparent }
+            &::before { background: transparent }
         }
     }
 
     &__collapsible {
         color: $ui-text-color;
+        background: $card-background-color;
         border-top: 1px solid $border-color;
 
         &-inner {
@@ -98,7 +116,7 @@
 
     &__back-button {
         background: $top-bar-color;
-        color: $icon-color;
+        color: $top-bar-icon-color;
         padding: 8px;
         margin: auto 0;
         border-radius: 50%;
@@ -156,6 +174,8 @@
         margin-bottom: 0;
         margin-top: 8px;
     }
+
+    &__row .text-btn { margin-bottom: 0 }
 }
 
 .column-back-button {
@@ -163,6 +183,8 @@
     background: $top-bar-color;
     color: $top-bar-icon-color;
     padding: 16px;
+
+    span { visibility: hidden }  // hide "back" string
 }
 
 .column-inline-form {
@@ -222,17 +244,31 @@
     }
 }
 
+// read status in notification column
 .muted {
     .status {
         &__content {
-            color: $primary-text-color;
+            color: $read-primary-text-color;
     
-            p { color: $primary-text-color }
+            p { color: $read-primary-text-color }
     
-            a { color: $secondary-text-color }
+            a { color: $read-secondary-text-color }
         }
 
-        &__display-name strong { color: $primary-text-color }
+        &__display-name strong { color: $read-primary-text-color }
+    }
+
+    .poll {
+        color: $read-primary-text-color;
+
+        &__chart {
+            background: $read-poll-bar-color;
+    
+            &.leading { background: $read-poll-bar-leading-color }
+        }
+
+        &__footer,
+        &__link { color: $read-ui-text-color }
     }
 }
 
@@ -267,7 +303,42 @@
         a { color: $ui-text-color }
 
         p a { color: $link-text-color }
+    }
 
+    &__trends {
+        background: $background-color;
+        margin-bottom: 0;
+
+        h4 {
+            color: $section-text-color;
+            padding: 12px 16px;
+            border-top: 1px solid $border-color;
+            border-bottom: none;
+        }
+    }
+}
+
+.trends__item {
+    padding: 16px;
+    border-bottom: none;
+
+    &__name {
+        color: $secondary-text-color;
+        font-size: 12px;
+
+        a { color: $primary-text-color }
+    }
+
+    &__current {
+        padding-right: 16px;
+        margin-left: 4px;
+        color: $secondary-text-color;
+    }
+
+    &__sparkline path {
+        stroke: $primary-color;
+        fill: $primary-color;
+        fill-opacity: 0.5;
     }
 }
 
@@ -330,22 +401,22 @@
 
 .notification {
     &__filter-bar {
-        background: $top-bar-color;
+        background: $tab-background-color;
         border-bottom: 1px solid $border-color;
         z-index: 1;
     
         button {
-            background: $top-bar-color;
-            color: $top-bar-icon-color;
+            background: $tab-background-color;
+            color: $tab-indicator-color;
             font-size: 16px;
 
             span { font-size: 14px }
     
             &.active {
-                color: $tab-indicator-color;
-                border-bottom: 4px solid $tab-indicator-color;
+                color: $tab-indicator-active-color;
+                border-bottom: 4px solid $tab-indicator-active-color;
     
-                &:before,
+                &::before,
                 &:after { border: none }
 
                 &:focus { background: $tab-indicator-background-focus-color }
@@ -370,6 +441,7 @@
     .icon-button.disabled { color: $disabled-icon-color }
 }
 
+// read notification
 .notification.notification-favourite.focusable,
 .notification.notification-follow.focusable { background: $list-background-inactive-color }
 
@@ -383,8 +455,6 @@
 }
 
 .react-swipeable-view-container { height: auto }
-
-.tabs-bar__wrapper { background: transparent }
 
 .attachment-list__list a { color: $secondary-text-color }
 
