@@ -23,6 +23,17 @@
         }
     }
 
+    &.overlayed {
+        border-radius: 50%;
+        background: $media-icon-background-color;
+        color: $media-icon-color;
+    
+        &:hover {
+            background: $media-icon-background-color;
+            color: $media-icon-hover-color;
+        }
+    }
+
     &:hover {
         color: $icon-button-hover-color;
         background-color: $icon-background-hover-color;
@@ -75,4 +86,10 @@
     &:hover { background: $text-button-hover-color }
 
     &:focus { background: $text-button-focus-color }
+}
+
+.spoiler-button__overlay__label {
+    background: $media-icon-background-color;
+    border-radius: $button-radius;
+    color: $media-icon-color;
 }

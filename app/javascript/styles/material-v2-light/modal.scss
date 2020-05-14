@@ -29,10 +29,25 @@
         color: $ui-text-color;
         font-size: 16px;
 
-        &:hover { background: $card-background-hover-color }
+        &:hover {
+            background: $card-background-hover-color;
+            color: $ui-text-color;
+        }
     }
 
     .dropdown-menu__separator { border-bottom-color: $border-color }
+
+    .status {
+        background: $card-background-color;
+        border-bottom-color: $border-color;
+        padding-top: 12px;
+        padding-bottom: 12px;
+
+        &__avatar {
+            left: 12px;
+            top: 12px;
+        }
+    }
 }
 
 .report-modal {

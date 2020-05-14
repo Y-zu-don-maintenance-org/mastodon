@@ -5,7 +5,7 @@
 .account {
     border-bottom: 1px solid $border-color;
 
-    .account__display-name,
+    .account__display-name { color: $primary-text-color }
     .account__display-name strong { color: $secondary-text-color }
 
     &__avatar {
@@ -13,11 +13,15 @@
         width: 40px;
         height: 40px;
 
-        &-overlay-base {
-            border-radius: 50%;
-            width: 44px;
-            height: 44px;
-            background-size: 44px;
+        &-overlay {
+            &-base {
+                border-radius: 50%;
+                width: 44px;
+                height: 44px;
+                background-size: 44px;
+            }
+
+            &-overlay { border-radius: $avater-radius }
         }
     }
 
@@ -109,24 +113,24 @@
     }
 
     &__section-headline {
-        background: $card-background-color;
+        background: $text-tab-background-color;
         border-bottom: 1px solid $border-color;
 
         a {
             padding: 16px 0;
-            color: $secondary-text-color;
+            color: $text-tab-indicator-color;
 
             &.active {
-                color: $tab-indicator-color;
-                border-bottom: 4px solid $tab-indicator-color;
+                color: $text-tab-indicator-active-color;
+                border-bottom: 4px solid $text-tab-indicator-active-color;
 
-                &:before,
+                &::before,
                 &:after { border: none }
 
-                &:focus { background: $tab-indicator-background-focus-color }
+                &:focus { background: $text-tab-indicator-background-focus-color }
             }
 
-            &:hover { background: $tab-indicator-background-hover-color }
+            &:hover { background: $text-tab-indicator-background-hover-color }
         }
     }
 }
