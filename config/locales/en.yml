@@ -1249,6 +1249,7 @@ en:
     material-v2-light: Material v2 (Light)
     mastodon-material-dark: Mastodon Material (Dark)
     mastodon-material-light: Mastodon Material (Light)
+    plus: Plus
   time:
     formats:
       default: "%b %d, %Y, %H:%M"

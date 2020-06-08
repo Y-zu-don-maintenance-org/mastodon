@@ -1231,6 +1231,7 @@ ja:
     material-v2-light: Material v2 (ライト)
     mastodon-material-dark: Mastodon Material (ダーク)
     mastodon-material-light: Mastodon Material (ライト)
+    plus: Plus
   time:
     formats:
       default: "%Y年%m月%d日 %H:%M"
