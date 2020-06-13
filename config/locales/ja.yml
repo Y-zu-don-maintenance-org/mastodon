@@ -1224,6 +1224,7 @@ ja:
     contrast: Mastodon (ハイコントラスト)
     default: Mastodon (ダーク)
     mastodon-light: Mastodon (ライト)
+    mastodon-auto: Mastodon (自動)
     # 追加テーマ
     material-v1-dark: Material v1 (ダーク)
     material-v1-light: Material v1 (ライト)
