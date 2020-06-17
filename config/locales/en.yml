@@ -1242,13 +1242,15 @@ en:
     contrast: Mastodon (High contrast)
     default: Mastodon (Dark)
     mastodon-light: Mastodon (Light)
+    mastodon-auto: Mastodon (Auto)
     # additional theme
-    material-v1-dark: Material v1 (Dark)
-    material-v1-light: Material v1 (Light)
-    material-v2-dark: Material v2 (Dark)
-    material-v2-light: Material v2 (Light)
+    material-black: Material (Black)
+    material-dark: Material (Dark)
+    material-light: Material (Light)
+    material-auto: Material (Auto)
     mastodon-material-dark: Mastodon Material (Dark)
     mastodon-material-light: Mastodon Material (Light)
+    mastodon-material-auto: Mastodon Material (Auto)
     plus: Plus
   time:
     formats:

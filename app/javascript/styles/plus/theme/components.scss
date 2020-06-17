@@ -173,8 +173,9 @@
 .compose-form {
     .autosuggest-textarea {
         &__textarea {
-            background: $card-background-color;
+            background: $text-field-background-color;
             color: $ui-text-color;
+            border-radius: $card-radius;
     
             &::placeholder { color: $tips-text-color }
         }
@@ -230,7 +231,7 @@
         &__poll-wrapper {
             border-top: 1px solid $border-color;
 
-            ul { padding: 12px }
+            ul { padding: 16px 12px 16px 0 }
 
             select {
                 color: $ui-text-color;
@@ -272,15 +273,29 @@
         width: 20px;
         height: 20px;
         flex: 0 0 20px;
+        margin: 8px;
+
+        &.checkbox { border-radius: 2px }
+
+        &:focus,
+        &:hover { border: 2px solid $control-border-color }
     }
 
     &__text input[type=text] {
         color: $ui-text-color;
-        background: $background-color;
+        background: $text-field-background-color;
         border: 1px solid $border-color;
         padding: 8px 12px;
     
         &:focus { border-color: $border-active-color }
+    }
+
+    &__option input[type=text] {
+        color: $primary-text-color;
+        background: $text-field-background-color;
+        border: none;
+        border-radius: 2px;
+        padding: 8px 16px;
     }
 
     &__chart {
@@ -368,7 +383,8 @@
 }
 
 .reply-indicator {
-    @include shadow-1dp;
+    box-shadow: none;
+    border: 1px solid $border-color;
     border-radius: $card-radius;
     background: $card-background-color;
     padding: 16px;
@@ -391,4 +407,128 @@
     &__list a { color: $secondary-text-color }
 
     &.compact .fa { color: $icon-color }
+}
+
+.block-modal {
+    background: $card-background-color;
+    color: $ui-text-color;
+    border-radius: $card-radius;
+
+    &__container { padding: 24px }
+
+    &__action-bar {
+        background: $card-background-color;
+        padding: 8px;
+        justify-content: flex-end;
+    }
+
+    &__cancel-button {
+        box-shadow: none !important;
+        color: $text-button-color;
+        background: transparent;
+
+        &:hover {
+            color: $text-button-color;
+            background-color: $text-button-hover-color;
+        }
+
+        &:focus,
+        &:active {
+            color: $text-button-color;
+            background-color: $text-button-focus-color;
+        }
+    }
+}
+
+.load-more {
+    color: $ui-text-color;
+
+    &:hover { background: transparent }
+}
+
+.autosuggest-hashtag {
+    &__name { color: $menu-text-color }
+}
+
+.filter-form {
+    background: $background-color;
+    color: $ui-text-color;
+
+    &__column { padding: 8px 16px }
+}
+
+.directory {
+    &__card {
+        @include shadow-1dp;
+        margin: 8px 4px;
+        border-radius: $card-radius;
+
+        &__img { border-radius: $card-radius $card-radius 0 0 }
+
+        &__bar {
+            background: $card-background-color;
+            padding: 8px 16px;
+
+            .display-name {
+                margin-left: 16px;
+
+                span { color: $secondary-text-color }
+            }
+        }
+
+        &__extra {
+            background: $card-background-color;
+            border-radius: 0 0 $card-radius $card-radius;
+
+            .account__header__content {
+                padding: 8px 16px;
+                border-bottom: 1px solid $border-color;
+            }
+
+            .accounts-table__count { padding: 16px 0 }
+        }
+    }
+}
+
+.mute-modal {
+    background: $card-background-color;
+    color: $ui-text-color;
+    border-radius: $card-radius;
+
+    &__container { padding: 24px }
+
+    &__explanation { margin-top: 16px }
+
+    &__action-bar {
+        background: $card-background-color;
+        padding: 8px;
+        justify-content: flex-end;
+    }
+
+    &__cancel-button {
+        box-shadow: none !important;
+        background: transparent;
+        margin: 0 8px;
+
+        &:hover {
+            color: $text-button-color;
+            background-color: $text-button-hover-color;
+        }
+
+        &:focus,
+        &:active {
+            color: $text-button-color;
+            background-color: $text-button-focus-color;
+        }
+    }
+
+    .setting-toggle {
+        margin-top: 16px;
+        margin-bottom: 16px;
+
+        &__label {
+            color: $ui-text-color;
+            margin: 0 0 0 12px;
+        }
+    }
 }
