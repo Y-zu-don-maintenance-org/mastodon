@@ -198,15 +198,10 @@
 
 .setting-text {
     color: $primary-text-color;
-    background: $search-bar-color;
+    background: $text-field-background-color;
     border-radius: $bar-radius;
 
     &::placeholder { color: $tips-text-color }
-
-    &:focus {
-        @include shadow-1dp;
-        background: $search-bar-focus-color;
-    }
 }
 
 .empty-column-indicator {
@@ -375,7 +370,18 @@
         &__unread { background: $badge-color }
     }
 
-    &__pagination { color: $ui-text-color }
+    &__pagination {
+        color: $ui-text-color;
+        padding: 8px 16px;
+        bottom: 8px;
+
+        .icon-button {
+            font-size: 20px !important;
+            width: 20px !important;
+            height: 20px !important;
+            margin: 0 8px;
+        }
+    }
 }
 
 .react-swipeable-view-container { transition: transform .3s cubic-bezier(0.165, 0.84, 0.44, 1) 0s, height 0.3s cubic-bezier(0.165, 0.84, 0.44, 1) 0s !important }
@@ -458,7 +464,7 @@
 
 .relationship-tag {
     color: $ui-text-color;
-    background-color: $contained-chip-color;
+    background-color: $relationship-tag-color;
     font-size: 12px;
     border-radius: 17px;
     padding: 4px 8px;
@@ -466,37 +472,3 @@
 }
 
 .attachment-list__list a { color: $secondary-text-color }
-
-.focusable {
-    &:focus { background: $card-background-color }
-}
-
-// single column mode
-@media screen and (min-width: 415px) {
-    .tabs-bar {
-        margin-bottom: 0;
-
-        &__wrapper { padding-top: 0 }
-    }
-
-    .columns-area__panels__main {
-        @include shadow-1dp;
-        padding: 0;
-        margin: 12px 12px 0;
-    }
-}
-
-@media screen and (min-width: 631px) {
-    .tabs-bar__link {
-        &:hover {
-            background: $tab-indicator-background-hover-color;
-            border-bottom-color: $tab-background-color;
-        }
-
-        &:active,
-        &:focus {
-            background: $tab-indicator-background-focus-color;
-            border-bottom-color: $tab-background-color;
-        }
-    }
-}
