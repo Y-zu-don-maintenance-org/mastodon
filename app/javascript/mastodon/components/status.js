@@ -459,6 +459,136 @@ class Status extends ImmutablePureComponent {
 
     const visibilityIcon = visibilityIconInfo[status.get('visibility')];
 
+    let quote = null;
+    if (status.get('quote', null) !== null && typeof status.get('quote') === 'object') {
+      let quote_status = status.get('quote');
+
+      let quote_media = null;
+      if (quote_status.get('media_attachments').size > 0) {
+        if (pictureInPicture.get('inUse')) {
+          quote_media = <PictureInPicturePlaceholder width={this.props.cachedMediaWidth} />;
+        } else if (this.props.muted) {
+          quote_media = (
+            <AttachmentList
+              compact
+              media={quote_status.get('media_attachments')}
+            />
+          );
+        } else if (quote_status.getIn(['media_attachments', 0, 'type']) === 'audio') {
+          const attachment = quote_status.getIn(['media_attachments', 0]);
+
+          quote_media = (
+            <Bundle fetchComponent={Audio} loading={this.renderLoadingAudioPlayer} >
+              {Component => (
+                <Component
+                  src={attachment.get('url')}
+                  alt={attachment.get('description')}
+                  poster={attachment.get('preview_url') || quote_status.getIn(['account', 'avatar_static'])}
+                  backgroundColor={attachment.getIn(['meta', 'colors', 'background'])}
+                  foregroundColor={attachment.getIn(['meta', 'colors', 'foreground'])}
+                  accentColor={attachment.getIn(['meta', 'colors', 'accent'])}
+                  duration={attachment.getIn(['meta', 'original', 'duration'], 0)}
+                  width={this.props.cachedMediaWidth}
+                  height={70}
+                  cacheWidth={this.props.cacheMediaWidth}
+                  deployPictureInPicture={pictureInPicture.get('available') ? this.handleDeployPictureInPicture : undefined}
+                  />
+              )}
+            </Bundle>
+          );
+        } else if (quote_status.getIn(['media_attachments', 0, 'type']) === 'video') {
+          const attachment = quote_status.getIn(['media_attachments', 0]);
+
+          quote_media = (
+            <Bundle fetchComponent={Video} loading={this.renderLoadingVideoPlayer} >
+              {Component => (
+                <Component
+                  preview={attachment.get('preview_url')}
+                  frameRate={attachment.getIn(['meta', 'original', 'frame_rate'])}
+                  blurhash={attachment.get('blurhash')}
+                  src={attachment.get('url')}
+                  alt={attachment.get('description')}
+                  width={this.props.cachedMediaWidth}
+                  height={110}
+                  inline
+                  sensitive={quote_status.get('sensitive')}
+                  onOpenVideo={this.handleOpenVideoQuote}
+                  cacheWidth={this.props.cacheMediaWidth}
+                  deployPictureInPicture={pictureInPicture.get('available') ? this.handleDeployPictureInPicture : undefined}
+                  visible={this.state.showQuoteMedia}
+                  onToggleVisibility={this.handleToggleQuoteMediaVisibility}
+                  quote
+                />
+              )}
+            </Bundle>
+          );
+        } else {
+          quote_media = (
+            <Bundle fetchComponent={MediaGallery} loading={this.renderLoadingMediaGallery}>
+              {Component => (
+                <Component
+                  media={quote_status.get('media_attachments')}
+                  sensitive={quote_status.get('sensitive')}
+                  height={110}
+                  onOpenMedia={this.handleOpenMediaQuote}
+                  cacheWidth={this.props.cacheMediaWidth}
+                  defaultWidth={this.props.cachedMediaWidth}
+                  visible={this.state.showQuoteMedia}
+                  onToggleVisibility={this.handleToggleQuoteMediaVisibility}
+                  quote
+                />
+              )}
+            </Bundle>
+          );
+        }
+      }
+
+      if (quote_muted) {
+        quote = (
+          <div className={classNames('quote-status', `status-${quote_status.get('visibility')}`, { muted: this.props.muted })} data-id={quote_status.get('id')}>
+            <div className={classNames('status__content muted-quote', { 'status__content--with-action': this.context.router })}>
+              <FormattedMessage id='status.muted_quote' defaultMessage='Muted quote' />
+            </div>
+          </div>
+        );
+      } else if (quote_status.get('visibility') === 'unlisted' && !!contextType && ['public', 'community', 'hashtag'].includes(contextType.split(':', 2)[0])) {
+        quote = (
+          <div className={classNames('quote-status', `status-${quote_status.get('visibility')}`, { muted: this.props.muted })} data-id={quote_status.get('id')}>
+            <div className={classNames('status__content unlisted-quote', { 'status__content--with-action': this.context.router })}>
+              <button onClick={this.handleQuoteClick}>
+                <FormattedMessage id='status.unlisted_quote' defaultMessage='Unlisted quote' />
+              </button>
+            </div>
+          </div>
+        );
+      } else {
+        quote = (
+          <div className={classNames('quote-status', `status-${quote_status.get('visibility')}`, { muted: this.props.muted })} data-id={quote_status.get('id')}>
+            <div className='status__info'>
+              <a onClick={this.handleAccountClick} target='_blank' data-id={quote_status.getIn(['account', 'id'])} data-group={quote_status.getIn(['account', 'group'])} href={quote_status.getIn(['account', 'url'])} title={quote_status.getIn(['account', 'acct'])} className='status__display-name'>
+                <div className='status__avatar'><Avatar account={quote_status.get('account')} size={18} /></div>
+                <DisplayName account={quote_status.get('account')} />
+              </a>
+            </div>
+            <StatusContent status={quote_status} onClick={this.handleQuoteClick} expanded={!status.get('quote_hidden')} onExpandedToggle={this.handleExpandedQuoteToggle} quote />
+            {quote_media}
+          </div>
+        );
+      }
+    } else if (quote_muted) {
+      quote = (
+        <div className={classNames('quote-status', { muted: this.props.muted })}>
+          <div className={classNames('status__content muted-quote', { 'status__content--with-action': this.context.router })}>
+            <FormattedMessage id='status.muted_quote' defaultMessage='Muted quote' />
+          </div>
+        </div>
+      );
+    }
+
+    const expires_at = status.get('expires_at')
+    const expires_date = expires_at && new Date(expires_at)
+    const expired = expires_date && expires_date.getTime() < intl.now()
+
     return (
       <HotKeys handlers={handlers}>
         <div className={classNames('status__wrapper', `status__wrapper-${status.get('visibility')}`, { 'status__wrapper-reply': !!status.get('in_reply_to_id'), unread, focusable: !this.props.muted })} tabIndex={this.props.muted ? null : 0} data-featured={featured ? 'true' : null} aria-label={textForScreenReader(intl, status, rebloggedByText)} ref={this.handleRef}>
