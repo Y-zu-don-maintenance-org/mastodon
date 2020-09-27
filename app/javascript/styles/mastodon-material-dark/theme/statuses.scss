@@ -86,12 +86,15 @@
         background: transparent;
         border-bottom-color: $border-color;
     }
+
+    &__visibility-icon { color: $icon-color }
 }
 
 .status-card {
     color: $icon-color;
     border-color: $border-color;
     outline: none;
+    margin-top: 16px;
 
     &__image {
         background: transparent;
@@ -110,7 +113,7 @@
 
     &__actions {
         &>div {
-            background: $media-icon-background-color;
+            background: $media-icon-bg-color;
             border-radius: $button-radius;
         }
 
@@ -136,7 +139,19 @@
         &:hover { background-color: transparent !important }
     }
 
-    &:hover { background-color: $card-background-color }
+    &.horizontal {
+        border-radius: 0;
+        
+        .status-card {
+            &__image-preview { border-radius: 0 }
+
+            &__image-image { border-radius: 0 }
+        }
+    }
+}
+
+a.status-card {
+    &:hover { background-color: $card-bg-color }
 }
 
 // Detailed status in mobile
@@ -152,7 +167,7 @@
 }
 
 .detailed-status {
-    background: $card-background-color;
+    background: $card-bg-color;
     padding: 16px;
 
     &__display-name {
@@ -167,7 +182,7 @@
     }
 
     &__action-bar {
-        background: $card-background-color;
+        background: $card-bg-color;
         border-top: none;
         border-bottom: 1px solid $border-color;
         padding: 12px 0;
