@@ -121,7 +121,7 @@
         background-color: $card-bg-color;
         padding: 16px;
 
-        .fa { margin-right: 8px }
+        .fa { margin-right: 16px }
     }
 
     &__section {
@@ -148,6 +148,11 @@
         width: 36px !important;
         height: 36px !important;
         padding: 8px;
+
+        &.active {
+            color: $icon-hover-color;
+            background: $icon-bg-active-color;
+        }
     }
 }
 
@@ -155,6 +160,8 @@
     border-top: 1px solid $border-color;
     margin: 8px 0;
 }
+
+.flex-spacer { margin: 8px 0 }
 
 .dropdown-menu {
     @include shadow-8dp;
@@ -233,6 +240,7 @@
             padding: 16px;
             border: 1px solid $border-color;
             border-radius: $card-radius;
+            box-shadow: none;
 
             a { color: $link-text-color }
         }
@@ -263,8 +271,7 @@
             padding: 8px;
 
             .icon-button {
-                width: 20px !important;
-                height: 20px !important;
+                @include icon-button;
                 padding: 8px;
             }
 
@@ -291,14 +298,12 @@
 
             .button.button-secondary {
                 box-shadow: none;
-                color: $outlined-button-color;
-                border-color: $outlined-button-color;
+                color: $text-button-color;
 
-                &:hover { background-color: $outlined-button-hover-color }
+                &:hover { background-color: $text-button-hover-color }
 
-                &:active { background-color: $outlined-button-active-color }
-
-                &:focus { background-color: $outlined-button-color }
+                &:active,
+                &:focus { background-color: $text-button-focus-color }
             }
 
             .poll__footer { border-top: none }
@@ -312,17 +317,32 @@
 
 
 .poll {
+    .button { margin-right: 8px }
+
+    li { margin-bottom: 0 }
+
     &__input {
-        border: 2px solid $control-border-color;
+        border: none;
         width: 20px;
         height: 20px;
         flex: 0 0 20px;
-        margin: 8px;
+        padding: 18px;
+        margin: 0 2px;
+        background: radial-gradient(circle, transparent, transparent 7px, $control-border-color 8px, $control-border-color 9px, transparent 10px, transparent);
+        
+        &:hover { background: radial-gradient(circle, $control-border-hover-color, $control-border-hover-color 7px, $control-border-color 8px, $control-border-color 9px, $control-border-hover-color 10px, $control-border-hover-color)}
 
-        &.checkbox { border-radius: 2px }
+        &.active { background: radial-gradient(circle, $control-border-active-color, $control-border-active-color 4px, transparent 5px, transparent 7px, $control-border-active-color 8px, $control-border-active-color 9px, transparent 10px, transparent) }
 
-        &:focus,
-        &:hover { border: 2px solid $control-border-color }
+        &.active:hover { background: radial-gradient(circle, $control-border-hover-color, $control-border-hover-color 7px, $control-border-color 8px, $control-border-color 9px, $control-border-hover-color 10px, $control-border-hover-color) }
+
+        &.checkbox {
+            border-radius: 2px;
+            border: 2px solid $control-border-color;
+            padding: 8px;
+            margin: 8px 10px;
+            background: none;
+        }
     }
 
     &__text input[type=text] {
@@ -334,12 +354,16 @@
         &:focus { border-color: $border-active-color }
     }
 
-    &__option input[type=text] {
-        color: $primary-text-color;
-        background: $text-field-bg-color;
-        border: none;
-        border-radius: 2px;
-        padding: 8px 16px;
+    &__option {
+        padding: 16px 0 8px;
+
+        input[type=text] {
+            color: $primary-text-color;
+            background: $text-field-bg-color;
+            border: none;
+            border-radius: 2px;
+            padding: 8px 16px;
+        }
     }
 
     &__chart {
@@ -444,7 +468,11 @@
         &-avatar { margin-right: 8px }
     }
 
-    &__content { color: $primary-text-color }
+    &__content {
+        color: $primary-text-color;
+
+        p { margin-bottom: 16px }
+    }
 }
 
 .attachment-list {
