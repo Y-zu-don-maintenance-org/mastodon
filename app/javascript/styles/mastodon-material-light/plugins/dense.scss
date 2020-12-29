@@ -35,7 +35,14 @@
 }
 
 .compose-form {
-    .compose-form__publish { padding-top: 8px }
+    .compose-form {
+        &__publish { padding-top: 8px }
+
+        &__buttons-wrapper {
+            .icon-button,
+            .text-icon-button { padding: 4px }
+        }
+    }
 }
 
 .status {

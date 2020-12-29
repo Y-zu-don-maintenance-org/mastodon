@@ -42,6 +42,7 @@
 }
 
 .actions-modal {
+    @include shadow-24dp;
     background: $card-bg-color;
     border-radius: $card-radius;
 
