@@ -1344,6 +1344,8 @@ en:
     mastodon-material-light: Mastodon Material (Light)
     mastodon-material-auto: Mastodon Material (Auto)
     plus: Plus
+    y-zu-dark: Y-zu (Dark)
+    y-zu-light: Y-zu (Light)
   time:
     formats:
       default: "%b %d, %Y, %H:%M"
