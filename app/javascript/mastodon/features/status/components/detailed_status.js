@@ -1,8 +1,10 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import Avatar from '../../../components/avatar';
 import DisplayName from '../../../components/display_name';
+import { mapStateToProps, quote } from '../../../components/status';
 import StatusContent from '../../../components/status_content';
 import MediaGallery from '../../../components/media_gallery';
 import { Link } from 'react-router-dom';
@@ -24,7 +26,7 @@ const messages = defineMessages({
   direct_short: { id: 'privacy.direct.short', defaultMessage: 'Direct' },
 });
 
-export default  @injectIntl
+export default @connect(mapStateToProps) @injectIntl
 class DetailedStatus extends ImmutablePureComponent {
 
   static contextTypes = {
@@ -36,16 +38,20 @@ class DetailedStatus extends ImmutablePureComponent {
     onOpenMedia: PropTypes.func.isRequired,
     onOpenVideo: PropTypes.func.isRequired,
     onToggleHidden: PropTypes.func.isRequired,
+    onQuoteToggleHidden: PropTypes.func.isRequired,
     measureHeight: PropTypes.bool,
     onHeightChange: PropTypes.func,
     domain: PropTypes.string.isRequired,
     compact: PropTypes.bool,
+    quoteMuted: PropTypes.bool,
     showMedia: PropTypes.bool,
+    showQuoteMedia: PropTypes.bool,
     pictureInPicture: ImmutablePropTypes.contains({
       inUse: PropTypes.bool,
       available: PropTypes.bool,
     }),
     onToggleMediaVisibility: PropTypes.func,
+    onQuoteToggleMediaVisibility: PropTypes.func,
   };
 
   state = {
@@ -54,8 +60,9 @@ class DetailedStatus extends ImmutablePureComponent {
 
   handleAccountClick = (e) => {
     if (e.button === 0 && !(e.ctrlKey || e.metaKey) && this.context.router) {
+      const id = e.currentTarget.getAttribute('data-id');
       e.preventDefault();
-      this.context.router.history.push(`/accounts/${this.props.status.getIn(['account', 'id'])}`);
+      this.context.router.history.push(`/accounts/${id}`);
     }
 
     e.stopPropagation();
@@ -67,6 +74,19 @@ class DetailedStatus extends ImmutablePureComponent {
 
   handleExpandedToggle = () => {
     this.props.onToggleHidden(this.props.status);
+  }
+
+  handleExpandedQuoteToggle = () => {
+    this.props.onQuoteToggleHidden(this.props.status);
+  }
+
+  handleQuoteClick = () => {
+    if (!this.context.router) {
+      return;
+    }
+
+    const { status } = this.props;
+    this.context.router.history.push(`/statuses/${status.getIn(['quote', 'id'])}`);
   }
 
   _measureHeight (heightJustChanged) {
@@ -105,13 +125,12 @@ class DetailedStatus extends ImmutablePureComponent {
   render () {
     const status = (this.props.status && this.props.status.get('reblog')) ? this.props.status.get('reblog') : this.props.status;
     const outerStyle = { boxSizing: 'border-box' };
-    const { intl, compact, pictureInPicture } = this.props;
+    const { intl, compact, pictureInPicture, quoteMuted } = this.props;
 
     if (!status) {
       return null;
     }
 
-    let media           = '';
     let applicationLink = '';
     let reblogLink = '';
     let reblogIcon = 'retweet';
@@ -121,59 +140,80 @@ class DetailedStatus extends ImmutablePureComponent {
       outerStyle.height = `${this.state.height}px`;
     }
 
-    if (pictureInPicture.get('inUse')) {
-      media = <PictureInPicturePlaceholder />;
-    } else if (status.get('media_attachments').size > 0) {
-      if (status.getIn(['media_attachments', 0, 'type']) === 'audio') {
-        const attachment = status.getIn(['media_attachments', 0]);
+    const identity = (status, _0, _1, quote = false) => (
+      <a href={status.getIn(['account', 'url'])} onClick={this.handleAccountClick} data-id={status.getIn(['account', 'id'])} className='detailed-status__display-name'>
+        <div className='detailed-status__display-avatar'><Avatar account={status.get('account')} size={quote ? 18 : 48} /></div>
+        <DisplayName account={status.get('account')} localDomain={this.props.domain} />
+      </a>
+    );
 
-        media = (
-          <Audio
-            src={attachment.get('url')}
-            alt={attachment.get('description')}
-            duration={attachment.getIn(['meta', 'original', 'duration'], 0)}
-            poster={attachment.get('preview_url') || status.getIn(['account', 'avatar_static'])}
-            backgroundColor={attachment.getIn(['meta', 'colors', 'background'])}
-            foregroundColor={attachment.getIn(['meta', 'colors', 'foreground'])}
-            accentColor={attachment.getIn(['meta', 'colors', 'accent'])}
-            height={150}
-          />
-        );
-      } else if (status.getIn(['media_attachments', 0, 'type']) === 'video') {
-        const attachment = status.getIn(['media_attachments', 0]);
+    const media = (status, quote = false) => {
+      if (pictureInPicture.get('inUse')) {
+        return <PictureInPicturePlaceholder />;
+      } else if (status.get('media_attachments').size > 0) {
+        if (status.getIn(['media_attachments', 0, 'type']) === 'audio') {
+          const attachment = status.getIn(['media_attachments', 0]);
 
-        media = (
-          <Video
-            preview={attachment.get('preview_url')}
-            frameRate={attachment.getIn(['meta', 'original', 'frame_rate'])}
-            blurhash={attachment.get('blurhash')}
-            src={attachment.get('url')}
-            alt={attachment.get('description')}
-            width={300}
-            height={150}
-            inline
-            onOpenVideo={this.handleOpenVideo}
+          return (
+            <Audio
+              src={attachment.get('url')}
+              alt={attachment.get('description')}
+              duration={attachment.getIn(['meta', 'original', 'duration'], 0)}
+              poster={attachment.get('preview_url') || status.getIn(['account', 'avatar_static'])}
+              backgroundColor={attachment.getIn(['meta', 'colors', 'background'])}
+              foregroundColor={attachment.getIn(['meta', 'colors', 'foreground'])}
+              accentColor={attachment.getIn(['meta', 'colors', 'accent'])}
+              height={150}
+              quote={quote}
+            />
+          );
+        } else if (status.getIn(['media_attachments', 0, 'type']) === 'video') {
+          const attachment = status.getIn(['media_attachments', 0]);
+
+          return (
+            <Video
+              preview={attachment.get('preview_url')}
+              frameRate={attachment.getIn(['meta', 'original', 'frame_rate'])}
+              blurhash={attachment.get('blurhash')}
+              src={attachment.get('url')}
+              alt={attachment.get('description')}
+              width={300}
+              height={150}
+              inline
+              onOpenVideo={this.handleOpenVideo}
+              sensitive={status.get('sensitive')}
+              visible={this.props.showMedia}
+              onToggleVisibility={this.props.onToggleMediaVisibility}
+              quote={quote}
+            />
+          );
+        } else {
+          return (
+            <MediaGallery
+              standalone
+              sensitive={status.get('sensitive')}
+              media={status.get('media_attachments')}
+              height={300}
+              onOpenMedia={this.props.onOpenMedia}
+              visible={this.props.showMedia}
+              onToggleVisibility={this.props.onToggleMediaVisibility}
+              quote={quote}
+            />
+          );
+        }
+      } else if (status.get('spoiler_text').length === 0) {
+        return (
+          <Card
             sensitive={status.get('sensitive')}
-            visible={this.props.showMedia}
-            onToggleVisibility={this.props.onToggleMediaVisibility}
-          />
-        );
-      } else {
-        media = (
-          <MediaGallery
-            standalone
-            sensitive={status.get('sensitive')}
-            media={status.get('media_attachments')}
-            height={300}
             onOpenMedia={this.props.onOpenMedia}
-            visible={this.props.showMedia}
-            onToggleVisibility={this.props.onToggleMediaVisibility}
+            card={status.get('card', null)}
+            quote={quote}
           />
         );
       }
-    } else if (status.get('spoiler_text').length === 0) {
-      media = <Card sensitive={status.get('sensitive')} onOpenMedia={this.props.onOpenMedia} card={status.get('card', null)} />;
-    }
+
+      return null;
+    };
 
     if (status.get('application')) {
       applicationLink = <React.Fragment> · <a className='detailed-status__application' href={status.getIn(['application', 'website'])} target='_blank' rel='noopener noreferrer'>{status.getIn(['application', 'name'])}</a></React.Fragment>;
@@ -240,14 +280,13 @@ class DetailedStatus extends ImmutablePureComponent {
     return (
       <div style={outerStyle}>
         <div ref={this.setRef} className={classNames('detailed-status', `detailed-status-${status.get('visibility')}`, { compact })}>
-          <a href={status.getIn(['account', 'url'])} onClick={this.handleAccountClick} className='detailed-status__display-name'>
-            <div className='detailed-status__display-avatar'><Avatar account={status.get('account')} size={48} /></div>
-            <DisplayName account={status.get('account')} localDomain={this.props.domain} />
-          </a>
+          {identity(status, null, null, false)}
 
           <StatusContent status={status} expanded={!status.get('hidden')} onExpandedToggle={this.handleExpandedToggle} />
 
-          {media}
+          {media(status, false)}
+
+          {quote(status, false, quoteMuted, this.handleQuoteClick, this.handleExpandedQuoteToggle, identity, media, this.context.router)}
 
           <div className='detailed-status__meta'>
             <a className='detailed-status__datetime' href={status.get('url')} target='_blank' rel='noopener noreferrer'>

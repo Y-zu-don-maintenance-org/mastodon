@@ -1,13 +1,14 @@
 import { connect } from 'react-redux';
-import { cancelReplyCompose } from '../../../actions/compose';
+import { cancelReplyCompose, cancelQuoteCompose } from '../../../actions/compose';
 import { makeGetStatus } from '../../../selectors';
 import ReplyIndicator from '../components/reply_indicator';
 
 const makeMapStateToProps = () => {
   const getStatus = makeGetStatus();
 
-  const mapStateToProps = state => ({
-    status: getStatus(state, { id: state.getIn(['compose', 'in_reply_to']) }),
+  const mapStateToProps = (state, props) => ({
+    status: getStatus(state, { id: state.getIn(['compose', props.quote ? 'quote_from' : 'in_reply_to']) }),
+    quote: props.quote,
   });
 
   return mapStateToProps;
@@ -15,8 +16,8 @@ const makeMapStateToProps = () => {
 
 const mapDispatchToProps = dispatch => ({
 
-  onCancel () {
-    dispatch(cancelReplyCompose());
+  onCancel (quote) {
+    dispatch(quote ? cancelQuoteCompose() : cancelReplyCompose());
   },
 
 });

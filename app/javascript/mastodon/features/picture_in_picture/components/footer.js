@@ -4,10 +4,11 @@ import ImmutablePureComponent from 'react-immutable-pure-component';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import PropTypes from 'prop-types';
 import IconButton from 'mastodon/components/icon_button';
+import StatusActionBar from 'mastodon/components/status_action_bar';
 import classNames from 'classnames';
 import { me, boostModal } from 'mastodon/initial_state';
 import { defineMessages, injectIntl } from 'react-intl';
-import { replyCompose } from 'mastodon/actions/compose';
+import { replyCompose, quoteCompose } from 'mastodon/actions/compose';
 import { reblog, favourite, unreblog, unfavourite } from 'mastodon/actions/interactions';
 import { makeGetStatus } from 'mastodon/selectors';
 import { openModal } from 'mastodon/actions/modal';
@@ -19,9 +20,13 @@ const messages = defineMessages({
   reblog_private: { id: 'status.reblog_private', defaultMessage: 'Boost with original visibility' },
   cancel_reblog_private: { id: 'status.cancel_reblog_private', defaultMessage: 'Unboost' },
   cannot_reblog: { id: 'status.cannot_reblog', defaultMessage: 'This post cannot be boosted' },
+  quote: { id: 'status.quote', defaultMessage: 'Quote' },
+  cannot_quote: { id: 'status.cannot_quote', defaultMessage: 'This post cannot be quoted' },
   favourite: { id: 'status.favourite', defaultMessage: 'Favourite' },
   replyConfirm: { id: 'confirmations.reply.confirm', defaultMessage: 'Reply' },
   replyMessage: { id: 'confirmations.reply.message', defaultMessage: 'Replying now will overwrite the message you are currently composing. Are you sure you want to proceed?' },
+  quoteConfirm: { id: 'confirmations.quote.confirm', defaultMessage: 'Quote' },
+  quoteMessage: { id: 'confirmations.quote.message', defaultMessage: 'Quoting now will overwrite the message you are currently composing. Are you sure you want to proceed?' },
   open: { id: 'status.open', defaultMessage: 'Expand this status' },
 });
 
@@ -105,6 +110,31 @@ class Footer extends ImmutablePureComponent {
       dispatch(openModal('BOOST', { status, onReblog: this._performReblog }));
     }
   };
+
+  _performQuote = () => {
+    const { dispatch, status, onClose } = this.props;
+    const { router } = this.context;
+
+    if (onClose) {
+      onClose();
+    }
+
+    dispatch(quoteCompose(status, router.history));
+  }
+
+  handleQuoteClick = () => {
+    const { dispatch, askReplyConfirmation, intl } = this.props;
+
+    if (askReplyConfirmation) {
+      dispatch(openModal('CONFIRM', {
+        message: intl.formatMessage(messages.quoteMessage),
+        confirm: intl.formatMessage(messages.quoteConfirm),
+        onConfirm: this._performQuote,
+      }));
+    } else {
+      this._performQuote();
+    }
+  }
 
   handleOpenClick = e => {
     const { router } = this.context;

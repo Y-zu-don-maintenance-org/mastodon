@@ -1,0 +1,20 @@
+:ruby
+  detailed ||= false
+  inline   ||= false
+
+.p-author.h-card
+  = link_to ActivityPub::TagManager.instance.url_for(author), class: "#{ detailed ? 'detailed-' : '' }status__display-name u-url", target: stream_link_target, rel: "noopener #{ (detailed || inline) ? '' : 'noreferrer' }" do
+    %div{ class: "#{ detailed ? 'detailed-' : '' }status__#{ detailed ? 'display-' : '' }avatar" }
+      %div
+        - if current_account&.user&.setting_auto_play_gif || autoplay
+          = image_tag author.avatar_original_url, alt: '', class: 'u-photo account__avatar'
+        - else
+          = image_tag author.avatar_static_url, alt: '', class: 'u-photo account__avatar'
+    %span.display-name
+      %bdi
+        %strong.display-name__html.p-name.emojify= display_name(author, custom_emojify: true, autoplay: autoplay)
+
+      %span.display-name__account
+        = acct(author)
+        - unless inline
+          = fa_icon('lock') if author.locked?

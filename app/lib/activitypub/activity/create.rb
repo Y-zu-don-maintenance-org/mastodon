@@ -77,6 +77,7 @@ class ActivityPub::Activity::Create < ActivityPub::Activity
     @mentions = []
     @params   = {}
 
+    process_quote
     process_status_params
     process_tags
     process_audience
@@ -117,6 +118,7 @@ class ActivityPub::Activity::Create < ActivityPub::Activity
         conversation: conversation_from_uri(@object['conversation']),
         media_attachment_ids: process_attachments.take(4).map(&:id),
         poll: process_poll,
+        quote: @quote,
       }
     end
   end
@@ -520,5 +522,22 @@ class ActivityPub::Activity::Create < ActivityPub::Activity
 
   def poll_lock_options
     { redis: Redis.current, key: "vote:#{replied_to_status.poll_id}:#{@account.id}" }
+  end
+
+  def process_quote
+    if (@quote = quote_from_url(@object['quoteUrl']))
+      /<br><br>RE:\s<\/span><a.*<\/a>/.match(@object['content']) do |m|
+        @object['content'] = @object['content'].sub(m[0], "</span><span class=\"quote-inline\">#{m[0].sub(/<\/span>/, '')}</span>")
+
+      end
+    end
+  end
+
+  def quote_from_url(url)
+    return nil if url.nil?
+    quote = ResolveURLService.new.call(url)
+    status_from_uri(quote.uri) if quote
+  rescue
+    nil
   end
 end

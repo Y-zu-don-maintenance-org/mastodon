@@ -450,6 +450,14 @@
         "id": "status.cannot_reblog"
       },
       {
+        "defaultMessage": "Quote",
+        "id": "status.quote"
+      },
+      {
+        "defaultMessage": "This post cannot be quoted",
+        "id": "status.cannot_quote"
+      },
+      {
         "defaultMessage": "Favourite",
         "id": "status.favourite"
       },
@@ -570,6 +578,14 @@
       {
         "defaultMessage": "{name} boosted",
         "id": "status.reblogged_by"
+      },
+      {
+        "defaultMessage": "Muted quote",
+        "id": "status.muted_quote"
+      },
+      {
+        "defaultMessage": "Unlisted quote",
+        "id": "status.unlisted_quote"
       }
     ],
     "path": "app/javascript/mastodon/components/status.json"
@@ -2769,6 +2785,14 @@
       {
         "defaultMessage": "Detailed conversation view",
         "id": "status.detailed_status"
+      },
+      {
+        "defaultMessage": "Quote",
+        "id": "confirmations.quote.confirm"
+      },
+      {
+        "defaultMessage": "Quoting now will overwrite the message you are currently composing. Are you sure you want to proceed?",
+        "id": "confirmations.quote.message"
       },
       {
         "defaultMessage": "Reply",

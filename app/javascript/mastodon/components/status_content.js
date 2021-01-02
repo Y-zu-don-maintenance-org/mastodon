@@ -9,6 +9,7 @@ import Icon from 'mastodon/components/icon';
 import { autoPlayGif } from 'mastodon/initial_state';
 
 const MAX_HEIGHT = 642; // 20px * 32 (+ 2px padding at the top)
+const QUOTE_MAX_HEIGHT = 102; // 20px * 5 (+ 2px padding at the top)
 
 export default class StatusContent extends React.PureComponent {
 
@@ -24,6 +25,7 @@ export default class StatusContent extends React.PureComponent {
     onClick: PropTypes.func,
     collapsable: PropTypes.bool,
     onCollapsedToggle: PropTypes.func,
+    quote: PropTypes.bool,
   };
 
   state = {
@@ -66,7 +68,7 @@ export default class StatusContent extends React.PureComponent {
       let collapsed =
           this.props.collapsable
           && this.props.onClick
-          && node.clientHeight > MAX_HEIGHT
+          && node.clientHeight > (this.props.quote ? QUOTE_MAX_HEIGHT : MAX_HEIGHT)
           && this.props.status.get('spoiler_text').length === 0;
 
       if(this.props.onCollapsedToggle) this.props.onCollapsedToggle(collapsed);
@@ -173,7 +175,7 @@ export default class StatusContent extends React.PureComponent {
   }
 
   render () {
-    const { status } = this.props;
+    const { status, quote } = this.props;
 
     if (status.get('content').length === 0) {
       return null;
@@ -202,6 +204,12 @@ export default class StatusContent extends React.PureComponent {
         <FormattedMessage id='status.read_more' defaultMessage='Read more' /><Icon id='angle-right' fixedWidth />
       </button>
     );
+
+    if (quote) {
+      const doc = new DOMParser().parseFromString(content.__html, 'text/html').documentElement;
+      Array.from(doc.querySelectorAll('br')).forEach(nl => nl.replaceWith(' '));
+      content.__html = doc.outerHTML;
+    }
 
     if (status.get('spoiler_text').length > 0) {
       let mentionsPlaceholder = '';

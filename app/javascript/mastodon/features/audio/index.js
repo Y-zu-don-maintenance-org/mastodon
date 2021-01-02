@@ -42,6 +42,7 @@ class Audio extends React.PureComponent {
     volume: PropTypes.number,
     muted: PropTypes.bool,
     deployPictureInPicture: PropTypes.func,
+    quote: PropTypes.bool,
   };
 
   state = {
@@ -83,7 +84,11 @@ class Audio extends React.PureComponent {
 
   _setDimensions () {
     const width  = this.player.offsetWidth;
-    const height = this.props.fullscreen ? this.player.offsetHeight : (width / (16/9));
+    let height   = this.props.fullscreen ? this.player.offsetHeight : (width / (16/9));
+
+    if (this.props.quote) {
+      height /= 2;
+    }
 
     if (this.props.cacheWidth) {
       this.props.cacheWidth(width);

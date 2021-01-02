@@ -6,6 +6,7 @@ import IconButton from '../../../components/icon_button';
 import DisplayName from '../../../components/display_name';
 import { defineMessages, injectIntl } from 'react-intl';
 import ImmutablePureComponent from 'react-immutable-pure-component';
+import classNames from 'classnames';
 import AttachmentList from 'mastodon/components/attachment_list';
 
 const messages = defineMessages({
@@ -23,6 +24,7 @@ class ReplyIndicator extends ImmutablePureComponent {
     status: ImmutablePropTypes.map,
     onCancel: PropTypes.func.isRequired,
     intl: PropTypes.object.isRequired,
+    quote: PropTypes.bool,
   };
 
   handleClick = () => {
@@ -37,7 +39,7 @@ class ReplyIndicator extends ImmutablePureComponent {
   }
 
   render () {
-    const { status, intl } = this.props;
+    const { status, intl, quote } = this.props;
 
     if (!status) {
       return null;
@@ -46,7 +48,7 @@ class ReplyIndicator extends ImmutablePureComponent {
     const content = { __html: status.get('contentHtml') };
 
     return (
-      <div className='reply-indicator'>
+      <div className={classNames('reply-indicator', { 'quote-indicator': quote })}>
         <div className='reply-indicator__header'>
           <div className='reply-indicator__cancel'><IconButton title={intl.formatMessage(messages.cancel)} icon='times' onClick={this.handleClick} inverted /></div>
 
