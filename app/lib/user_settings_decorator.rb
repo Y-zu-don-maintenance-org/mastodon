@@ -15,6 +15,7 @@ class UserSettingsDecorator
   private
 
   def process_update
+<<<<<<< HEAD
     user.settings['notification_emails'] = merged_notification_emails if change?('notification_emails')
     user.settings['interactions']        = merged_interactions if change?('interactions')
     user.settings['default_privacy']     = default_privacy_preference if change?('setting_default_privacy')
@@ -39,6 +40,8 @@ class UserSettingsDecorator
     user.settings['use_pending_items']   = use_pending_items_preference if change?('setting_use_pending_items')
     user.settings['trends']              = trends_preference if change?('setting_trends')
     user.settings['crop_images']         = crop_images_preference if change?('setting_crop_images')
+    user.settings['place_tab_bar_at_bottom']           = place_tab_bar_at_bottom_preference if change?('setting_place_tab_bar_at_bottom')
+    user.settings['show_tab_bar_label']                = show_tab_bar_label_preference if change?('setting_show_tab_bar_label')
   end
 
   def merged_notification_emails
@@ -137,6 +140,49 @@ class UserSettingsDecorator
     boolean_cast_setting 'setting_crop_images'
   end
 
+<<<<<<< HEAD
+=======
+  def show_follow_button_on_timeline_preference
+    boolean_cast_setting 'setting_show_follow_button_on_timeline'
+  end
+
+  def show_subscribe_button_on_timeline_preference
+    boolean_cast_setting 'setting_show_subscribe_button_on_timeline'
+  end
+
+  def show_followed_by_preference
+    boolean_cast_setting 'setting_show_followed_by'
+  end
+
+  def follow_button_to_list_adder_preference
+    boolean_cast_setting 'setting_follow_button_to_list_adder'
+  end
+
+  def show_navigation_panel_preference
+    boolean_cast_setting 'setting_show_navigation_panel'
+  end
+
+  def show_quote_button_preference
+    boolean_cast_setting 'setting_show_quote_button'
+  end
+
+  def show_bookmark_button_preference
+    boolean_cast_setting 'setting_show_bookmark_button'
+  end
+
+  def show_target_preference
+    boolean_cast_setting 'setting_show_target'
+  end
+
+  def place_tab_bar_at_bottom_preference
+    boolean_cast_setting 'setting_place_tab_bar_at_bottom'
+  end
+
+  def show_tab_bar_label_preference
+    boolean_cast_setting 'setting_show_tab_bar_label'
+  end
+
+>>>>>>> fb196ccdb... Add place tab bar at bottom and add short label
   def boolean_cast_setting(key)
     ActiveModel::Type::Boolean.new.cast(settings[key])
   end

@@ -25,6 +25,7 @@ class InitialStateSerializer < ActiveModel::Serializer
     }
 
     if object.current_account
+<<<<<<< HEAD
       store[:me]                = object.current_account.id.to_s
       store[:unfollow_modal]    = object.current_account.user.setting_unfollow_modal
       store[:boost_modal]       = object.current_account.user.setting_boost_modal
@@ -40,6 +41,8 @@ class InitialStateSerializer < ActiveModel::Serializer
       store[:is_staff]          = object.current_account.user.staff?
       store[:trends]            = Setting.trends && object.current_account.user.setting_trends
       store[:crop_images]       = object.current_account.user.setting_crop_images
+      store[:place_tab_bar_at_bottom]           = object.current_account.user.setting_place_tab_bar_at_bottom
+      store[:show_tab_bar_label]                = object.current_account.user.setting_show_tab_bar_label
     else
       store[:auto_play_gif] = Setting.auto_play_gif
       store[:display_media] = Setting.display_media
