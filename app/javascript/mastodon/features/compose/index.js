@@ -112,7 +112,7 @@ class Compose extends React.PureComponent {
         'PUBLIC':        { to: '/timelines/public',       title: formatMessage(messages.public),        label: formatMessage(messages.short_public),        icon_id: 'globe' },
         'LIST':          { to: '/lists',                  title: formatMessage(messages.lists),         label: formatMessage(messages.short_lists),         icon_id: 'list-ul' },
         'PREFERENCES':   { href: '/settings/preferences', title: formatMessage(messages.preferences),   label: formatMessage(messages.short_preferences),   icon_id: 'cog' },
-        'SIGN_OUT':      { href: '/auth/sign_out',        title: formatMessage(messages.logout),        label: formatMessage(messages.short_logout),        icon_id: 'sign-out' },
+        'SIGN_OUT':      { href: '/auth/sign_out',        title: formatMessage(messages.logout),        label: formatMessage(messages.short_logout),        icon_id: 'sign-out', method: 'delete' },
       };
 
       const { href, to, title, label, icon_id, method } = tabParams[id];
@@ -121,7 +121,7 @@ class Compose extends React.PureComponent {
 
       if (href) {
         return (
-          <a href={href} className={classNames('drawer__tab', { 'short-label': show_tab_bar_label })} title={title} aria-label={title}>{icon}<span className='drawer__tab__short-label'>{label}</span></a>
+          <a href={href} className={classNames('drawer__tab', { 'short-label': show_tab_bar_label })} title={title} aria-label={title} data-method={method}>{icon}<span className='drawer__tab__short-label'>{label}</span></a>
         );
       } else {
         return (
