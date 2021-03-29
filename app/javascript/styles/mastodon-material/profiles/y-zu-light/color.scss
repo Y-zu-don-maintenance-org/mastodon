@@ -1,14 +1,15 @@
 // Add your customization below
 
-$primary-color: #6D4C41;
+$primary-color: #7e5f66;
 
 $section-text-color: $primary-color;
 
-$icon-color: #92787D;
+$icon-color: #92787d;
 $icon-hover-color: darken($icon-color, 10%);
 $top-bar-icon-color: $icon-color;
 $top-bar-icon-hover-color: darken($top-bar-icon-color, 10%);
 $top-bar-icon-active-color: darken($top-bar-icon-color, 18%);
+$floating-action-button-icon-color: $primary-color;
 
 $control-border-color: $icon-color;
 $control-border-active-color: $primary-color;
@@ -36,5 +37,11 @@ $border-active-color: $primary-color;
 
 $tab-indicator-color: $top-bar-icon-color;
 $tab-indicator-active-color: $top-bar-icon-color;
+$text-tab-indicator-color: lighten($top-bar-icon-color, 10%);
+$text-tab-indicator-active-color: $top-bar-icon-color;
 $icon-tab-indicator-active-color: $top-bar-icon-color;
 $icon-tab-indicator-hover-color: $top-bar-icon-hover-color;
+
+$progress-indicator-color: $primary-color;
+$progress-indicator-track-color: lighten($progress-indicator-color, 30%);
+$loading-indicator-color: $primary-color;
