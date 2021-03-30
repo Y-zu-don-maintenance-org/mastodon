@@ -39,6 +39,10 @@ $border-color: lighten($icon-color, 30%);
 $border-hover-color: darken($border-color, 30%);
 $border-active-color: $primary-color;
 
+$scroll-bar-thumb-color: lighten($icon-color, 30%);
+$scroll-bar-thumb-hover-color: darken($scroll-bar-thumb-color, 10%);
+$scroll-bar-thumb-active-color: darken($scroll-bar-thumb-color, 18%);
+
 $tab-indicator-color: $top-bar-icon-color;
 $tab-indicator-active-color: $top-bar-icon-color;
 $text-tab-indicator-color: lighten($top-bar-icon-color, 10%);
