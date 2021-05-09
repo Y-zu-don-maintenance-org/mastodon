@@ -36,7 +36,7 @@ class Formatter
 
     html = raw_content
 
-    mdFormatter = Formatter_Markdown.new(html)
+    mdFormatter = FormatterMarkdown.new(html)
     html = mdFormatter.formatted
 
     html = "RT @#{prepend_reblog} #{html}" if prepend_reblog
