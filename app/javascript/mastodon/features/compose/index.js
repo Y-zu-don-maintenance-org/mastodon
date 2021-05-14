@@ -137,8 +137,8 @@ class Compose extends React.PureComponent {
     let header = '';
 
     if (multiColumn) {
-      // const defaultTabIds = ['START', 'HOME', 'NOTIFICATIONS', 'COMMUNITY', 'PUBLIC', 'LIST', 'PREFERENCES', 'SIGN_OUT'];
-      const defaultTabIds = ['START', 'HOME', 'NOTIFICATIONS', 'PUBLIC', 'LIST', 'PREFERENCES', 'SIGN_OUT'];
+       const defaultTabIds = ['START', 'HOME', 'NOTIFICATIONS', 'COMMUNITY', 'PUBLIC', 'LIST', 'PREFERENCES', 'SIGN_OUT'];
+//      const defaultTabIds = ['START', 'HOME', 'NOTIFICATIONS', 'PUBLIC', 'LIST', 'PREFERENCES', 'SIGN_OUT'];
 
       let tabs = defaultTabIds;
 
