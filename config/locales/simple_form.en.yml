@@ -53,9 +53,6 @@ en:
         setting_display_media_show_all: Always show media
         setting_hide_network: Who you follow and who follows you will be hidden on your profile
         setting_noindex: Affects your public profile and status pages
-<<<<<<< HEAD
-        setting_show_application: The application you use to post will be displayed in the detailed view of your posts
-=======
         setting_place_tab_bar_at_bottom: When using a touch device, you can operate tabs within the reach of your fingers.
         setting_show_application: The application you use to toot will be displayed in the detailed view of your toots
         setting_show_bookmark_button: When turned off, the bookmark call will be in Mastodon's standard position (in the menu on the action bar)
@@ -66,7 +63,6 @@ en:
         setting_show_tab_bar_label: When adding a list etc. to the tab bar, it is recommended to display the label because it is not possible to distinguish by the icon alone
         setting_show_followed_by: "The color of the follow button changes according to the follow status (gray: no follow relationship, yellow: followed, blue: following, green: mutual follow)"
         setting_show_target: Enable the function to switch between posting target and follow / subscribe target
->>>>>>> fb196ccdb... Add place tab bar at bottom and add short label
         setting_use_blurhash: Gradients are based on the colors of the hidden visuals but obfuscate any details
         setting_use_pending_items: Hide timeline updates behind a click instead of automatically scrolling the feed
         username: Your username will be unique on %{domain}
