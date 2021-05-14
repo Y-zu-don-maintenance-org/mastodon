@@ -35,6 +35,7 @@ const messages = defineMessages({
   notifications: { id: 'tabs_bar.notifications', defaultMessage: 'Notifications' },
   public: { id: 'navigation_bar.public_timeline', defaultMessage: 'Federated timeline' },
   community: { id: 'navigation_bar.community_timeline', defaultMessage: 'Local timeline' },
+  lists: { id: 'navigation_bar.lists', defaultMessage: 'Lists' },
   preferences: { id: 'navigation_bar.preferences', defaultMessage: 'Preferences' },
   logout: { id: 'navigation_bar.logout', defaultMessage: 'Logout' },
   compose: { id: 'navigation_bar.compose', defaultMessage: 'Compose new toot' },
@@ -114,7 +115,7 @@ class Compose extends React.PureComponent {
         'SIGN_OUT':      { href: '/auth/sign_out',        title: formatMessage(messages.logout),        label: formatMessage(messages.short_logout),        icon_id: 'sign-out' },
       };
 
-      const { href, to, title, label, icon_id } = tabParams[id];
+      const { href, to, title, label, icon_id, method } = tabParams[id];
 
       const icon = (id === 'NOTIFICATIONS') ? <NotificationsCounterIcon /> : <Icon id={icon_id} fixedWidth />;
 
