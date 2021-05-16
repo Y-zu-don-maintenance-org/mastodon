@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'singleton'
+require_relative './formatter_markdown'
 
 class Formatter
   include Singleton
@@ -34,13 +35,34 @@ class Formatter
     linkable_accounts << status.account
 
     html = raw_content
+
+    mdFormatter = FormatterMarkdown.new(html)
+    html = mdFormatter.formatted
+
     html = "RT @#{prepend_reblog} #{html}" if prepend_reblog
     html = encode_and_link_urls(html, linkable_accounts)
     html = encode_custom_emojis(html, status.emojis, options[:autoplay]) if options[:custom_emojify]
     html = simple_format(html, {}, sanitize: false)
+    html = quotify(html, status) if status.quote? && !options[:escape_quotify]
     html = html.delete("\n")
 
+    mdLinkDecoder = MDLinkDecoder.new(html)
+    html = mdLinkDecoder.decode
+
+    html.gsub!(/(&amp;)/){"&"}
+
     html.html_safe # rubocop:disable Rails/OutputSafety
+  end
+
+  def format_in_quote(status, **options)
+    html = format(status)
+    return '' if html.empty?
+    doc = Nokogiri::HTML.parse(html, nil, 'utf-8')
+    html = doc.css('body')[0].inner_html
+    html.sub!(/^<p>(.+)<\/p>$/, '\1')
+    html = Sanitize.clean(html).delete("\n").truncate(150)
+    html = encode_custom_emojis(html, status.emojis) if options[:custom_emojify]
+    html.html_safe
   end
 
   def reformat(html)
@@ -111,13 +133,18 @@ class Formatter
   def encode_and_link_urls(html, accounts = nil, options = {})
     entities = utf8_friendly_extractor(html, extract_url_without_protocol: false)
 
+    mdExtractor = MDExtractor.new(html)
+    entities.concat(mdExtractor.extractEntities)
+
     if accounts.is_a?(Hash)
       options  = accounts
       accounts = nil
     end
 
     rewrite(html.dup, entities) do |entity|
-      if entity[:url]
+      if entity[:markdown]
+        html[entity[:indices][0]...entity[:indices][1]]
+      elsif entity[:url]
         link_to_url(entity, options)
       elsif entity[:hashtag]
         link_to_hashtag(entity)
@@ -190,6 +217,12 @@ class Formatter
     html
   end
   # rubocop:enable Metrics/BlockNesting
+
+  def quotify(html, status)
+    url = ActivityPub::TagManager.instance.url_for(status.quote)
+    link = encode_and_link_urls(url)
+    html.sub(/(<[^>]+>)\z/, "<span class=\"quote-inline\"><br/>QT: #{link}</span>\\1")
+  end
 
   def rewrite(text, entities)
     text = text.to_s
