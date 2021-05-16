@@ -187,6 +187,7 @@
   "follow_request.reject": "拒否",
   "follow_requests.unlocked_explanation": "あなたのアカウントは承認制ではありませんが、{domain} のスタッフはこれらのアカウントからのフォローリクエストの確認が必要であると判断しました。",
   "generic.saved": "保存しました",
+  "getting_started.chatroom": "チャットルーム",
   "getting_started.developers": "開発",
   "getting_started.directory": "ディレクトリ",
   "getting_started.documentation": "ドキュメント",
