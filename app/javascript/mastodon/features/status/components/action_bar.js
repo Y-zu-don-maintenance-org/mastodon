@@ -92,10 +92,6 @@ class ActionBar extends React.PureComponent {
     this.props.onFavourite(this.props.status);
   }
 
-  handleBookmarkClick = (e) => {
-    this.props.onBookmark(this.props.status, e);
-  }
-
   handleDeleteClick = () => {
     this.props.onDelete(this.props.status, this.context.router.history);
   }
@@ -285,8 +281,6 @@ class ActionBar extends React.PureComponent {
         <div className='detailed-status__button'><IconButton className='star-icon' animate active={status.get('favourited')} title={intl.formatMessage(messages.favourite)} icon='star' onClick={this.handleFavouriteClick} /></div>
         <div className='detailed-status__button'><IconButton disabled={reblog_disabled} title={reblog_disabled ? intl.formatMessage(messages.cannot_reblog) : intl.formatMessage(messages.quote)} icon='quote-right' onClick={this.handleQuoteClick} /></div>
         {shareButton}
-        <div className='detailed-status__button'><IconButton className='bookmark-icon' active={status.get('bookmarked')} title={intl.formatMessage(messages.bookmark)} icon='bookmark' onClick={this.handleBookmarkClick} /></div>
-
         <div className='detailed-status__action-bar-dropdown'>
           <DropdownMenuContainer size={18} icon='ellipsis-h' status={status} items={menu} direction='left' title={intl.formatMessage(messages.more)} />
         </div>
