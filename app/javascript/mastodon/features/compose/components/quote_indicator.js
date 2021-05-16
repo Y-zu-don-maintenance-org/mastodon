@@ -6,8 +6,11 @@ import IconButton from '../../../components/icon_button';
 import DisplayName from '../../../components/display_name';
 import { defineMessages, injectIntl } from 'react-intl';
 import ImmutablePureComponent from 'react-immutable-pure-component';
+<<<<<<< HEAD
 import { isRtl } from '../../../rtl';
+=======
 import AttachmentList from 'mastodon/components/attachment_list';
+>>>>>>> 008cc7f1a... fix rtl in quote_indicator
 
 const messages = defineMessages({
   cancel: { id: 'quote_indicator.cancel', defaultMessage: 'Cancel' },
@@ -57,6 +60,9 @@ export default class QuoteIndicator extends ImmutablePureComponent {
           </a>
         </div>
 
+<<<<<<< HEAD
+        <div className='quote-indicator__content' style={style} dangerouslySetInnerHTML={content} />
+=======
         <div className='quote-indicator__content' dir='auto' dangerouslySetInnerHTML={content} />
 
         {status.get('media_attachments').size > 0 && (
@@ -65,6 +71,7 @@ export default class QuoteIndicator extends ImmutablePureComponent {
             media={status.get('media_attachments')}
           />
         )}
+>>>>>>> 008cc7f1a... fix rtl in quote_indicator
       </div>
     );
   }
