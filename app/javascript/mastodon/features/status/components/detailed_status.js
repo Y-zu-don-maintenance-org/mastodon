@@ -54,15 +54,8 @@ class DetailedStatus extends ImmutablePureComponent {
 
   handleAccountClick = (e) => {
     if (e.button === 0 && !(e.ctrlKey || e.metaKey) && this.context.router) {
-      const id = e.currentTarget.getAttribute('data-id');
-      const group = e.currentTarget.getAttribute('data-group') !== 'false';
-
       e.preventDefault();
-      if (group) {
-        this.context.router.history.push(`/timelines/groups/${id}`);
-      } else {
-        this.context.router.history.push(`/accounts/${id}`);
-      }
+      this.context.router.history.push(`/accounts/${this.props.status.getIn(['account', 'id'])}`);
     }
 
     e.stopPropagation();
@@ -126,95 +119,6 @@ class DetailedStatus extends ImmutablePureComponent {
 
     if (this.props.measureHeight) {
       outerStyle.height = `${this.state.height}px`;
-    }
-
-    let quote = null;
-    if (status.get('quote', null) !== null) {
-      let quote_status = status.get('quote');
-
-      let quote_media = null;
-      if (quote_status.get('media_attachments').size > 0) {
-
-        if (quote_status.getIn(['media_attachments', 0, 'type']) === 'audio') {
-          const attachment = quote_status.getIn(['media_attachments', 0]);
-
-          quote_media = (
-            <Audio
-              src={attachment.get('url')}
-              alt={attachment.get('description')}
-              duration={attachment.getIn(['meta', 'original', 'duration'], 0)}
-              poster={attachment.get('preview_url') || quote_status.getIn(['account', 'avatar_static'])}
-              backgroundColor={attachment.getIn(['meta', 'colors', 'background'])}
-              foregroundColor={attachment.getIn(['meta', 'colors', 'foreground'])}
-              accentColor={attachment.getIn(['meta', 'colors', 'accent'])}
-              height={60}
-            />
-          );
-        } else if (quote_status.getIn(['media_attachments', 0, 'type']) === 'video') {
-          const attachment = quote_status.getIn(['media_attachments', 0]);
-
-          quote_media = (
-            <Video
-              preview={attachment.get('preview_url')}
-              frameRate={attachment.getIn(['meta', 'original', 'frame_rate'])}
-              blurhash={attachment.get('blurhash')}
-              src={attachment.get('url')}
-              alt={attachment.get('description')}
-              width={300}
-              height={150}
-              inline
-              onOpenVideo={this.handleOpenVideoQuote}
-              sensitive={quote_status.get('sensitive')}
-              visible={this.props.showQuoteMedia}
-              onToggleVisibility={this.props.onToggleQuoteMediaVisibility}
-              quote
-            />
-          );
-        } else {
-          quote_media = (
-            <MediaGallery
-              standalone
-              sensitive={quote_status.get('sensitive')}
-              media={quote_status.get('media_attachments')}
-              height={300}
-              onOpenMedia={this.props.onOpenMediaQuote}
-              visible={this.props.showQuoteMedia}
-              onToggleVisibility={this.props.onToggleQuoteMediaVisibility}
-              quote
-            />
-          );
-        }
-      }
-
-      if (quote_muted) {
-        quote = (
-          <div className='quote-status' data-id={quote_status.get('id')} dataurl={quote_status.get('url')}>
-            <div className='status__content muted-quote'>
-              <FormattedMessage id='status.muted_quote' defaultMessage='Muted quote' />
-            </div>
-          </div>
-        );
-      } else {
-        quote = (
-          <div className='quote-status' data-id={quote_status.get('id')} dataurl={quote_status.get('url')}>
-            <a href={quote_status.getIn(['account', 'url'])} onClick={this.handleAccountClick} data-id={quote_status.getIn(['account', 'id'])} data-group={quote_status.getIn(['account', 'group'])} className='detailed-status__display-name'>
-              <div className='detailed-status__display-avatar'><Avatar account={quote_status.get('account')} size={18} /></div>
-              <DisplayName account={quote_status.get('account')} localDomain={this.props.domain} />
-            </a>
-
-            <StatusContent status={quote_status} onClick={this.handleQuoteClick} expanded={!status.get('quote_hidden')} onExpandedToggle={this.handleExpandedQuoteToggle} quote />
-            {quote_media}
-          </div>
-        );
-      }
-    } else if (quote_muted) {
-      quote = (
-        <div className={classNames('quote-status', { muted: this.props.muted })} data-id={quote_status.get('id')} dataurl={quote_status.get('url')}>
-          <div className={classNames('status__content muted-quote', { 'status__content--with-action': this.context.router })}>
-            <FormattedMessage id='status.muted_quote' defaultMessage='Muted quote' />
-          </div>
-        </div>
-      );
     }
 
     if (pictureInPicture.get('inUse')) {
@@ -335,8 +239,8 @@ class DetailedStatus extends ImmutablePureComponent {
 
     return (
       <div style={outerStyle}>
-        <div ref={this.setRef} className={classNames('detailed-status', `detailed-status-${status.get('visibility')}`, { compact, 'detailed-status-with-expiration': expires_date, 'detailed-status-expired': expired })}>
-          <a href={status.getIn(['account', 'url'])} onClick={this.handleAccountClick} data-id={status.getIn(['account', 'id'])} data-group={status.getIn(['account', 'group'])} className='detailed-status__display-name'>
+        <div ref={this.setRef} className={classNames('detailed-status', `detailed-status-${status.get('visibility')}`, { compact })}>
+          <a href={status.getIn(['account', 'url'])} onClick={this.handleAccountClick} className='detailed-status__display-name'>
             <div className='detailed-status__display-avatar'><Avatar account={status.get('account')} size={48} /></div>
             <DisplayName account={status.get('account')} localDomain={this.props.domain} />
           </a>
