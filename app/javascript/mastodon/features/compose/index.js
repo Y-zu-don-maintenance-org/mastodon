@@ -35,6 +35,7 @@ const messages = defineMessages({
   notifications: { id: 'tabs_bar.notifications', defaultMessage: 'Notifications' },
   public: { id: 'navigation_bar.public_timeline', defaultMessage: 'Federated timeline' },
   community: { id: 'navigation_bar.community_timeline', defaultMessage: 'Local timeline' },
+  lists: { id: 'navigation_bar.lists', defaultMessage: 'Lists' },
   preferences: { id: 'navigation_bar.preferences', defaultMessage: 'Preferences' },
   logout: { id: 'navigation_bar.logout', defaultMessage: 'Logout' },
   compose: { id: 'navigation_bar.compose', defaultMessage: 'Compose new toot' },
@@ -111,16 +112,16 @@ class Compose extends React.PureComponent {
         'PUBLIC':        { to: '/timelines/public',       title: formatMessage(messages.public),        label: formatMessage(messages.short_public),        icon_id: 'globe' },
         'LIST':          { to: '/lists',                  title: formatMessage(messages.lists),         label: formatMessage(messages.short_lists),         icon_id: 'list-ul' },
         'PREFERENCES':   { href: '/settings/preferences', title: formatMessage(messages.preferences),   label: formatMessage(messages.short_preferences),   icon_id: 'cog' },
-        'SIGN_OUT':      { href: '/auth/sign_out',        title: formatMessage(messages.logout),        label: formatMessage(messages.short_logout),        icon_id: 'sign-out' },
+        'SIGN_OUT':      { href: '/auth/sign_out',        title: formatMessage(messages.logout),        label: formatMessage(messages.short_logout),        icon_id: 'sign-out', method: 'delete' },
       };
 
-      const { href, to, title, label, icon_id } = tabParams[id];
+      const { href, to, title, label, icon_id, method } = tabParams[id];
 
       const icon = (id === 'NOTIFICATIONS') ? <NotificationsCounterIcon /> : <Icon id={icon_id} fixedWidth />;
 
       if (href) {
         return (
-          <a href={href} className={classNames('drawer__tab', { 'short-label': show_tab_bar_label })} title={title} aria-label={title}>{icon}<span className='drawer__tab__short-label'>{label}</span></a>
+          <a href={href} className={classNames('drawer__tab', { 'short-label': show_tab_bar_label })} title={title} aria-label={title} data-method={method}>{icon}<span className='drawer__tab__short-label'>{label}</span></a>
         );
       } else {
         return (
@@ -137,8 +138,8 @@ class Compose extends React.PureComponent {
     let header = '';
 
     if (multiColumn) {
-      // const defaultTabIds = ['START', 'HOME', 'NOTIFICATIONS', 'COMMUNITY', 'PUBLIC', 'LIST', 'PREFERENCES', 'SIGN_OUT'];
-      const defaultTabIds = ['START', 'HOME', 'NOTIFICATIONS', 'PUBLIC', 'LIST', 'PREFERENCES', 'SIGN_OUT'];
+       const defaultTabIds = ['START', 'HOME', 'NOTIFICATIONS', 'COMMUNITY', 'PUBLIC', 'LIST', 'PREFERENCES', 'SIGN_OUT'];
+//      const defaultTabIds = ['START', 'HOME', 'NOTIFICATIONS', 'PUBLIC', 'LIST', 'PREFERENCES', 'SIGN_OUT'];
 
       let tabs = defaultTabIds;
 
