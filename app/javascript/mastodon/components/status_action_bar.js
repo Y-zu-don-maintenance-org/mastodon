@@ -124,6 +124,14 @@ class StatusActionBar extends ImmutablePureComponent {
     }
   }
 
+  handleBookmarkClick = () => {
+    this.props.onBookmark(this.props.status);
+  }
+
+  handleReblogClick = (e) => {
+    this.props.onReblog(this.props.status, e);
+  }
+  
   _openInteractionDialog = type => {
     window.open(`/interact/${this.props.status.get('id')}?type=${type}`, 'mastodon-intent', 'width=445,height=600,resizable=no,menubar=no,status=no,scrollbars=yes');
   }
