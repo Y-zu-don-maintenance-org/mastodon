@@ -54,7 +54,7 @@ ja:
         setting_hide_network: フォローとフォロワーの情報がプロフィールページで見られないようにします
         setting_noindex: 公開プロフィールおよび各投稿ページに影響します
         setting_place_tab_bar_at_bottom: タッチデバイス使用時に、タブの操作を指の届く範囲で行えます
-        setting_show_application: 投稿するのに使用したアプリがトゥートの詳細ビューに表示されるようになります
+        setting_show_application: 投稿するのに使用したアプリが投稿の詳細ビューに表示されるようになります
         setting_show_bookmark_button: オフにした場合、ブックマークの呼び出しはMastodon標準の位置となります（アクションバーのメニューの中）
         setting_show_follow_button_on_timeline: フォロー状態を確認し易くなり、素早くフォローリストを構築できます
         setting_show_navigation_panel: 上級者向け UI の右端にナビゲーションパネルを表示します
