@@ -9,11 +9,14 @@
     i { margin: 0 }
 }
 
+.tabs-bar__link span { margin-left: 0 }
+
 .tabs-bar.bottom-bar {
     @include shadow-4dp;
     
     .tabs-bar {
-        &__link.active { border-bottom: none }
+        &__link,
+        &__link.active { border-bottom: 4px solid transparent }
     }
 
     &__link span { margin-left: 0 }
