@@ -12,8 +12,8 @@ class ActivityPub::ActorSerializer < ActivityPub::Serializer
   attributes :id, :type, :following, :followers,
              :inbox, :outbox, :featured, :featured_tags,
              :preferred_username, :name, :summary,
-             :url, :manually_approves_followers, :is_cat
-             :discoverable
+             :url, :manually_approves_followers, :is_cat,
+             :discoverable, :published
 
   has_one :public_key, serializer: ActivityPub::PublicKeySerializer
 
@@ -162,6 +162,10 @@ class ActivityPub::ActorSerializer < ActivityPub::Serializer
     !object.suspended? && !object.also_known_as.empty?
   end
 
+  def published
+    object.created_at.midnight.iso8601
+  end
+
   class CustomEmojiSerializer < ActivityPub::EmojiSerializer
   end
 
@@ -177,7 +181,7 @@ class ActivityPub::ActorSerializer < ActivityPub::Serializer
     end
 
     def href
-      explore_hashtag_url(object)
+      tag_url(object)
     end
 
     def name
