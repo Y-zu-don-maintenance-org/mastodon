@@ -1,0 +1,56 @@
+.status__action-bar-button {
+    background: #eeeeee;
+    width: 28px !important;
+    height: 28px !important;
+
+    .fa { vertical-align: bottom }
+}
+
+// exception
+.media-modal__overlay .picture-in-picture__footer .icon-button,
+.status__action-bar-button.icon-button--with-counter { background: transparent }
+
+// favorite icon
+.star-icon.active,
+.star-icon.icon-button.active.activate,
+.notification__favourite-icon-wrapper .star-icon { background: #db4437 }
+
+.notification__favourite-icon-wrapper {
+    left: -34px;
+
+    .star-icon {
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
+        vertical-align: baseline;
+        font-size: 18px;
+
+        &.fa-fw::before { vertical-align: middle }
+    }
+}
+
+// Fedibird bottom bar in mobile
+.tabs-bar.bottom-bar {
+    background: #212121;
+
+    .tabs-bar__link {
+        color: transparentize(#ffffff, 0.5);
+
+        &.active { color: #ffffff }
+    }
+}
+
+// Itabashi quote
+.quote-status {
+    border-radius: 0;
+    border: none;
+    border-top: 1px solid $border-color;
+    padding: 16px 0;
+
+    .detailed-status__display-avatar,
+    .status__avatar { left: 0 !important }
+}
+
+@media screen and (min-width: 630px) {
+    .quote-indicator__content, .reply-indicator__content, .status__content { padding-top: 32px }
+}
