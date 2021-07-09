@@ -1,6 +1,6 @@
 .status.quote-status{ dataurl:  ActivityPub::TagManager.instance.url_for(status) }
-  = render 'statuses/author', author: status.account, autoplay: autoplay, inline: true
+  = render 'statuses/author', author: status.account, inline: true
 
-  = render 'statuses/text', status: status, autoplay: autoplay
+  = render 'statuses/text', status: status
 
-  = render 'statuses/media', status: status, autoplay: autoplay, quote: true
+  = render 'statuses/media', status: status, quote: true

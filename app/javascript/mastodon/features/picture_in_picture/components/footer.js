@@ -11,6 +11,7 @@ import { defineMessages, injectIntl } from 'react-intl';
 import { replyCompose, quoteCompose } from 'mastodon/actions/compose';
 import { reblog, favourite, unreblog, unfavourite } from 'mastodon/actions/interactions';
 import { makeGetStatus } from 'mastodon/selectors';
+import { initBoostModal } from 'mastodon/actions/boosts';
 import { openModal } from 'mastodon/actions/modal';
 
 const messages = defineMessages({
@@ -94,9 +95,9 @@ class Footer extends ImmutablePureComponent {
     }
   };
 
-  _performReblog = () => {
-    const { dispatch, status } = this.props;
-    dispatch(reblog(status));
+  _performReblog = (status, privacy) => {
+    const { dispatch } = this.props;
+    dispatch(reblog(status, privacy));
   }
 
   handleReblogClick = e => {
@@ -105,9 +106,9 @@ class Footer extends ImmutablePureComponent {
     if (status.get('reblogged')) {
       dispatch(unreblog(status));
     } else if ((e && e.shiftKey) || !boostModal) {
-      this._performReblog();
+      this._performReblog(status);
     } else {
-      dispatch(openModal('BOOST', { status, onReblog: this._performReblog }));
+      dispatch(initBoostModal({ status, onReblog: this._performReblog }));
     }
   };
 

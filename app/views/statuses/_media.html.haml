@@ -4,15 +4,10 @@
 
 - if !status.media_attachments.empty?
   - if status.media_attachments.first.video?
-    - video = status.media_attachments.first
-    = react_component :video, src: full_asset_url(video.file.url(:original)), preview: full_asset_url(video.thumbnail.present? ? video.thumbnail.url : video.file.url(:small)), blurhash: video.blurhash, sensitive: sensitized?(status, current_account), width: detailed ? 670 : 610, height: detailed ? 380 : 343, detailed: detailed, inline: true, quote: quote, alt: video.description do
-      = render partial: 'statuses/attachment_list', locals: { attachments: status.media_attachments }
+    = render_video_component(status, width: 670, height: 380, detailed: detailed)
   - elsif status.media_attachments.first.audio?
-    - audio = status.media_attachments.first
-    = react_component :audio, src: full_asset_url(audio.file.url(:original)), poster: full_asset_url(audio.thumbnail.present? ? audio.thumbnail.url : status.account.avatar_static_url), backgroundColor: audio.file.meta.dig('colors', 'background'), foregroundColor: audio.file.meta.dig('colors', 'foreground'), accentColor: audio.file.meta.dig('colors', 'accent'), width: detailed ? 670 : 610, height: detailed ? 380 : 343, quote: quote, alt: audio.description, duration: audio.file.meta.dig('original', 'duration') do
-      = render partial: 'statuses/attachment_list', locals: { attachments: status.media_attachments }
+    = render_audio_component(status, width: 670, height: 380)
   - else
-    = react_component :media_gallery, height: detailed ? 380 : 343, sensitive: sensitized?(status, current_account), standalone: detailed, autoplay: autoplay, media: status.media_attachments.map { |a| ActiveModelSerializers::SerializableResource.new(a, serializer: REST::MediaAttachmentSerializer).as_json }, quote: quote do
-      = render partial: 'statuses/attachment_list', locals: { attachments: status.media_attachments }
+    = render_media_gallery_component(status, height: 380, standalone: true)
 - elsif status.preview_card
-  = react_component :card, sensitive: sensitized?(status, current_account), 'maxDescription': 160, card: ActiveModelSerializers::SerializableResource.new(status.preview_card, serializer: REST::PreviewCardSerializer).as_json, quote: true
+  = render_card_component(status, quote: quote)

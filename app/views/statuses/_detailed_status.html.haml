@@ -1,14 +1,14 @@
 .detailed-status.detailed-status--flex{ class: "detailed-status-#{status.visibility}" }
-  = render 'statuses/author', author: status.account, autoplay: autoplay, detailed: true
+  = render 'statuses/author', author: status.account, detailed: true
 
   = account_action_button(status.account)
 
-  = render 'statuses/text', status: status, autoplay: autoplay
+  = render 'statuses/text', status: status
 
   - if status.quote?
-    = render 'statuses/quote', status: status.quote, autoplay: autoplay
+    = render 'statuses/quote', status: status.quote
 
-  = render 'statuses/media', status: status, autoplay: autoplay, detailed: true
+  = render 'statuses/media', status: status, detailed: true
 
   .detailed-status__meta
     %data.dt-published{ value: status.created_at.to_time.iso8601 }

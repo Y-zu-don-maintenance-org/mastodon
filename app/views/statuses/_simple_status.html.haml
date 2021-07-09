@@ -9,14 +9,14 @@
       %time.time-ago{ datetime: status.created_at.iso8601, title: l(status.created_at) }= l(status.created_at)
     %data.dt-published{ value: status.created_at.to_time.iso8601 }
 
-    = render 'statuses/author', author: status.account, autoplay: autoplay
+    = render 'statuses/author', author: status.account
 
-  = render 'statuses/text', status: status, autoplay: autoplay
+  = render 'statuses/text', status: status
 
   - if status.quote?
-    = render 'statuses/quote', status: status.quote, autoplay: autoplay
+    = render 'statuses/quote', status: status.quote
 
-  = render 'statuses/media', status: status, autoplay: autoplay
+  = render 'statuses/media', status: status
 
   - if !status.in_reply_to_id.nil? && status.in_reply_to_account_id == status.account.id && !hide_show_thread
     = link_to ActivityPub::TagManager.instance.url_for(status), class: 'status__content__read-more-button', target: stream_link_target, rel: 'noopener noreferrer' do
