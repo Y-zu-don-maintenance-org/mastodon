@@ -14,3 +14,4 @@ mastodon-material-auto: styles/mastodon-material-auto.scss
 plus: styles/plus.scss
 y-zu-dark: styles/y-zu-dark.scss
 y-zu-light: styles/y-zu-light.scss
+y-zu-auto: styles/y-zu-auto.scss
