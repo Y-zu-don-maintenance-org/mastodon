@@ -1387,6 +1387,7 @@ en:
     plus: Plus
     y-zu-dark: Y-zu (Dark)
     y-zu-light: Y-zu (Light)
+    y-zu-auto: Y-zu (Auto)
   time:
     formats:
       default: "%b %d, %Y, %H:%M"
