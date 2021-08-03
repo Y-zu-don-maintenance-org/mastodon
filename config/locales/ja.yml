@@ -1365,6 +1365,7 @@ ja:
     plus: Plus
     y-zu-dark: Y-zu (ダーク)
     y-zu-light: Y-zu (ライト)
+    y-zu-auto: Y-zu (自動)
   time:
     formats:
       default: "%Y年%m月%d日 %H:%M"
