@@ -34,6 +34,11 @@ $website: "";
     }
 }
 
+// single column mode
+@media screen and (min-width: 415px) {
+    .columns-area__panels__main { box-shadow: none }
+}
+
 // Fedibird bottom bar in mobile
 .tabs-bar.bottom-bar {
     background: #212121;
