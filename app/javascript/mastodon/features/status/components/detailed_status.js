@@ -60,9 +60,9 @@ class DetailedStatus extends ImmutablePureComponent {
 
   handleAccountClick = (e) => {
     if (e.button === 0 && !(e.ctrlKey || e.metaKey) && this.context.router) {
-      const id = e.currentTarget.getAttribute('data-id');
+      const acct = e.currentTarget.getAttribute('data-acct');
       e.preventDefault();
-      this.context.router.history.push(`/accounts/${id}`);
+      this.context.router.history.push(`/@${acct}`);
     }
 
     e.stopPropagation();
@@ -141,7 +141,7 @@ class DetailedStatus extends ImmutablePureComponent {
     }
 
     const identity = (status, _0, _1, quote = false) => (
-      <a href={status.getIn(['account', 'url'])} onClick={this.handleAccountClick} data-id={status.getIn(['account', 'id'])} className='detailed-status__display-name'>
+      <a href={status.getIn(['account', 'url'])} onClick={this.handleAccountClick} data-acct={status.getIn(['account', 'acct'])} className='detailed-status__display-name'>
         <div className='detailed-status__display-avatar'><Avatar account={status.get('account')} size={quote ? 18 : 48} /></div>
         <DisplayName account={status.get('account')} localDomain={this.props.domain} />
       </a>
@@ -235,7 +235,7 @@ class DetailedStatus extends ImmutablePureComponent {
       reblogLink = (
         <React.Fragment>
           <React.Fragment> · </React.Fragment>
-          <Link to={`/statuses/${status.get('id')}/reblogs`} className='detailed-status__link'>
+          <Link to={`/@${status.getIn(['account', 'acct'])}/${status.get('id')}/reblogs`} className='detailed-status__link'>
             <Icon id={reblogIcon} />
             <span className='detailed-status__reblogs'>
               <AnimatedNumber value={status.get('reblogs_count')} />
@@ -259,7 +259,7 @@ class DetailedStatus extends ImmutablePureComponent {
 
     if (this.context.router) {
       favouriteLink = (
-        <Link to={`/statuses/${status.get('id')}/favourites`} className='detailed-status__link'>
+        <Link to={`/@${status.getIn(['account', 'acct'])}/${status.get('id')}/favourites`} className='detailed-status__link'>
           <Icon id='star' />
           <span className='detailed-status__favorites'>
             <AnimatedNumber value={status.get('favourites_count')} />
