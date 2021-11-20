@@ -1,3 +1,9 @@
+$name: "Quote";
+$plugin-version: "1.0.0";
+$target-version: "1.0.0";
+$website: "";
+@include version-check($name, $plugin-version, $target-version, $website);
+
 .quote-indicator,
 .reply-indicator {
     @include card-elevation(false);
