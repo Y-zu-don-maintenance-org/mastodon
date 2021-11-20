@@ -1,7 +1,8 @@
-$name: Plus;
+$name: "Plus";
+$plugin-version: "1.0.0";
 $target-version: "1.0.0";
 $website: "";
-@include version-check($name, $target-version, $website);
+@include version-check($name, $plugin-version, $target-version, $website);
 
 .status__action-bar-button {
     background: #eeeeee;
@@ -32,11 +33,6 @@ $website: "";
 
         &.fa-fw::before { vertical-align: middle }
     }
-}
-
-// single column mode
-@media screen and (min-width: 415px) {
-    .columns-area__panels__main { box-shadow: none }
 }
 
 // Fedibird bottom bar in mobile
