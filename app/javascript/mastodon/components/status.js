@@ -81,6 +81,7 @@ const messages = defineMessages({
   unlisted_short: { id: 'privacy.unlisted.short', defaultMessage: 'Unlisted' },
   private_short: { id: 'privacy.private.short', defaultMessage: 'Followers-only' },
   direct_short: { id: 'privacy.direct.short', defaultMessage: 'Direct' },
+  edited: { id: 'status.edited', defaultMessage: 'Edited {date}' },
 });
 
 export const quote = (status, muted, quoteMuted, handleQuoteClick, handleExpandedQuoteToggle, identity, media, router, contextType = 'home') => {
@@ -234,7 +235,11 @@ class Status extends ImmutablePureComponent {
     this.handleHotkeyOpen();
   }
 
-  handleAccountClick = e => {
+  handlePrependAccountClick = e => {
+    this.handleAccountClick(e, false);
+  }
+
+  handleAccountClick = (e, proper = true) => {
     if (e && (e.button !== 0 || e.ctrlKey || e.metaKey))  {
       return;
     }
@@ -243,7 +248,7 @@ class Status extends ImmutablePureComponent {
       e.preventDefault();
     }
 
-    this.handleHotkeyOpenProfile();
+    this._openProfile(proper);
   }
 
   handleQuoteClick = () => {
@@ -345,8 +350,12 @@ class Status extends ImmutablePureComponent {
   }
 
   handleHotkeyOpenProfile = () => {
+    this._openProfile();
+  }
+
+  _openProfile = (proper = true) => {
     const { router } = this.context;
-    const status = this._properStatus();
+    const status = proper ? this._properStatus() : this.props.status;
 
     if (!router) {
       return;
@@ -449,7 +458,7 @@ class Status extends ImmutablePureComponent {
       prepend = (
         <div className='status__prepend'>
           <div className='status__prepend-icon-wrapper'><Icon id='retweet' className='status__prepend-icon' fixedWidth /></div>
-          <FormattedMessage id='status.reblogged_by' defaultMessage='{name} boosted' values={{ name: <a onClick={this.handleAccountClick} data-id={status.getIn(['account', 'id'])} href={status.getIn(['account', 'url'])} className='status__display-name muted'><bdi><strong dangerouslySetInnerHTML={display_name_html} /></bdi></a> }} />
+          <FormattedMessage id='status.reblogged_by' defaultMessage='{name} boosted' values={{ name: <a onClick={this.handlePrependAccountClick} data-id={status.getIn(['account', 'id'])} href={status.getIn(['account', 'url'])} className='status__display-name muted'><bdi><strong dangerouslySetInnerHTML={display_name_html} /></bdi></a> }} />
         </div>
       );
 
@@ -595,7 +604,7 @@ class Status extends ImmutablePureComponent {
             <div className='status__info'>
               <a onClick={this.handleClick} href={status.get('url')} className='status__relative-time' target='_blank' rel='noopener noreferrer'>
                 <span className='status__visibility-icon'><Icon id={visibilityIcon.icon} title={visibilityIcon.text} /></span>
-                <RelativeTimestamp timestamp={status.get('created_at')} />
+                <RelativeTimestamp timestamp={status.get('created_at')} />{status.get('edited_at') && <abbr title={intl.formatMessage(messages.edited, { date: intl.formatDate(status.get('edited_at'), { hour12: false, year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' }) })}> *</abbr>}
               </a>
 
               {identity(status, account, otherAccounts, false)}
