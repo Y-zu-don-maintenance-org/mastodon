@@ -25,6 +25,7 @@ import {
   hideStatus,
   revealStatus,
   toggleStatusCollapse,
+  editStatus,
   hideQuote,
   revealQuote,
 } from '../actions/statuses';
@@ -161,6 +162,10 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
         onConfirm: () => dispatch(deleteStatus(status.get('id'), history, withRedraft)),
       }));
     }
+  },
+
+  onEdit (status, history) {
+    dispatch(editStatus(status.get('id'), history));
   },
 
   onDirect (account, router) {

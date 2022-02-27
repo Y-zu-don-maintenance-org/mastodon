@@ -30,6 +30,7 @@ import {
   muteStatus,
   unmuteStatus,
   deleteStatus,
+  editStatus,
   hideStatus,
   revealStatus,
   hideQuote,
@@ -298,6 +299,10 @@ class Status extends ImmutablePureComponent {
         onConfirm: () => dispatch(deleteStatus(status.get('id'), history, withRedraft)),
       }));
     }
+  }
+
+  handleEditClick = (status, history) => {
+    this.props.dispatch(editStatus(status.get('id'), history));
   }
 
   handleDirectClick = (account, router) => {
@@ -606,6 +611,7 @@ class Status extends ImmutablePureComponent {
                   onQuote={this.handleQuoteClick}
                   onBookmark={this.handleBookmarkClick}
                   onDelete={this.handleDeleteClick}
+                  onEdit={this.handleEditClick}
                   onDirect={this.handleDirectClick}
                   onMention={this.handleMentionClick}
                   onMute={this.handleMuteClick}
