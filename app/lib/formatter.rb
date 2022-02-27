@@ -38,7 +38,7 @@ class Formatter
     html = encode_and_link_urls(html, linkable_accounts)
     html = encode_custom_emojis(html, status.emojis, options[:autoplay]) if options[:custom_emojify]
     html = simple_format(html, {}, sanitize: false)
-    html = quotify(html, status) if status.quote? && !options[:escape_quotify]
+    html = quotify(html, status) if status.respond_to?(:quote?) && status.quote? && !options[:escape_quotify]
     html = html.delete("\n")
 
     html.html_safe # rubocop:disable Rails/OutputSafety
