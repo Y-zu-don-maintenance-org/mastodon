@@ -177,18 +177,6 @@ export function submitCompose(routerHistory) {
 
     dispatch(submitComposeRequest());
 
-<<<<<<< HEAD
-    api(getState).post('/api/v1/statuses', {
-      status,
-      in_reply_to_id: getState().getIn(['compose', 'in_reply_to'], null),
-      media_ids: media.map(item => item.get('id')),
-      sensitive: getState().getIn(['compose', 'sensitive']),
-      spoiler_text: getState().getIn(['compose', 'spoiler']) ? getState().getIn(['compose', 'spoiler_text'], '') : '',
-      visibility: getState().getIn(['compose', 'privacy']),
-      poll: getState().getIn(['compose', 'poll'], null),
-      quote_id: getState().getIn(['compose', 'quote_from'], null),
-    }, {
-=======
     api(getState).request({
       url: statusId === null ? '/api/v1/statuses' : `/api/v1/statuses/${statusId}`,
       method: statusId === null ? 'post' : 'put',
@@ -200,8 +188,8 @@ export function submitCompose(routerHistory) {
         spoiler_text: getState().getIn(['compose', 'spoiler']) ? getState().getIn(['compose', 'spoiler_text'], '') : '',
         visibility: getState().getIn(['compose', 'privacy']),
         poll: getState().getIn(['compose', 'poll'], null),
+        quote_id: getState().getIn(['compose', 'quote_from'], null),
       },
->>>>>>> v3.5.0rc1
       headers: {
         'Idempotency-Key': getState().getIn(['compose', 'idempotencyKey']),
       },

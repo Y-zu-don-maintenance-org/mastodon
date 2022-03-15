@@ -368,7 +368,6 @@ class ActivityPub::Activity::Create < ActivityPub::Activity
     value_or_id(@object['inReplyTo'])
   end
 
-<<<<<<< HEAD
   def text_from_content
     return Formatter.instance.linkify([[text_from_name, text_from_summary.presence].compact.join("\n\n"), object_url || object_uri].join(' ')) if converted_object_type?
 
@@ -431,28 +430,16 @@ class ActivityPub::Activity::Create < ActivityPub::Activity
 
   def name_language_map?
     @object['nameMap'].is_a?(Hash) && !@object['nameMap'].empty?
-=======
+  end
+
   def converted_text
     Formatter.instance.linkify([@status_parser.title.presence, @status_parser.spoiler_text.presence, @status_parser.url || @status_parser.uri].compact.join("\n\n"))
->>>>>>> v3.5.0rc1
   end
 
   def unsupported_media_type?(mime_type)
     mime_type.present? && !MediaAttachment.supported_mime_types.include?(mime_type)
   end
 
-<<<<<<< HEAD
-  def supported_blurhash?(blurhash)
-    components = blurhash.blank? || !blurhash_valid_chars?(blurhash) ? nil : Blurhash.components(blurhash)
-    components.present? && components.none? { |comp| comp > 5 }
-  end
-
-  def blurhash_valid_chars?(blurhash)
-    /^[\w#$%*+-.:;=?@\[\]^{|}~]+$/.match?(blurhash)
-  end
-
-=======
->>>>>>> v3.5.0rc1
   def skip_download?
     return @skip_download if defined?(@skip_download)
 

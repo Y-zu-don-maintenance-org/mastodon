@@ -108,16 +108,6 @@ class GettingStarted extends ImmutablePureComponent {
     );
     height += 48;
 
-<<<<<<< HEAD
-      if (profile_directory) {
-        navItems.push(
-          <ColumnLink key='directory' icon='address-book' text={intl.formatMessage(messages.profile_directory)} to='/directory' />,
-          <ColumnLink key='infomation' icon='bullhorn' text={intl.formatMessage(messages.admin_notifications)} to='/timelines/tag/Yづinfo' />,
-        );
-
-        height += 48*2;
-      }
-=======
     if (multiColumn) {
       navItems.push(
         <ColumnLink key='community_timeline' icon='users' text={intl.formatMessage(messages.community_timeline)} to='/public/local' />,
@@ -125,23 +115,12 @@ class GettingStarted extends ImmutablePureComponent {
       );
 
       height += 48*2;
->>>>>>> v3.5.0rc1
 
       navItems.push(
         <ColumnSubheading key='header-personal' text={intl.formatMessage(messages.personal)} />,
       );
 
       height += 34;
-<<<<<<< HEAD
-    } else if (profile_directory) {
-      navItems.push(
-        <ColumnLink key='directory' icon='address-book' text={intl.formatMessage(messages.profile_directory)} to='/directory' />,
-        <ColumnLink key='infomation' icon='bullhorn' text={intl.formatMessage(messages.admin_notifications)} to='/timelines/tag/Yづinfo' />,
-      );
-
-      height += 48*2;
-=======
->>>>>>> v3.5.0rc1
     }
 
     if (multiColumn && !columns.find(item => item.get('id') === 'HOME')) {

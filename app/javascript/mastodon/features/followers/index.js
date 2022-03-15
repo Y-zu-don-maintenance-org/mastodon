@@ -140,11 +140,7 @@ class Followers extends ImmutablePureComponent {
           hasMore={hasMore}
           isLoading={isLoading}
           onLoadMore={this.handleLoadMore}
-<<<<<<< HEAD
-          prepend={<HeaderContainer accountId={this.props.params.accountId} hideTabs />}
-=======
           prepend={<HeaderContainer accountId={this.props.accountId} hideTabs />}
->>>>>>> v3.5.0rc1
           alwaysPrepend
           append={remoteMessage}
           emptyMessage={emptyMessage}

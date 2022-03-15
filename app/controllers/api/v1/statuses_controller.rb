@@ -37,21 +37,6 @@ class Api::V1::StatusesController < Api::BaseController
   end
 
   def create
-<<<<<<< HEAD
-    @status = PostStatusService.new.call(current_user.account,
-                                         text: status_params[:status],
-                                         thread: @thread,
-                                         media_ids: status_params[:media_ids],
-                                         sensitive: status_params[:sensitive],
-                                         spoiler_text: status_params[:spoiler_text],
-                                         visibility: status_params[:visibility],
-                                         scheduled_at: status_params[:scheduled_at],
-                                         application: doorkeeper_token.application,
-                                         poll: status_params[:poll],
-                                         idempotency: request.headers['Idempotency-Key'],
-                                         with_rate_limit: true,
-                                         quote_id: status_params[:quote_id].presence)
-=======
     @status = PostStatusService.new.call(
       current_user.account,
       text: status_params[:status],
@@ -65,9 +50,9 @@ class Api::V1::StatusesController < Api::BaseController
       application: doorkeeper_token.application,
       poll: status_params[:poll],
       idempotency: request.headers['Idempotency-Key'],
-      with_rate_limit: true
+      with_rate_limit: true,
+      quote_id: status_params[:quote_id].presence)
     )
->>>>>>> v3.5.0rc1
 
     render json: @status, serializer: @status.is_a?(ScheduledStatus) ? REST::ScheduledStatusSerializer : REST::StatusSerializer
   end

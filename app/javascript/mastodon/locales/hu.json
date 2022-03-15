@@ -57,12 +57,8 @@
   "alert.rate_limited.title": "Forgalomkorlátozás",
   "alert.unexpected.message": "Váratlan hiba történt.",
   "alert.unexpected.title": "Hoppá!",
-<<<<<<< HEAD
-  "announcement.announcement": "Bejelentés",
-=======
   "announcement.announcement": "Közlemény",
   "attachments_list.unprocessed": "(feldolgozatlan)",
->>>>>>> v3.5.0rc1
   "autosuggest_hashtag.per_week": "{count} hetente",
   "boost_modal.combo": "Hogy átugord ezt következő alkalommal, használd {combo}",
   "bundle_column_error.body": "Valami hiba történt a komponens betöltése közben.",

@@ -15,16 +15,11 @@ class Auth::SessionsController < Devise::SessionsController
 
   def create
     super do |resource|
-<<<<<<< HEAD
-      resource.update_sign_in!(request, new_sign_in: true)
-      flash.delete(:notice)
-=======
       # We only need to call this if this hasn't already been
       # called from one of the two-factor or sign-in token
       # authentication methods
 
       on_authentication_success(resource, :password) unless @on_authentication_success_called
->>>>>>> v3.5.0rc1
     end
   end
 

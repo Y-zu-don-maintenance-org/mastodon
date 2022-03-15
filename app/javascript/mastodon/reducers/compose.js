@@ -351,7 +351,6 @@ export default function compose(state = initialState, action) {
         map.set('spoiler_text', '');
       }
     });
-<<<<<<< HEAD
   case COMPOSE_QUOTE:
     return state.withMutations(map => {
       map.set('in_reply_to', null);
@@ -385,8 +384,6 @@ export default function compose(state = initialState, action) {
       map.set('poll', null);
       map.set('idempotencyKey', uuid());
     });
-=======
->>>>>>> v3.5.0rc1
   case COMPOSE_SUBMIT_REQUEST:
     return state.set('is_submitting', true);
   case COMPOSE_UPLOAD_CHANGE_REQUEST:

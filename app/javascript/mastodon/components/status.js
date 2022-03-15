@@ -166,18 +166,12 @@ class Status extends ImmutablePureComponent {
     this.setState({ showMedia: !this.state.showMedia });
   }
 
-<<<<<<< HEAD
   handleToggleQuoteMediaVisibility = () => {
     this.setState({ showQuoteMedia: !this.state.showQuoteMedia });
   }
 
-  handleClick = () => {
-    if (this.props.onClick) {
-      this.props.onClick();
-=======
   handleClick = e => {
     if (e && (e.button !== 0 || e.ctrlKey || e.metaKey)) {
->>>>>>> v3.5.0rc1
       return;
     }
 
@@ -197,7 +191,6 @@ class Status extends ImmutablePureComponent {
       return;
     }
 
-<<<<<<< HEAD
   handleQuoteClick = () => {
     if (!this.context.router) {
       return;
@@ -208,11 +201,7 @@ class Status extends ImmutablePureComponent {
   }
 
   handleAccountClick = (e) => {
-    if (this.context.router && e.button === 0 && !(e.ctrlKey || e.metaKey)) {
-      const id = e.currentTarget.getAttribute('data-id');
-=======
     if (e) {
->>>>>>> v3.5.0rc1
       e.preventDefault();
     }
 

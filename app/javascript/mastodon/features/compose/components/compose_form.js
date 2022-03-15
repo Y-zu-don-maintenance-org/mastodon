@@ -30,14 +30,9 @@ const messages = defineMessages({
   spoiler_placeholder: { id: 'compose_form.spoiler_placeholder', defaultMessage: 'Write your warning here' },
   publish: { id: 'compose_form.publish', defaultMessage: 'Toot' },
   publishLoud: { id: 'compose_form.publish_loud', defaultMessage: '{publish}!' },
-<<<<<<< HEAD
-
-  
   utilBtns_goji: { id: 'compose_form.utilBtns_goji', defaultMessage: 'Typo!!!' },
-  utilBtns_harukin: { id: 'compose_form.utilBtns_harukin', defaultMessage: 'Burn Harukin' }
-=======
+  utilBtns_harukin: { id: 'compose_form.utilBtns_harukin', defaultMessage: 'Burn Harukin' },
   saveChanges: { id: 'compose_form.save_changes', defaultMessage: 'Save changes' },
->>>>>>> v3.5.0rc1
 });
 
 export default @injectIntl
@@ -71,14 +66,11 @@ class ComposeForm extends ImmutablePureComponent {
     onPickEmoji: PropTypes.func.isRequired,
     showSearch: PropTypes.bool,
     anyMedia: PropTypes.bool,
-<<<<<<< HEAD
     singleColumn: PropTypes.bool,  
     onGojiSubmit: PropTypes.func.isRequired,
-    onHarukinSubmit: PropTypes.func.isRequired
-=======
+    onHarukinSubmit: PropTypes.func.isRequired,
     isInReply: PropTypes.bool,
     singleColumn: PropTypes.bool,
->>>>>>> v3.5.0rc1
   };
 
   static defaultProps = {

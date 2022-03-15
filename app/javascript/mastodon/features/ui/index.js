@@ -153,17 +153,6 @@ class SwitchingColumnsArea extends React.PureComponent {
           {redirect}
           <WrappedRoute path='/getting-started' component={GettingStarted} content={children} />
           <WrappedRoute path='/keyboard-shortcuts' component={KeyboardShortcuts} content={children} />
-<<<<<<< HEAD
-          <WrappedRoute path='/timelines/home' component={HomeTimeline} content={children} />
-          <WrappedRoute path='/timelines/public' exact component={PublicTimeline} content={children} />
-          <WrappedRoute path='/timelines/public/local' exact component={CommunityTimeline} content={children} />
-          <WrappedRoute path='/timelines/direct' component={DirectTimeline} content={children} />
-          <WrappedRoute path='/timelines/tag/:id' component={HashtagTimeline} content={children} />
-          <WrappedRoute path='/timelines/list/:id' component={ListTimeline} content={children} />
-
-          <WrappedRoute path='/notifications' component={Notifications} content={children} />
-          <WrappedRoute path='/favourites' component={FavouritedStatuses} content={children} />
-=======
 
           <WrappedRoute path={['/home', '/timelines/home']} component={HomeTimeline} content={children} />
           <WrappedRoute path={['/public', '/timelines/public']} exact component={PublicTimeline} content={children} />
@@ -174,17 +163,10 @@ class SwitchingColumnsArea extends React.PureComponent {
           <WrappedRoute path='/notifications' component={Notifications} content={children} />
           <WrappedRoute path='/favourites' component={FavouritedStatuses} content={children} />
 
->>>>>>> v3.5.0rc1
           <WrappedRoute path='/bookmarks' component={BookmarkedStatuses} content={children} />
           <WrappedRoute path='/pinned' component={PinnedStatuses} content={children} />
 
           <WrappedRoute path='/start' component={FollowRecommendations} content={children} />
-<<<<<<< HEAD
-          <WrappedRoute path='/search' component={Search} content={children} />
-          <WrappedRoute path='/directory' component={Directory} content={children} />
-
-          <WrappedRoute path='/statuses/new' component={Compose} content={children} />
-=======
           <WrappedRoute path='/directory' component={Directory} content={children} />
           <WrappedRoute path={['/explore', '/search']} component={Explore} content={children} />
           <WrappedRoute path={['/publish', '/statuses/new']} component={Compose} content={children} />
@@ -201,20 +183,10 @@ class SwitchingColumnsArea extends React.PureComponent {
           {/* Legacy routes, cannot be easily factored with other routes because they share a param name */}
           <WrappedRoute path='/timelines/tag/:id' component={HashtagTimeline} content={children} />
           <WrappedRoute path='/timelines/list/:id' component={ListTimeline} content={children} />
->>>>>>> v3.5.0rc1
           <WrappedRoute path='/statuses/:statusId' exact component={Status} content={children} />
           <WrappedRoute path='/statuses/:statusId/reblogs' component={Reblogs} content={children} />
           <WrappedRoute path='/statuses/:statusId/favourites' component={Favourites} content={children} />
 
-<<<<<<< HEAD
-          <WrappedRoute path='/accounts/:accountId' exact component={AccountTimeline} content={children} />
-          <WrappedRoute path='/accounts/:accountId/with_replies' component={AccountTimeline} content={children} componentParams={{ withReplies: true }} />
-          <WrappedRoute path='/accounts/:accountId/followers' component={Followers} content={children} />
-          <WrappedRoute path='/accounts/:accountId/following' component={Following} content={children} />
-          <WrappedRoute path='/accounts/:accountId/media' component={AccountGallery} content={children} />
-
-=======
->>>>>>> v3.5.0rc1
           <WrappedRoute path='/follow_requests' component={FollowRequests} content={children} />
           <WrappedRoute path='/blocks' component={Blocks} content={children} />
           <WrappedRoute path='/domain_blocks' component={DomainBlocks} content={children} />

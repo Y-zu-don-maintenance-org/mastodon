@@ -30,14 +30,12 @@ export const STATUS_COLLAPSE = 'STATUS_COLLAPSE';
 
 export const REDRAFT = 'REDRAFT';
 
-<<<<<<< HEAD
 export const QUOTE_REVEAL = 'QUOTE_REVEAL';
 export const QUOTE_HIDE   = 'QUOTE_HIDE';
-=======
+
 export const STATUS_FETCH_SOURCE_REQUEST = 'STATUS_FETCH_SOURCE_REQUEST';
 export const STATUS_FETCH_SOURCE_SUCCESS = 'STATUS_FETCH_SOURCE_SUCCESS';
 export const STATUS_FETCH_SOURCE_FAIL    = 'STATUS_FETCH_SOURCE_FAIL';
->>>>>>> v3.5.0rc1
 
 export function fetchStatusRequest(id, skipLoading) {
   return {

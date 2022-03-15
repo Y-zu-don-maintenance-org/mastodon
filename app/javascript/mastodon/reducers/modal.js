@@ -1,17 +1,5 @@
 import { MODAL_OPEN, MODAL_CLOSE } from '../actions/modal';
 import { TIMELINE_DELETE } from '../actions/timelines';
-<<<<<<< HEAD
-import { Stack as ImmutableStack, Map as ImmutableMap } from 'immutable';
-
-export default function modal(state = ImmutableStack(), action) {
-  switch(action.type) {
-  case MODAL_OPEN:
-        return state.unshift(ImmutableMap({ modalType: action.modalType, modalProps: action.modalProps }));
-  case MODAL_CLOSE:
-    return (action.modalType === undefined || action.modalType === state.getIn([0, 'modalType'])) ? state.shift() : state;
-  case TIMELINE_DELETE:
-        return state.filterNot((modal) => modal.get('modalProps').statusId === action.id);
-=======
 import { COMPOSE_UPLOAD_CHANGE_SUCCESS } from '../actions/compose';
 import { Stack as ImmutableStack, Map as ImmutableMap } from 'immutable';
 
@@ -45,7 +33,6 @@ export default function modal(state = initialState, action) {
     return popModal(state, { modalType: 'FOCAL_POINT', ignoreFocus: false });
   case TIMELINE_DELETE:
     return state.update('stack', stack => stack.filterNot((modal) => modal.get('modalProps').statusId === action.id));
->>>>>>> v3.5.0rc1
   default:
     return state;
   }

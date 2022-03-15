@@ -12,10 +12,7 @@ import AccountCard from './components/account_card';
 import RadioButton from 'mastodon/components/radio_button';
 import LoadMore from 'mastodon/components/load_more';
 import ScrollContainer from 'mastodon/containers/scroll_container';
-<<<<<<< HEAD
-=======
 import LoadingIndicator from 'mastodon/components/loading_indicator';
->>>>>>> v3.5.0rc1
 
 const messages = defineMessages({
   title: { id: 'column.directory', defaultMessage: 'Browse profiles' },
