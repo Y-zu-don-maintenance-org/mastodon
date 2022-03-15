@@ -84,8 +84,7 @@ const messages = defineMessages({
   edited: { id: 'status.edited', defaultMessage: 'Edited {date}' },
 });
 
-export default @connect(mapStateToProps)
-@injectIntl
+export default @injectIntl
 class Status extends ImmutablePureComponent {
 
   static contextTypes = {
@@ -187,10 +186,10 @@ class Status extends ImmutablePureComponent {
   }
 
   handleAccountClick = (e, proper = true) => {
-    if (e && (e.button !== 0 || e.ctrlKey || e.metaKey))  {
+    if (e && (e.button !== 0 || e.ctrlKey || e.metaKey)) {
       return;
     }
-
+  }
   handleQuoteClick = () => {
     if (!this.context.router) {
       return;
@@ -218,17 +217,17 @@ class Status extends ImmutablePureComponent {
 
   handleExpandedQuoteToggle = () => {
     this.props.onQuoteToggleHidden(this._properStatus());
-  };
+  }
 
-  renderLoadingMediaGallery () {
+  renderLoadingMediaGallery = () => {
     return <div className='media-gallery' style={{ height: '110px' }} />;
   }
 
-  renderLoadingVideoPlayer () {
+  renderLoadingVideoPlayer = () => {
     return <div className='video-player' style={{ height: '110px' }} />;
   }
 
-  renderLoadingAudioPlayer () {
+  renderLoadingAudioPlayer = () => {
     return <div className='audio-player' style={{ height: '110px' }} />;
   }
 
@@ -337,7 +336,7 @@ class Status extends ImmutablePureComponent {
     this.handleToggleMediaVisibility();
   }
 
-  _properStatus () {
+  _properStatus = () => {
     const { status } = this.props;
 
     if (status.get('reblog', null) !== null && typeof status.get('reblog') === 'object') {
@@ -347,7 +346,7 @@ class Status extends ImmutablePureComponent {
     }
   }
 
-  _properQuoteStatus () {
+  _properQuoteStatus = () => {
     const status = this._properStatus();
 
     if (status.get('quote', null) !== null && typeof status.get('quote') === 'object') {
@@ -361,7 +360,7 @@ class Status extends ImmutablePureComponent {
     this.node = c;
   }
 
-  render () {
+  render = () => {
     let media = null;
     let statusAvatar, prepend, rebloggedByText;
 
@@ -433,7 +432,7 @@ class Status extends ImmutablePureComponent {
       rebloggedByText = intl.formatMessage({ id: 'status.reblogged_by', defaultMessage: '{name} boosted' }, { name: status.getIn(['account', 'acct']) });
 
       account = status.get('account');
-      status  = status.get('reblog');
+      status = status.get('reblog');
     }
 
     if (status.get('media_attachments').size > 0) {
@@ -574,7 +573,7 @@ class Status extends ImmutablePureComponent {
                   height={70}
                   cacheWidth={this.props.cacheMediaWidth}
                   deployPictureInPicture={pictureInPicture.get('available') ? this.handleDeployPictureInPicture : undefined}
-                  />
+                />
               )}
             </Bundle>
           );
