@@ -103,11 +103,7 @@ describe FollowingAccountsController do
 
         context 'when account hides their network' do
           before do
-<<<<<<< HEAD
-            alice.user.settings.hide_network = true
-=======
             alice.update(hide_collections: true)
->>>>>>> v3.5.0rc1
           end
 
           it 'returns followers count' do
