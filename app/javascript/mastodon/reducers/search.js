@@ -1,6 +1,8 @@
 import {
   SEARCH_CHANGE,
   SEARCH_CLEAR,
+  SEARCH_FETCH_REQUEST,
+  SEARCH_FETCH_FAIL,
   SEARCH_FETCH_SUCCESS,
   SEARCH_SHOW,
   SEARCH_EXPAND_SUCCESS,
@@ -18,6 +20,7 @@ const initialState = ImmutableMap({
   submitted: false,
   hidden: false,
   results: ImmutableMap(),
+  isLoading: false,
   searchTerm: '',
 });
 
@@ -39,12 +42,24 @@ export default function search(state = initialState, action) {
   case COMPOSE_DIRECT:
   case COMPOSE_QUOTE:
     return state.set('hidden', true);
+  case SEARCH_FETCH_REQUEST:
+    return state.withMutations(map => {
+      map.set('isLoading', true);
+      map.set('submitted', true);
+    });
+  case SEARCH_FETCH_FAIL:
+    return state.set('isLoading', false);
   case SEARCH_FETCH_SUCCESS:
-    return state.set('results', ImmutableMap({
-      accounts: ImmutableList(action.results.accounts.map(item => item.id)),
-      statuses: ImmutableList(action.results.statuses.map(item => item.id)),
-      hashtags: fromJS(action.results.hashtags),
-    })).set('submitted', true).set('searchTerm', action.searchTerm);
+    return state.withMutations(map => {
+      map.set('results', ImmutableMap({
+        accounts: ImmutableList(action.results.accounts.map(item => item.id)),
+        statuses: ImmutableList(action.results.statuses.map(item => item.id)),
+        hashtags: fromJS(action.results.hashtags),
+      }));
+
+      map.set('searchTerm', action.searchTerm);
+      map.set('isLoading', false);
+    });
   case SEARCH_EXPAND_SUCCESS:
     const results = action.searchType === 'hashtags' ? fromJS(action.results.hashtags) : action.results[action.searchType].map(item => item.id);
     return state.updateIn(['results', action.searchType], list => list.concat(results));

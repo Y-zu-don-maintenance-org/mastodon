@@ -64,7 +64,7 @@ class Footer extends ImmutablePureComponent {
     const { router } = this.context;
 
     if (onClose) {
-      onClose();
+      onClose(true);
     }
 
     dispatch(replyCompose(status, router.history));
@@ -124,7 +124,7 @@ class Footer extends ImmutablePureComponent {
       onClose();
     }
 
-    router.history.push(`/statuses/${status.get('id')}`);
+    router.history.push(`/@${status.getIn(['account', 'acct'])}/${status.get('id')}`);
   }
 
   _performQuote = () => {
@@ -185,8 +185,12 @@ class Footer extends ImmutablePureComponent {
         <IconButton className='status__action-bar-button' title={replyTitle} icon={status.get('in_reply_to_account_id') === status.getIn(['account', 'id']) ? 'reply' : replyIcon} onClick={this.handleReplyClick} counter={status.get('replies_count')} obfuscateCount />
         <IconButton className={classNames('status__action-bar-button', { reblogPrivate })} disabled={!publicStatus && !reblogPrivate}  active={status.get('reblogged')} pressed={status.get('reblogged')} title={reblogTitle} icon='retweet' onClick={this.handleReblogClick} counter={status.get('reblogs_count')} />
         <IconButton className='status__action-bar-button star-icon' animate active={status.get('favourited')} pressed={status.get('favourited')} title={intl.formatMessage(messages.favourite)} icon='star' onClick={this.handleFavouriteClick} counter={status.get('favourites_count')} />
+<<<<<<< HEAD
         <IconButton className='status__action-bar-button' disabled={!publicStatus} title={!publicStatus ? intl.formatMessage(messages.cannot_quote) : intl.formatMessage(messages.quote)} icon='quote-right' onClick={this.handleQuoteClick} />
         {withOpenButton && <IconButton className='status__action-bar-button' title={intl.formatMessage(messages.open)} icon='external-link' onClick={this.handleOpenClick} />}
+=======
+        {withOpenButton && <IconButton className='status__action-bar-button' title={intl.formatMessage(messages.open)} icon='external-link' onClick={this.handleOpenClick} href={status.get('url')} />}
+>>>>>>> v3.5.0rc1
       </div>
     );
   }

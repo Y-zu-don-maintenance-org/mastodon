@@ -121,8 +121,12 @@ class Video extends React.PureComponent {
     autoPlay: PropTypes.bool,
     volume: PropTypes.number,
     muted: PropTypes.bool,
+<<<<<<< HEAD
     componetIndex: PropTypes.number,
     quote: PropTypes.bool,
+=======
+    componentIndex: PropTypes.number,
+>>>>>>> v3.5.0rc1
   };
 
   static defaultProps = {
@@ -503,7 +507,7 @@ class Video extends React.PureComponent {
       startTime: this.video.currentTime,
       autoPlay: !this.state.paused,
       defaultVolume: this.state.volume,
-      componetIndex: this.props.componetIndex,
+      componentIndex: this.props.componentIndex,
     });
   }
 

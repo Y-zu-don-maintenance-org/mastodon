@@ -25,8 +25,12 @@ import {
   hideStatus,
   revealStatus,
   toggleStatusCollapse,
+<<<<<<< HEAD
   hideQuote,
   revealQuote,
+=======
+  editStatus,
+>>>>>>> v3.5.0rc1
 } from '../actions/statuses';
 import {
   unmuteAccount,
@@ -161,6 +165,10 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
         onConfirm: () => dispatch(deleteStatus(status.get('id'), history, withRedraft)),
       }));
     }
+  },
+
+  onEdit (status, history) {
+    dispatch(editStatus(status.get('id'), history));
   },
 
   onDirect (account, router) {

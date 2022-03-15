@@ -3,7 +3,11 @@ require 'rails_helper'
 describe Api::V1::Accounts::NotesController do
   render_views
 
+<<<<<<< HEAD
   let(:user)    { Fabricate(:user, account: Fabricate(:account, username: 'alice')) }
+=======
+  let(:user)    { Fabricate(:user) }
+>>>>>>> v3.5.0rc1
   let(:token)   { Fabricate(:accessible_access_token, resource_owner_id: user.id, scopes: 'write:accounts') }
   let(:account) { Fabricate(:account) }
   let(:comment) { 'foo' }
@@ -31,7 +35,11 @@ describe Api::V1::Accounts::NotesController do
       end
     end
 
+<<<<<<< HEAD
     context 'when account note exceends allowed length' do
+=======
+    context 'when account note exceeds allowed length' do
+>>>>>>> v3.5.0rc1
       let(:comment) { 'a' * 2_001 }
 
       it 'returns 422' do

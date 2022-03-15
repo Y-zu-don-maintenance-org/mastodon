@@ -55,7 +55,7 @@ const messages = defineMessages({
   publish: { id: 'compose_form.publish', defaultMessage: 'Toot' },
 });
 
-const shouldHideFAB = path => path.match(/^\/statuses\/|^\/search|^\/getting-started|^\/start/);
+const shouldHideFAB = path => path.match(/^\/statuses\/|^\/@[^/]+\/\d+|^\/publish|^\/explore|^\/getting-started|^\/start/);
 
 export default @(component => injectIntl(component, { withRef: true }))
 class ColumnsArea extends ImmutablePureComponent {
@@ -218,7 +218,11 @@ class ColumnsArea extends ImmutablePureComponent {
     const columnIndex = getIndex(this.context.router.history.location.pathname);
 
     if (singleColumn) {
+<<<<<<< HEAD
       const floatingActionButton = shouldHideFAB(this.context.router.history.location.pathname) ? null : <Link key='floating-action-button' to='/statuses/new' className={classNames('floating-action-button', { 'bottom-bar': place_tab_bar_at_bottom })} aria-label={intl.formatMessage(messages.publish)}><Icon id='pencil' /></Link>;
+=======
+      const floatingActionButton = shouldHideFAB(this.context.router.history.location.pathname) ? null : <Link key='floating-action-button' to='/publish' className='floating-action-button' aria-label={intl.formatMessage(messages.publish)}><Icon id='pencil' /></Link>;
+>>>>>>> v3.5.0rc1
 
       const content = columnIndex !== -1 ? (
         <ReactSwipeableViews key='content' className={classNames('swipeable-view__wrapper', { 'bottom-bar': place_tab_bar_at_bottom })} hysteresis={0.2} threshold={15} index={columnIndex} onChangeIndex={this.handleSwipe} onTransitionEnd={this.handleAnimationEnd} animateTransitions={shouldAnimate} springConfig={{ duration: '400ms', delay: '0s', easeFunction: 'ease' }} style={{ height: '100%' }} disabled={disableSwiping}>
