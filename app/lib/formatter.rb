@@ -1,15 +1,24 @@
 # frozen_string_literal: true
 
 require 'singleton'
+#Singleton パターンを提供するモジュールです。Mix-in により singleton パターンを提供します。
 require_relative './formatter_markdown'
+#Markdownの呼び出し
 
 class Formatter
+# Rubyなどのオブジェクト指向型の言語では、この入れ物であるクラスの中に処理を書くことが基本となってきます。 クラスを定義するということは、具体的にはクラスの定義よりRuby言語に新しい「型」を加えることです。 その型をnewすると、変数に新しい型の「値」を代入できるようになります。
+# instanceメソッドが定義され、newメソッドがprivateに設定される
   include Singleton
   include RoutingHelper
 
   include ActionView::Helpers::TextHelper
+#TextHelper モジュールは、文字列のフィルタリング、フォーマット、変換を行うためのメソッド群を提供し、ビュー内のインライン Ruby コードの量を減らすことができます。これらのヘルパーメソッドは Action View を拡張し、テンプレートファイル内で呼び出すことができます。
 
   def format(status, **options)
+    # defとは、メソッドを定義するための記述です。メソッドは、何度も使うような処理をまとめるための仕組みです。その定義の最初に使う記述がdefです。
+    # def メソッド名(引数1, 引数2, ...)
+    # formatメソッドを定義し、引数1にstatus,2に**optionsを定義
+    # オプション引数を利用するにはメソッドを定義する際に引数を受ける変数名に「**」を付けます。そして、この方法で指定された引数は、「**」の付いた変数名のハッシュとしてメソッドの中で利用できます
     if status.respond_to?(:reblog?) && status.reblog?
       prepend_reblog = status.reblog.account.acct
       status         = status.proper
@@ -55,6 +64,7 @@ class Formatter
   end
 
   def format_in_quote(status, **options)
+  # format_in_quoteを定義、引数statusと**options
     html = format(status)
     return '' if html.empty?
     doc = Nokogiri::HTML.parse(html, nil, 'utf-8')
