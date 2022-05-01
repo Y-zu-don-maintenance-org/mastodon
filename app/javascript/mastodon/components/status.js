@@ -191,10 +191,6 @@ class Status extends ImmutablePureComponent {
       e.preventDefault();
       this.context.router.history.push(`/accounts/${id}`);
     }
-    
-    if (e && (e.button !== 0 || e.ctrlKey || e.metaKey))  {
-      return;
-    }
 
     if (e) {
       e.preventDefault();
