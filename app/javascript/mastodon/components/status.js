@@ -186,10 +186,17 @@ class Status extends ImmutablePureComponent {
   }
 
   handleAccountClick = (e, proper = true) => {
-    if (e && (e.button !== 0 || e.ctrlKey || e.metaKey)) {
+    if (e && (e.button !== 0 || e.ctrlKey || e.metaKey))  {
       return;
     }
+
+    if (e) {
+      e.preventDefault();
+    }
+
+    this._openProfile(proper);
   }
+
   handleQuoteClick = () => {
     if (!this.context.router) {
       return;
@@ -197,14 +204,6 @@ class Status extends ImmutablePureComponent {
 
     const { status } = this.props;
     this.context.router.history.push(`/statuses/${status.getIn(['reblog', 'quote', 'id'], status.getIn(['quote', 'id']))}`);
-  }
-
-  handleAccountClick = (e) => {
-    if (e) {
-      e.preventDefault();
-    }
-
-    this._openProfile(proper);
   }
 
   handleExpandedToggle = () => {
