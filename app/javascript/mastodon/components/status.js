@@ -191,11 +191,6 @@ class Status extends ImmutablePureComponent {
       e.preventDefault();
       this.context.router.history.push(`/accounts/${id}`);
     }
-
-    if (e) {
-      e.preventDefault();
-    }
-
     this._openProfile(proper);
   }
 
