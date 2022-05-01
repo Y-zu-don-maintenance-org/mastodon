@@ -30,12 +30,13 @@ class QuoteIndicator extends ImmutablePureComponent {
   }
 
   handleAccountClick = (e) => {
-    if (e.button === 0 && !(e.ctrlKey || e.metaKey)) {
+    if (this.context.router && e.button === 0 && !(e.ctrlKey || e.metaKey)) {
+      const id = e.currentTarget.getAttribute('data-id');
       e.preventDefault();
-      this.context.router.history.push(`/accounts/${this.props.status.getIn(['account', 'id'])}`);
+      this.context.router.history.push(`/accounts/${id}`);
     }
   }
-
+  
   render () {
     const { status, intl } = this.props;
 
