@@ -5,6 +5,10 @@ module FormattingHelper
     HtmlAwareFormatter.new(text, local, options).to_s
   end
 
+  def quotify(html, status, text, local, options = {})
+    QuoteFormatter.new(html, status, text, local, options).to_s
+  end
+
   def linkify(text, options = {})
     TextFormatter.new(text, options).to_s
   end
