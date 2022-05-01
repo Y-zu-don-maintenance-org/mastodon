@@ -185,12 +185,12 @@ class Status extends ImmutablePureComponent {
     this.handleAccountClick(e, false);
   }
 
-  handleAccountClick = (e, proper = true) => {
-    if (this.context.router && e.button === 0 && !(e.ctrlKey || e.metaKey)) {
-      const id = e.currentTarget.getAttribute('data-id');
-      e.preventDefault();
-      this.context.router.history.push(`/accounts/${id}`);
-    }
+  handleAccountClick = (e, proper = true) => {      
+    // if (this.context.router && e.button === 0 && !(e.ctrlKey || e.metaKey)) {
+    //   const id = e.currentTarget.getAttribute('data-id');
+    //   e.preventDefault();
+    //   this.context.router.history.push(`/accounts/${id}`);
+    // }
     this._openProfile(proper);
   }
 
