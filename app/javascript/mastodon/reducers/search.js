@@ -43,7 +43,10 @@ export default function search(state = initialState, action) {
   case COMPOSE_DIRECT:
     return state.set('hidden', true);
   case SEARCH_FETCH_REQUEST:
-    return state.set('isLoading', true);
+    return state.withMutations(map => {
+      map.set('isLoading', true);
+      map.set('submitted', true);
+    });
   case SEARCH_FETCH_FAIL:
     return state.set('isLoading', false);
   case SEARCH_FETCH_SUCCESS:
@@ -54,7 +57,6 @@ export default function search(state = initialState, action) {
         hashtags: fromJS(action.results.hashtags),
       }));
 
-      map.set('submitted', true);
       map.set('searchTerm', action.searchTerm);
       map.set('isLoading', false);
     });
