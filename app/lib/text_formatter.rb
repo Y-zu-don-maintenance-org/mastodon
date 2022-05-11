@@ -33,8 +33,7 @@ class TextFormatter
   end
 
   def to_s
-    append_quote if quote?
-    return ''.html_safe if text.blank?
+    return ''.html_safe if text.blank? & !quote?
 
     html = rewrite do |entity|
       if entity[:url]
@@ -45,6 +44,8 @@ class TextFormatter
         link_to_mention(entity)
       end
     end
+
+    html += render_quote if quote?
 
     html = simple_format(html, {}, sanitize: false).delete("\n") if multiline?
 
@@ -129,8 +130,11 @@ class TextFormatter
     HTML
   end
 
-  def append_quote
-    @text += "\n[#{ap_tag_manager.url_for(quote)}]"
+  def render_quote
+    link = link_to_url({ url: ap_tag_manager.url_for(quote) })
+    <<~HTML.squish
+      <span class="quote-inline"><br/>~~~~~~~~~~<br/>[#{link}]</span>
+    HTML
   end
 
   def entity_cache
