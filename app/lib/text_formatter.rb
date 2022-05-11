@@ -121,7 +121,7 @@ class TextFormatter
 
     return "@#{h(entity[:screen_name])}" if account.nil?
 
-    url = ActivityPub::TagManager.instance.url_for(account)
+    url = ap_tag_manager.url_for(account)
     display_username = same_username_hits&.positive? || with_domains? ? account.pretty_acct : account.username
 
     <<~HTML.squish
@@ -130,7 +130,7 @@ class TextFormatter
   end
 
   def append_quote
-    @text += "\n[#{tag_manager.url_for(quote)}]"
+    @text += "\n[#{ap_tag_manager.url_for(quote)}]"
   end
 
   def entity_cache
@@ -139,6 +139,10 @@ class TextFormatter
 
   def tag_manager
     @tag_manager ||= TagManager.instance
+  end
+
+  def ap_tag_manager
+    @ap_tag_manager ||= ActivityPub::TagManager.instance
   end
 
   delegate :local_domain?, to: :tag_manager
