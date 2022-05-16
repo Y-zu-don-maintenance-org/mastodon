@@ -10,11 +10,12 @@ class QuoteFormatter
   end
 
   def to_s
-    return html if status.quote? && !options[:escape_quotify]
-    
-    url = ActivityPub::TagManager.instance.url_for(status.quote)
-    link = encode_and_link_urls(url)
-    html.sub(/(<[^>]+>)\z/, "<span class=\"quote-inline\"><br/>QT: #{link}</span>\\1")
+    def render_quote
+      link = link_to_url({ url: ap_tag_manager.url_for(quote) })
+      <<~HTML.squish
+        <span class="quote-inline"><br/>~~~~~~~~~~<br/>[#{link}]</span>
+      HTML
+    end
   end
 
   def format_in_quote(status, **options)

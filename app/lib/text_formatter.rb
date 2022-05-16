@@ -128,14 +128,6 @@ class TextFormatter
     HTML
   end
 
-  def quotify
-    url = ActivityPub::TagManager.instance.url_for(status.quote)
-    link = encode_and_link_urls(url)
-    <<~HTML.squish
-      <span class="quote-inline"><br/>QT: #{link}</span>"
-    HTML
-  end
-
   def entity_cache
     @entity_cache ||= EntityCache.instance
   end
