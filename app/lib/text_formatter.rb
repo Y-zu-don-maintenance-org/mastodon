@@ -134,7 +134,7 @@ class TextFormatter
     link = link_to_url({ url: ActivityPub::TagManager.instance.url_for(quote) })
 
     <<~HTML.squish
-      <span class="quote-inline"><br/>QT: #{link}</span>"
+      <span class="quote-inline"><br/>QT: #{link}</span>
     HTML
   end
 
