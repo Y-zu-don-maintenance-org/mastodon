@@ -21,6 +21,8 @@ class TextFormatter
   # @option options [Boolean] :with_domains
   # @option options [Boolean] :with_rel_me
   # @option options [Array<Account>] :preloaded_accounts
+  # @option options [Status] :quote
+  
   def initialize(text, options = {})
     @text    = text
     @options = DEFAULT_OPTIONS.merge(options)
@@ -30,8 +32,8 @@ class TextFormatter
     @entities ||= Extractor.extract_entities_with_indices(text, extract_url_without_protocol: false)
   end
 
-  def to_s(status, **options)
-    return ''.html_safe if text.blank? & !status.quote?
+  def to_s
+    return ''.html_safe if text.blank? & !quote?
 
     html = rewrite do |entity|
       if entity[:url]
@@ -43,7 +45,7 @@ class TextFormatter
       end
     end
 
-    html += quotify if status.quote?
+    html += quotify if quote?
 
     html = simple_format(html, {}, sanitize: false).delete("\n") if multiline?
 
