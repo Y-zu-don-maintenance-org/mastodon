@@ -128,7 +128,7 @@ class TextFormatter
     HTML
   end
 
-  def render_quote
+  def quotify
     url = ActivityPub::TagManager.instance.url_for(status.quote)
     link = encode_and_link_urls(url)
     <<~HTML.squish
