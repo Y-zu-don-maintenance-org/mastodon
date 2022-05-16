@@ -22,7 +22,7 @@ class TextFormatter
   # @option options [Boolean] :with_rel_me
   # @option options [Array<Account>] :preloaded_accounts
   # @option options [Status] :quote
-  
+
   def initialize(text, options = {})
     @text    = text
     @options = DEFAULT_OPTIONS.merge(options)
@@ -166,5 +166,13 @@ class TextFormatter
 
   def preloaded_accounts?
     preloaded_accounts.present?
+  end
+
+  def quote
+    options[:quote]
+  end
+
+  def quote?
+    quote.present?
   end
 end
