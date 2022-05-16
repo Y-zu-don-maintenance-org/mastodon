@@ -131,8 +131,8 @@ class TextFormatter
   end
 
   def quotify
-    url = ActivityPub::TagManager.instance.url_for(quote)
-    link = encode_and_link_urls(url)
+    link = link_to_url({ url: ActivityPub::TagManager.instance.url_for(quote) })
+
     <<~HTML.squish
       <span class="quote-inline"><br/>QT: #{link}</span>"
     HTML
