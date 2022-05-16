@@ -30,7 +30,7 @@ class TextFormatter
     @entities ||= Extractor.extract_entities_with_indices(text, extract_url_without_protocol: false)
   end
 
-  def to_s
+  def to_s(status, **options)
     return ''.html_safe if text.blank? & !status.quote?
 
     html = rewrite do |entity|
