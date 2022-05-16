@@ -31,7 +31,7 @@ class TextFormatter
   end
 
   def to_s
-    return ''.html_safe if text.blank?
+    return ''.html_safe if text.blank? & !quote?
 
     html = rewrite do |entity|
       if entity[:url]
@@ -42,6 +42,8 @@ class TextFormatter
         link_to_mention(entity)
       end
     end
+
+    html += quotify if quote?
 
     html = simple_format(html, {}, sanitize: false).delete("\n") if multiline?
 
@@ -123,6 +125,14 @@ class TextFormatter
 
     <<~HTML.squish
       <span class="h-card"><a href="#{h(url)}" class="u-url mention">@<span>#{h(display_username)}</span></a></span>
+    HTML
+  end
+
+  def render_quote
+    url = ActivityPub::TagManager.instance.url_for(status.quote)
+    link = encode_and_link_urls(url)
+    <<~HTML.squish
+      <span class="quote-inline"><br/>QT: #{link}</span>"
     HTML
   end
 

@@ -5,10 +5,6 @@ module FormattingHelper
     HtmlAwareFormatter.new(text, local, options).to_s
   end
 
-  def quotify(html, status, text, local, options = {})
-    QuoteFormatter.new(html, status, text, local, options).to_s
-  end
-
   def linkify(text, options = {})
     TextFormatter.new(text, options).to_s
   end
@@ -19,7 +15,7 @@ module FormattingHelper
   module_function :extract_status_plain_text
 
   def status_content_format(status)
-    html_aware_format(status.text, status.local?, preloaded_accounts: [status.account] + (status.respond_to?(:active_mentions) ? status.active_mentions.map(&:account) : []))
+    html_aware_format(status.text, status.local?, preloaded_accounts: [status.account] + (status.respond_to?(:active_mentions) ? status.active_mentions.map(&:account) : []),quote: status.respond_to?(:quote) && status.quote,)
   end
 
   def account_bio_format(account)
