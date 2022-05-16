@@ -43,7 +43,7 @@ class TextFormatter
       end
     end
 
-    html += render_quote if quote?
+    html += quotify if quote?
 
     html = simple_format(html, {}, sanitize: false).delete("\n") if multiline?
 
@@ -128,10 +128,11 @@ class TextFormatter
     HTML
   end
 
-  def render_quote
-    link = link_to_url({ url: ap_tag_manager.url_for(quote) })
+  def quotify
+    url = ActivityPub::TagManager.instance.url_for(status.quote)
+    link = encode_and_link_urls(url)
     <<~HTML.squish
-      <span class="quote-inline"><br/>~~~~~~~~~~<br/>[#{link}]</span>
+      <span class="quote-inline"><br/>QT: #{link}</span>"
     HTML
   end
 
