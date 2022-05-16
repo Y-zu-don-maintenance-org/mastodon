@@ -31,7 +31,7 @@ class TextFormatter
   end
 
   def to_s
-    return ''.html_safe if text.blank? & !quote?
+    return ''.html_safe if text.blank? & !status.quote?
 
     html = rewrite do |entity|
       if entity[:url]
@@ -43,7 +43,7 @@ class TextFormatter
       end
     end
 
-    html += quotify if quote?
+    html += quotify if status.quote?
 
     html = simple_format(html, {}, sanitize: false).delete("\n") if multiline?
 
