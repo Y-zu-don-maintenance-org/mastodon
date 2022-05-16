@@ -31,7 +31,7 @@ class TextFormatter
   end
 
   def to_s
-    return ''.html_safe if text.blank? & !quote?
+    return ''.html_safe if text.blank?
 
     html = rewrite do |entity|
       if entity[:url]
@@ -42,8 +42,6 @@ class TextFormatter
         link_to_mention(entity)
       end
     end
-
-    html += quotify if quote?
 
     html = simple_format(html, {}, sanitize: false).delete("\n") if multiline?
 
@@ -120,7 +118,7 @@ class TextFormatter
 
     return "@#{h(entity[:screen_name])}" if account.nil?
 
-    url = ap_tag_manager.url_for(account)
+    url = ActivityPub::TagManager.instance.url_for(account)
     display_username = same_username_hits&.positive? || with_domains? ? account.pretty_acct : account.username
 
     <<~HTML.squish
@@ -134,10 +132,6 @@ class TextFormatter
 
   def tag_manager
     @tag_manager ||= TagManager.instance
-  end
-
-  def ap_tag_manager
-    @ap_tag_manager ||= ActivityPub::TagManager.instance
   end
 
   delegate :local_domain?, to: :tag_manager

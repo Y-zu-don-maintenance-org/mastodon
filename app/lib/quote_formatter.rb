@@ -10,12 +10,11 @@ class QuoteFormatter
   end
 
   def to_s
-    def render_quote
-      link = link_to_url({ url: ap_tag_manager.url_for(quote) })
-      <<~HTML.squish
-        <span class="quote-inline"><br/>~~~~~~~~~~<br/>[#{link}]</span>
-      HTML
-    end
+    url = ActivityPub::TagManager.instance.url_for(status.quote)
+    link = encode_and_link_urls(url)
+    <<~HTML.squish
+      <span class="quote-inline"><br/>QT: #{link}</span>"
+    HTML
   end
 
   def format_in_quote(status, **options)
