@@ -27,6 +27,7 @@ export const showTrends = getMeta('trends');
 export const title = getMeta('title');
 export const cropImages = getMeta('crop_images');
 export const disableSwiping = getMeta('disable_swiping');
+export const languages = initialState && initialState.languages;
 export const place_tab_bar_at_bottom = getMeta('place_tab_bar_at_bottom');
 export const show_tab_bar_label = getMeta('show_tab_bar_label');
 
