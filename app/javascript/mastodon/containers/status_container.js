@@ -26,6 +26,8 @@ import {
   revealStatus,
   toggleStatusCollapse,
   editStatus,
+  translateStatus,
+  undoStatusTranslation,
   hideQuote,
   revealQuote,
 } from '../actions/statuses';
@@ -37,6 +39,9 @@ import {
   blockDomain,
   unblockDomain,
 } from '../actions/domain_blocks';
+import {
+  initAddFilter,
+} from '../actions/filters';
 import { initMuteModal } from '../actions/mutes';
 import { initBlockModal } from '../actions/blocks';
 import { initBoostModal } from '../actions/boosts';
@@ -71,7 +76,7 @@ const makeMapStateToProps = () => {
   return mapStateToProps;
 };
 
-const mapDispatchToProps = (dispatch, { intl }) => ({
+const mapDispatchToProps = (dispatch, { intl, contextType }) => ({
 
   onReply (status, router) {
     dispatch((_, getState) => {
@@ -168,6 +173,14 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
     dispatch(editStatus(status.get('id'), history));
   },
 
+  onTranslate (status) {
+    if (status.get('translation')) {
+      dispatch(undoStatusTranslation(status.get('id')));
+    } else {
+      dispatch(translateStatus(status.get('id')));
+    }
+  },
+
   onDirect (account, router) {
     dispatch(directCompose(account, router));
   },
@@ -195,6 +208,10 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
 
   onReport (status) {
     dispatch(initReport(status.get('account'), status));
+  },
+
+  onAddFilter (status) {
+    dispatch(initAddFilter(status, { contextType }));
   },
 
   onMute (account) {
@@ -247,6 +264,14 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
 
   deployPictureInPicture (status, type, mediaProps) {
     dispatch(deployPictureInPicture(status.get('id'), status.getIn(['account', 'id']), type, mediaProps));
+  },
+
+  onInteractionModal (type, status) {
+    dispatch(openModal('INTERACTION', {
+      type,
+      accountId: status.getIn(['account', 'id']),
+      url: status.get('url'),
+    }));
   },
 
 });

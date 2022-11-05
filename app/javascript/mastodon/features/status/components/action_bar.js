@@ -6,8 +6,9 @@ import StatusActionBar from '../../../components/status_action_bar';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import DropdownMenuContainer from '../../../containers/dropdown_menu_container';
 import { defineMessages, injectIntl } from 'react-intl';
-import { me, isStaff } from '../../../initial_state';
+import { me } from '../../../initial_state';
 import classNames from 'classnames';
+import { PERMISSION_MANAGE_USERS } from 'mastodon/permissions';
 
 const messages = defineMessages({
   delete: { id: 'status.delete', defaultMessage: 'Delete' },
@@ -53,6 +54,7 @@ class ActionBar extends React.PureComponent {
 
   static contextTypes = {
     router: PropTypes.object,
+    identity: PropTypes.object,
   };
 
   static propTypes = {
@@ -200,6 +202,7 @@ class ActionBar extends React.PureComponent {
 
   render () {
     const { status, relationship, intl } = this.props;
+    const { signedIn, permissions } = this.context.identity;
 
     const publicStatus       = ['public', 'unlisted'].includes(status.get('visibility'));
     const pinnableStatus     = ['public', 'unlisted', 'private'].includes(status.get('visibility'));
@@ -223,7 +226,7 @@ class ActionBar extends React.PureComponent {
 
       menu.push({ text: intl.formatMessage(mutingConversation ? messages.unmuteConversation : messages.muteConversation), action: this.handleConversationMuteClick });
       menu.push(null);
-      // menu.push({ text: intl.formatMessage(messages.edit), action: this.handleEditClick });
+      menu.push({ text: intl.formatMessage(messages.edit), action: this.handleEditClick });
       menu.push({ text: intl.formatMessage(messages.delete), action: this.handleDeleteClick });
       menu.push({ text: intl.formatMessage(messages.redraft), action: this.handleRedraftClick });
     } else {
@@ -256,10 +259,10 @@ class ActionBar extends React.PureComponent {
         }
       }
 
-      if (isStaff) {
+      if ((permissions & PERMISSION_MANAGE_USERS) === PERMISSION_MANAGE_USERS) {
         menu.push(null);
         menu.push({ text: intl.formatMessage(messages.admin_account, { name: status.getIn(['account', 'username']) }), href: `/admin/accounts/${status.getIn(['account', 'id'])}` });
-        menu.push({ text: intl.formatMessage(messages.admin_status), href: `/admin/accounts/${status.getIn(['account', 'id'])}/statuses?id=${status.get('id')}` });
+        menu.push({ text: intl.formatMessage(messages.admin_status), href: `/admin/accounts/${status.getIn(['account', 'id'])}/statuses/${status.get('id')}` });
       }
     }
 
@@ -293,11 +296,12 @@ class ActionBar extends React.PureComponent {
         <div className='detailed-status__button' ><IconButton className={classNames({ reblogPrivate })} disabled={!publicStatus && !reblogPrivate} active={status.get('reblogged')} title={reblogTitle} icon='retweet' onClick={this.handleReblogClick} /></div>
         <div className='detailed-status__button'><IconButton className='star-icon' animate active={status.get('favourited')} title={intl.formatMessage(messages.favourite)} icon='star' onClick={this.handleFavouriteClick} /></div>
         <div className='detailed-status__button'><IconButton disabled={!publicStatus} title={StatusActionBar.quoteTitle(intl, messages, publicStatus)} icon='quote-right' onClick={this.handleQuoteClick} /></div>
+        <div className='detailed-status__button'><IconButton className='bookmark-icon' disabled={!signedIn} active={status.get('bookmarked')} title={intl.formatMessage(messages.bookmark)} icon='bookmark' onClick={this.handleBookmarkClick} /></div>
+
         {shareButton}
-        <div className='detailed-status__button'><IconButton className='bookmark-icon' active={status.get('bookmarked')} title={intl.formatMessage(messages.bookmark)} icon='bookmark' onClick={this.handleBookmarkClick} /></div>
 
         <div className='detailed-status__action-bar-dropdown'>
-          <DropdownMenuContainer size={18} icon='ellipsis-h' status={status} items={menu} direction='left' title={intl.formatMessage(messages.more)} />
+          <DropdownMenuContainer size={18} icon='ellipsis-h' disabled={!signedIn} status={status} items={menu} direction='left' title={intl.formatMessage(messages.more)} />
         </div>
       </div>
     );

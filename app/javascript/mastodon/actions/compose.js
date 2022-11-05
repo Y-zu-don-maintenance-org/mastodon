@@ -1,18 +1,20 @@
-import api from '../api';
-import { CancelToken, isCancel } from 'axios';
+import axios from 'axios';
 import { throttle } from 'lodash';
-import { search as emojiSearch } from '../features/emoji/emoji_mart_search_light';
-import { tagHistory } from '../settings';
-import { useEmoji } from './emojis';
-import resizeImage from '../utils/resize_image';
-import { importFetchedAccounts } from './importer';
-import { updateTimeline } from './timelines';
-import { showAlertForError } from './alerts';
-import { showAlert } from './alerts';
-import { openModal } from './modal';
 import { defineMessages } from 'react-intl';
+import api from 'mastodon/api';
+import { search as emojiSearch } from 'mastodon/features/emoji/emoji_mart_search_light';
+import { tagHistory } from 'mastodon/settings';
+import resizeImage from 'mastodon/utils/resize_image';
+import { showAlert, showAlertForError } from './alerts';
+import { useEmoji } from './emojis';
+import { importFetchedAccounts, importFetchedStatus } from './importer';
+import { openModal } from './modal';
+import { updateTimeline } from './timelines';
 
-let cancelFetchComposeSuggestionsAccounts, cancelFetchComposeSuggestionsTags;
+/** @type {AbortController | undefined} */
+let fetchComposeSuggestionsAccountsController;
+/** @type {AbortController | undefined} */
+let fetchComposeSuggestionsTagsController;
 
 export const COMPOSE_CHANGE          = 'COMPOSE_CHANGE';
 export const COMPOSE_SUBMIT_REQUEST  = 'COMPOSE_SUBMIT_REQUEST';
@@ -25,11 +27,13 @@ export const COMPOSE_QUOTE_CANCEL    = 'COMPOSE_QUOTE_CANCEL';
 export const COMPOSE_DIRECT          = 'COMPOSE_DIRECT';
 export const COMPOSE_MENTION         = 'COMPOSE_MENTION';
 export const COMPOSE_RESET           = 'COMPOSE_RESET';
-export const COMPOSE_UPLOAD_REQUEST  = 'COMPOSE_UPLOAD_REQUEST';
-export const COMPOSE_UPLOAD_SUCCESS  = 'COMPOSE_UPLOAD_SUCCESS';
-export const COMPOSE_UPLOAD_FAIL     = 'COMPOSE_UPLOAD_FAIL';
-export const COMPOSE_UPLOAD_PROGRESS = 'COMPOSE_UPLOAD_PROGRESS';
-export const COMPOSE_UPLOAD_UNDO     = 'COMPOSE_UPLOAD_UNDO';
+
+export const COMPOSE_UPLOAD_REQUEST    = 'COMPOSE_UPLOAD_REQUEST';
+export const COMPOSE_UPLOAD_SUCCESS    = 'COMPOSE_UPLOAD_SUCCESS';
+export const COMPOSE_UPLOAD_FAIL       = 'COMPOSE_UPLOAD_FAIL';
+export const COMPOSE_UPLOAD_PROGRESS   = 'COMPOSE_UPLOAD_PROGRESS';
+export const COMPOSE_UPLOAD_PROCESSING = 'COMPOSE_UPLOAD_PROCESSING';
+export const COMPOSE_UPLOAD_UNDO       = 'COMPOSE_UPLOAD_UNDO';
 
 export const THUMBNAIL_UPLOAD_REQUEST  = 'THUMBNAIL_UPLOAD_REQUEST';
 export const THUMBNAIL_UPLOAD_SUCCESS  = 'THUMBNAIL_UPLOAD_SUCCESS';
@@ -47,12 +51,12 @@ export const COMPOSE_TAG_HISTORY_UPDATE = 'COMPOSE_TAG_HISTORY_UPDATE';
 export const COMPOSE_MOUNT   = 'COMPOSE_MOUNT';
 export const COMPOSE_UNMOUNT = 'COMPOSE_UNMOUNT';
 
-export const COMPOSE_SENSITIVITY_CHANGE = 'COMPOSE_SENSITIVITY_CHANGE';
-export const COMPOSE_SPOILERNESS_CHANGE = 'COMPOSE_SPOILERNESS_CHANGE';
+export const COMPOSE_SENSITIVITY_CHANGE  = 'COMPOSE_SENSITIVITY_CHANGE';
+export const COMPOSE_SPOILERNESS_CHANGE  = 'COMPOSE_SPOILERNESS_CHANGE';
 export const COMPOSE_SPOILER_TEXT_CHANGE = 'COMPOSE_SPOILER_TEXT_CHANGE';
-export const COMPOSE_VISIBILITY_CHANGE  = 'COMPOSE_VISIBILITY_CHANGE';
-export const COMPOSE_LISTABILITY_CHANGE = 'COMPOSE_LISTABILITY_CHANGE';
-export const COMPOSE_COMPOSING_CHANGE = 'COMPOSE_COMPOSING_CHANGE';
+export const COMPOSE_VISIBILITY_CHANGE   = 'COMPOSE_VISIBILITY_CHANGE';
+export const COMPOSE_COMPOSING_CHANGE    = 'COMPOSE_COMPOSING_CHANGE';
+export const COMPOSE_LANGUAGE_CHANGE     = 'COMPOSE_LANGUAGE_CHANGE';
 
 export const COMPOSE_EMOJI_INSERT = 'COMPOSE_EMOJI_INSERT';
 
@@ -79,10 +83,8 @@ const messages = defineMessages({
   uploadErrorPoll:  { id: 'upload_error.poll', defaultMessage: 'File upload not allowed with polls.' },
 });
 
-const COMPOSE_PANEL_BREAKPOINT = 600 + (285 * 1) + (10 * 1);
-
 export const ensureComposeIsVisible = (getState, routerHistory) => {
-  if (!getState().getIn(['compose', 'mounted']) && window.innerWidth < COMPOSE_PANEL_BREAKPOINT) {
+  if (!getState().getIn(['compose', 'mounted'])) {
     routerHistory.push('/publish');
   }
 };
@@ -188,6 +190,7 @@ export function submitCompose(routerHistory) {
         spoiler_text: getState().getIn(['compose', 'spoiler']) ? getState().getIn(['compose', 'spoiler_text'], '') : '',
         visibility: getState().getIn(['compose', 'privacy']),
         poll: getState().getIn(['compose', 'poll'], null),
+        language: getState().getIn(['compose', 'language']),
         quote_id: getState().getIn(['compose', 'quote_from'], null),
       },
       headers: {
@@ -210,6 +213,10 @@ export function submitCompose(routerHistory) {
           dispatch(updateTimeline(timelineId, { ...response.data }));
         }
       };
+
+      if (statusId) {
+        dispatch(importFetchedStatus({ ...response.data }));
+      }
 
       if (statusId === null && response.data.visibility !== 'direct') {
         insertIfOnline('home');
@@ -287,13 +294,16 @@ export function uploadCompose(files) {
           if (status === 200) {
             dispatch(uploadComposeSuccess(data, f));
           } else if (status === 202) {
+            dispatch(uploadComposeProcessing());
+
             let tryCount = 1;
+
             const poll = () => {
               api(getState).get(`/api/v1/media/${data.id}`).then(response => {
                 if (response.status === 200) {
                   dispatch(uploadComposeSuccess(response.data, f));
                 } else if (response.status === 206) {
-                  let retryAfter = (Math.log2(tryCount) || 1) * 1000;
+                  const retryAfter = (Math.log2(tryCount) || 1) * 1000;
                   tryCount += 1;
                   setTimeout(() => poll(), retryAfter);
                 }
@@ -307,6 +317,10 @@ export function uploadCompose(files) {
     };
   };
 };
+
+export const uploadComposeProcessing = () => ({
+  type: COMPOSE_UPLOAD_PROCESSING,
+});
 
 export const uploadThumbnail = (id, file) => (dispatch, getState) => {
   dispatch(uploadThumbnailRequest());
@@ -452,8 +466,8 @@ export function undoUploadCompose(media_id) {
 };
 
 export function clearComposeSuggestions() {
-  if (cancelFetchComposeSuggestionsAccounts) {
-    cancelFetchComposeSuggestionsAccounts();
+  if (fetchComposeSuggestionsAccountsController) {
+    fetchComposeSuggestionsAccountsController.abort();
   }
   return {
     type: COMPOSE_SUGGESTIONS_CLEAR,
@@ -461,14 +475,14 @@ export function clearComposeSuggestions() {
 };
 
 const fetchComposeSuggestionsAccounts = throttle((dispatch, getState, token) => {
-  if (cancelFetchComposeSuggestionsAccounts) {
-    cancelFetchComposeSuggestionsAccounts();
+  if (fetchComposeSuggestionsAccountsController) {
+    fetchComposeSuggestionsAccountsController.abort();
   }
 
+  fetchComposeSuggestionsAccountsController = new AbortController();
+
   api(getState).get('/api/v1/accounts/search', {
-    cancelToken: new CancelToken(cancel => {
-      cancelFetchComposeSuggestionsAccounts = cancel;
-    }),
+    signal: fetchComposeSuggestionsAccountsController.signal,
 
     params: {
       q: token.slice(1),
@@ -479,9 +493,11 @@ const fetchComposeSuggestionsAccounts = throttle((dispatch, getState, token) => 
     dispatch(importFetchedAccounts(response.data));
     dispatch(readyComposeSuggestionsAccounts(token, response.data));
   }).catch(error => {
-    if (!isCancel(error)) {
+    if (!axios.isCancel(error)) {
       dispatch(showAlertForError(error));
     }
+  }).finally(() => {
+    fetchComposeSuggestionsAccountsController = undefined;
   });
 }, 200, { leading: true, trailing: true });
 
@@ -491,16 +507,16 @@ const fetchComposeSuggestionsEmojis = (dispatch, getState, token) => {
 };
 
 const fetchComposeSuggestionsTags = throttle((dispatch, getState, token) => {
-  if (cancelFetchComposeSuggestionsTags) {
-    cancelFetchComposeSuggestionsTags();
+  if (fetchComposeSuggestionsTagsController) {
+    fetchComposeSuggestionsTagsController.abort();
   }
 
   dispatch(updateSuggestionTags(token));
 
+  fetchComposeSuggestionsTagsController = new AbortController();
+
   api(getState).get('/api/v2/search', {
-    cancelToken: new CancelToken(cancel => {
-      cancelFetchComposeSuggestionsTags = cancel;
-    }),
+    signal: fetchComposeSuggestionsTagsController.signal,
 
     params: {
       type: 'hashtags',
@@ -512,9 +528,11 @@ const fetchComposeSuggestionsTags = throttle((dispatch, getState, token) => {
   }).then(({ data }) => {
     dispatch(readyComposeSuggestionsTags(token, data.hashtags));
   }).catch(error => {
-    if (!isCancel(error)) {
+    if (!axios.isCancel(error)) {
       dispatch(showAlertForError(error));
     }
+  }).finally(() => {
+    fetchComposeSuggestionsTagsController = undefined;
   });
 }, 200, { leading: true, trailing: true });
 
@@ -625,7 +643,20 @@ function insertIntoTagHistory(recognizedTags, text) {
     const state = getState();
     const oldHistory = state.getIn(['compose', 'tagHistory']);
     const me = state.getIn(['meta', 'me']);
-    const names = recognizedTags.map(tag => text.match(new RegExp(`#${tag.name}`, 'i'))[0].slice(1));
+
+    // FIXME: Matching input hashtags with recognized hashtags has become more
+    // complicated because of new normalization rules, it's no longer just
+    // a case sensitivity issue
+    const names = recognizedTags.map(tag => {
+      const matches = text.match(new RegExp(`#${tag.name}`, 'i'));
+
+      if (matches && matches.length > 0) {
+        return matches[0].slice(1);
+      } else {
+        return tag.name;
+      }
+    });
+
     const intersectedOldHistory = oldHistory.filter(name => names.findIndex(newName => newName.toLowerCase() === name.toLowerCase()) === -1);
 
     names.push(...intersectedOldHistory.toJS());
@@ -654,6 +685,11 @@ export function changeComposeSensitivity() {
     type: COMPOSE_SENSITIVITY_CHANGE,
   };
 };
+
+export const changeComposeLanguage = language => ({
+  type: COMPOSE_LANGUAGE_CHANGE,
+  language,
+});
 
 export function changeComposeSpoilerness() {
   return {

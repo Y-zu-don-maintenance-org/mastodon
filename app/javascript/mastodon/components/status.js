@@ -4,7 +4,6 @@ import ImmutablePropTypes from 'react-immutable-proptypes';
 import PropTypes from 'prop-types';
 import Avatar from './avatar';
 import AvatarOverlay from './avatar_overlay';
-import AvatarComposite from './avatar_composite';
 import RelativeTimestamp from './relative_timestamp';
 import DisplayName from './display_name';
 import StatusContent from './status_content';
@@ -148,7 +147,6 @@ class Status extends ImmutablePureComponent {
   static propTypes = {
     status: ImmutablePropTypes.map,
     account: ImmutablePropTypes.map,
-    otherAccounts: ImmutablePropTypes.list,
     onClick: PropTypes.func,
     onReply: PropTypes.func,
     onFavourite: PropTypes.func,
@@ -160,10 +158,13 @@ class Status extends ImmutablePureComponent {
     onOpenMedia: PropTypes.func,
     onOpenVideo: PropTypes.func,
     onBlock: PropTypes.func,
+    onAddFilter: PropTypes.func,
     onEmbed: PropTypes.func,
     onHeightChange: PropTypes.func,
     onToggleHidden: PropTypes.func,
     onToggleCollapsed: PropTypes.func,
+    onTranslate: PropTypes.func,
+    onInteractionModal: PropTypes.func,
     onQuoteToggleHidden: PropTypes.func,
     muted: PropTypes.bool,
     quoteMuted: PropTypes.bool,
@@ -201,6 +202,7 @@ class Status extends ImmutablePureComponent {
     showMedia: defaultMediaVisibility(this.props.status),
     showQuoteMedia: defaultMediaVisibility(this.props.status ? this.props.status.get('quote', null) : null),
     statusId: undefined,
+    forceFilter: undefined,
   };
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -266,6 +268,10 @@ class Status extends ImmutablePureComponent {
 
   handleCollapsedToggle = isCollapsed => {
     this.props.onToggleCollapsed(this._properStatus(), isCollapsed);
+  }
+
+  handleTranslate = () => {
+    this.props.onTranslate(this._properStatus());
   }
 
   handleExpandedQuoteToggle = () => {
@@ -380,6 +386,15 @@ class Status extends ImmutablePureComponent {
     this.handleToggleMediaVisibility();
   }
 
+  handleUnfilterClick = e => {
+    this.setState({ forceFilter: false });
+    e.preventDefault();
+  }
+
+  handleFilterClick = () => {
+    this.setState({ forceFilter: true });
+  }
+
   _properStatus () {
     const { status } = this.props;
 
@@ -397,7 +412,7 @@ class Status extends ImmutablePureComponent {
   render () {
     let prepend, rebloggedByText;
 
-    const { intl, hidden, featured, otherAccounts, unread, showThread, scrollKey, pictureInPicture, quoteMuted, contextType } = this.props;
+    const { intl, hidden, featured, unread, showThread, scrollKey, pictureInPicture, quoteMuted, contextType } = this.props;
 
     let { status, account, ...other } = this.props;
 
@@ -430,7 +445,8 @@ class Status extends ImmutablePureComponent {
       );
     }
 
-    if (status.get('filtered') || status.getIn(['reblog', 'filtered'])) {
+    const matchedFilters = status.get('matched_filters');
+    if (this.state.forceFilter === undefined ? matchedFilters : this.state.forceFilter) {
       const minHandlers = this.props.muted ? {} : {
         moveUp: this.handleHotkeyMoveUp,
         moveDown: this.handleHotkeyMoveDown,
@@ -439,7 +455,11 @@ class Status extends ImmutablePureComponent {
       return (
         <HotKeys handlers={minHandlers}>
           <div className='status__wrapper status__wrapper--filtered focusable' tabIndex='0' ref={this.handleRef}>
-            <FormattedMessage id='status.filtered' defaultMessage='Filtered' />
+            <FormattedMessage id='status.filtered' defaultMessage='Filtered' />: {matchedFilters.join(', ')}.
+            {' '}
+            <button className='status__wrapper--filtered__button' onClick={this.handleUnfilterClick}>
+              <FormattedMessage id='status.show_filter_reason' defaultMessage='Show anyway' />
+            </button>
           </div>
         </HotKeys>
       );
@@ -466,6 +486,15 @@ class Status extends ImmutablePureComponent {
 
       account = status.get('account');
       status  = status.get('reblog');
+    } else if (showThread && status.get('in_reply_to_id') && status.get('in_reply_to_account_id') === status.getIn(['account', 'id'])) {
+      const display_name_html = { __html: status.getIn(['account', 'display_name_html']) };
+
+      prepend = (
+        <div className='status__prepend'>
+          <div className='status__prepend-icon-wrapper'><Icon id='reply' className='status__prepend-icon' fixedWidth /></div>
+          <FormattedMessage id='status.replied_to' defaultMessage='Replied to {name}' values={{ name: <a onClick={this.handlePrependAccountClick} data-id={status.getIn(['account', 'id'])} href={status.getIn(['account', 'url'])} className='status__display-name muted'><bdi><strong dangerouslySetInnerHTML={display_name_html} /></bdi></a> }} />
+        </div>
+      );
     }
 
     const media = (status, quote = false) => {
@@ -497,6 +526,10 @@ class Status extends ImmutablePureComponent {
                   height={110}
                   cacheWidth={this.props.cacheMediaWidth}
                   deployPictureInPicture={pictureInPicture.get('available') ? this.handleDeployPictureInPicture : undefined}
+                  sensitive={status.get('sensitive')}
+                  blurhash={attachment.get('blurhash')}
+                  visible={this.state.showMedia}
+                  onToggleVisibility={this.handleToggleMediaVisibility}
                   quote={quote}
                 />
               )}
@@ -565,9 +598,7 @@ class Status extends ImmutablePureComponent {
     };
 
     const statusAvatar = (status, account, otherAccounts, quote = false) => {
-      if (otherAccounts && otherAccounts.size > 0) {
-        return <AvatarComposite accounts={otherAccounts} size={quote ? 18 : 48} />;
-      } else if (account === undefined || account === null) {
+      if (account === undefined || account === null) {
         return <Avatar account={status.get('account')} size={quote ? 18 : 48} />;
       } else {
         return <AvatarOverlay account={status.get('account')} friend={account} />;
@@ -588,7 +619,7 @@ class Status extends ImmutablePureComponent {
       'public': { icon: 'globe', text: intl.formatMessage(messages.public_short) },
       'unlisted': { icon: 'unlock', text: intl.formatMessage(messages.unlisted_short) },
       'private': { icon: 'lock', text: intl.formatMessage(messages.private_short) },
-      'direct': { icon: 'envelope', text: intl.formatMessage(messages.direct_short) },
+      'direct': { icon: 'at', text: intl.formatMessage(messages.direct_short) },
     };
 
     const visibilityIcon = visibilityIconInfo[status.get('visibility')];
@@ -599,8 +630,6 @@ class Status extends ImmutablePureComponent {
           {prepend}
 
           <div className={classNames('status', `status-${status.get('visibility')}`, { 'status-reply': !!status.get('in_reply_to_id'), muted: this.props.muted })} data-id={status.get('id')}>
-            <div className='status__expand' onClick={this.handleClick} role='presentation' />
-
             <div className='status__info'>
               <a onClick={this.handleClick} href={status.get('url')} className='status__relative-time' target='_blank' rel='noopener noreferrer'>
                 <span className='status__visibility-icon'><Icon id={visibilityIcon.icon} title={visibilityIcon.text} /></span>
@@ -610,13 +639,21 @@ class Status extends ImmutablePureComponent {
               {identity(status, account, otherAccounts, false)}
             </div>
 
-            <StatusContent status={status} onClick={this.handleClick} expanded={!status.get('hidden')} showThread={showThread} onExpandedToggle={this.handleExpandedToggle} collapsable onCollapsedToggle={this.handleCollapsedToggle} />
+            <StatusContent
+              status={status}
+              onClick={this.handleClick}
+              expanded={!status.get('hidden')}
+              onExpandedToggle={this.handleExpandedToggle}
+              onTranslate={this.handleTranslate}
+              collapsable
+              onCollapsedToggle={this.handleCollapsedToggle}
+            />
 
             {media(status)}
 
             {quote(status, this.props.muted, quoteMuted, this.handleQuoteClick, this.handleExpandedQuoteToggle, identity, media, this.context.router, contextType)}
 
-            <StatusActionBar scrollKey={scrollKey} status={status} account={account} {...other} />
+            <StatusActionBar scrollKey={scrollKey} status={status} account={account} onFilter={matchedFilters ? this.handleFilterClick : null} {...other} />
           </div>
         </div>
       </HotKeys>
