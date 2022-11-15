@@ -597,7 +597,7 @@ class Status extends ImmutablePureComponent {
       return null;
     };
 
-    const statusAvatar = (status, account, otherAccounts, quote = false) => {
+    const statusAvatar = (status, account, quote = false) => {
       if (account === undefined || account === null) {
         return <Avatar account={status.get('account')} size={quote ? 18 : 48} />;
       } else {
@@ -605,13 +605,13 @@ class Status extends ImmutablePureComponent {
       }
     };
 
-    const identity = (status, account, otherAccounts, quote = false) => (
+    const identity = (status, account, quote = false) => (
       <a onClick={this.handleAccountClick} href={`/@${status.getIn(['account', 'acct'])}`} title={status.getIn(['account', 'acct'])} className='status__display-name' target='_blank' rel='noopener noreferrer'>
         <div className='status__avatar'>
-          {statusAvatar(status, account, otherAccounts, quote)}
+          {statusAvatar(status, account, quote)}
         </div>
 
-        <DisplayName account={status.get('account')} others={otherAccounts} />
+        <DisplayName account={status.get('account')} />
       </a>
     );
 
@@ -636,7 +636,7 @@ class Status extends ImmutablePureComponent {
                 <RelativeTimestamp timestamp={status.get('created_at')} />{status.get('edited_at') && <abbr title={intl.formatMessage(messages.edited, { date: intl.formatDate(status.get('edited_at'), { hour12: false, year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' }) })}> *</abbr>}
               </a>
 
-              {identity(status, account, otherAccounts, false)}
+              {identity(status, account, false)}
             </div>
 
             <StatusContent
