@@ -455,7 +455,7 @@ class Status extends ImmutablePureComponent {
       prepend = (
         <div className='status__prepend'>
           <div className='status__prepend-icon-wrapper'><Icon id='reply' className='status__prepend-icon' fixedWidth /></div>
-          <FormattedMessage id='<FormattedMessage id='status.replied_to' defaultMessage='Replied to {name}' defaultMessage='Replied to {name}' values={{ name: <a onClick={this.handlePrependAccountClick} data-id={status.getIn(['account', 'id'])} href={`/@${status.getIn(['account', 'acct'])}`} className='status__display-name muted'><bdi><strong dangerouslySetInnerHTML={display_name_html} /></bdi></a> }} />
+          <FormattedMessage id='status.replied_to' defaultMessage='Replied to {name}' defaultMessage='Replied to {name}' values={{ name: <a onClick={this.handlePrependAccountClick} data-id={status.getIn(['account', 'id'])} href={`/@${status.getIn(['account', 'acct'])}`} className='status__display-name muted'><bdi><strong dangerouslySetInnerHTML={display_name_html} /></bdi></a> }} />
         </div>
       );
     }
