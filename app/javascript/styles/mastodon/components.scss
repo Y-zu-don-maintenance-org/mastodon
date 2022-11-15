@@ -1074,16 +1074,9 @@
 
   .status__avatar,
   .detailed-status__display-avatar {
-    height: 18px !important;
-    width: 18px !important;
     position: absolute;
     top: 5px !important;
     left: 5px !important;
-
-    & img {
-      height: 18px !important;
-      width: 18px !important;
-    }
   }
 
   .display-name {
