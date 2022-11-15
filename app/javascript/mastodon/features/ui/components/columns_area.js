@@ -2,6 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
+
+import ReactSwipeableViews from 'react-swipeable-views';
+import TabsBar, { links, getIndex, getLink } from './tabs_bar';
+import { Link } from 'react-router-dom';
+
+import { disableSwiping, place_tab_bar_at_bottom } from 'mastodon/initial_state';
+
 import BundleContainer from '../containers/bundle_container';
 import ColumnLoading from './column_loading';
 import DrawerLoading from './drawer_loading';
@@ -23,6 +30,8 @@ import ComposePanel from './compose_panel';
 import NavigationPanel from './navigation_panel';
 import { supportsPassiveEvents } from 'detect-passive-events';
 import { scrollRight } from '../../../scroll';
+
+import classNames from 'classnames';
 
 const componentMap = {
   'COMPOSE': Compose,

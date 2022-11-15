@@ -132,5 +132,7 @@ export const usePendingItems = getMeta('use_pending_items');
 export const version = getMeta('version');
 export const translationEnabled = getMeta('translation_enabled');
 export const languages = initialState?.languages;
+export const place_tab_bar_at_bottom = getMeta('place_tab_bar_at_bottom');
+export const show_tab_bar_label = getMeta('show_tab_bar_label');
 
 export default initialState;
