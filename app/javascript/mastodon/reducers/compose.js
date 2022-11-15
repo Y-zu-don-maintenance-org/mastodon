@@ -141,7 +141,7 @@ function appendMedia(state, media, file) {
     if (media.get('type') === 'image') {
       media = media.set('file', file);
     }
-    map.update('media_attachments', list => list.push(media));
+    map.update('media_attachments', list => list.push(media.set('unattached', true)));
     map.set('is_uploading', false);
     map.set('is_processing', false);
     map.set('resetFileKey', Math.floor((Math.random() * 0x10000)));
@@ -464,7 +464,7 @@ export default function compose(state = initialState, action) {
       .setIn(['media_modal', 'dirty'], false)
       .update('media_attachments', list => list.map(item => {
         if (item.get('id') === action.media.id) {
-          return fromJS(action.media);
+          return fromJS(action.media).set('unattached', true);
         }
 
         return item;
@@ -476,12 +476,13 @@ export default function compose(state = initialState, action) {
       map.set('quote_from', action.status.getIn(['quote', 'id']));
       map.set('quote_from_url', action.status.getIn(['quote', 'url']));
       map.set('privacy', action.status.get('visibility'));
-      map.set('media_attachments', action.status.get('media_attachments'));
+      map.set('media_attachments', action.status.get('media_attachments').map((media) => media.set('unattached', true)));
       map.set('focusDate', new Date());
       map.set('caretPosition', null);
       map.set('idempotencyKey', uuid());
       map.set('sensitive', action.status.get('sensitive'));
       map.set('language', action.status.get('language'));
+      map.set('id', null);
 
       if (action.status.get('spoiler_text').length > 0) {
         map.set('spoiler', true);
