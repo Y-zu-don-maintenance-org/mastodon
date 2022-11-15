@@ -99,8 +99,6 @@ gem 'json-ld'
 gem 'json-ld-preloaded', '~> 3.2'
 gem 'rdf-normalize', '~> 0.5'
 
-gem 'redcarpet', "~> 3.4.0" 
-
 group :development, :test do
   gem 'fabrication', '~> 2.30'
   gem 'fuubar', '~> 2.5'
