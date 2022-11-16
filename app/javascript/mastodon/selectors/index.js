@@ -51,7 +51,7 @@ export const makeGetStatus = () => {
       getFilters,
     ],
 
-    (statusBase, statusReblog, statusQuote, accountBase, accountReblog, filters,  accountQuote, accountReblogQuote, relationship, reblogRelationship, quoteRelationship, reblogQuoteRelationship, moved, reblogMoved, quoteMoved, reblogQuoteMoved, filtersRegex) => {
+    (statusBase, statusReblog, statusQuote, accountBase, accountReblog, accountQuote, accountReblogQuote, relationship, reblogRelationship, quoteRelationship, moved, reblogMoved, quoteMoved, reblogQuoteMoved, filters) => {
       if (!statusBase || statusBase.get('isLoading')) {
         return null;
       }
@@ -80,18 +80,13 @@ export const makeGetStatus = () => {
       } else {
         statusQuote = null;
       }
-
+      
       if (statusReblog && accountReblogQuote) {
         accountReblogQuote = accountReblog.withMutations(map => {
           map.set('relationship', reblogQuoteRelationship);
           map.set('moved', reblogQuoteMoved);
         });
         statusReblog = statusReblog.setIn(['quote', 'account'], accountReblogQuote);
-      }
-
-      const dropRegex = (accountReblog || accountBase).get('id') !== me && filtersRegex[0];
-      if (dropRegex && dropRegex.test(statusBase.get('reblog') ? statusReblog.get('search_index') : statusBase.get('search_index'))) {
-        return null;
       }
 
       let filtered = false;
