@@ -541,7 +541,6 @@ GEM
       rdf (~> 3.2)
     redcarpet (3.5.1)
     redis (4.5.1)
-    redcarpet (3.4.0)
     redis-actionpack (5.2.0)
       actionpack (>= 5, < 7)
       redis-rack (>= 2.1.0, < 3)
