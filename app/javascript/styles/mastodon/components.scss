@@ -1105,10 +1105,10 @@
 
   .status__avatar,
   .detailed-status__display-avatar {
-    height: 18px;
-    width: 18px;
+    height: 36px;
+    width: 36px;
     position: absolute;
-    top: 5px !important;
+    // top: 5px !important;
     left: 5px !important;
     cursor: pointer;
 
@@ -1123,7 +1123,7 @@
   }
 
   .display-name {
-    padding-left: 20px;
+    padding-left: 44px;
   }
 
   .detailed-status__display-name {
