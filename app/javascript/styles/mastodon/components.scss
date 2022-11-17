@@ -1077,7 +1077,7 @@
 .quote-status {
   border: solid 1px $ui-base-lighter-color;
   border-radius: 4px;
-  padding: 5px;
+  padding: 10px;
   margin-top: 8px;
   position: relative;
 
@@ -1107,7 +1107,7 @@
   .detailed-status__display-avatar {
     height: 36px;
     width: 36px;
-    position: absolute;
+    // position: absolute;
     // top: 5px !important;
     left: 5px !important;
     cursor: pointer;
@@ -1122,8 +1122,9 @@
     color: $ui-base-lighter-color;
   }
 
-  .display-name {
-    padding-left: 44px;
+  .status__display-name {
+    color: $inverted-text-color;
+    line-height:inherit;
   }
 
   .detailed-status__display-name {
