@@ -99,7 +99,7 @@ class DetailedStatus extends ImmutablePureComponent {
       e.preventDefault();
       const status = (this.props.status && this.props.status.get('reblog')) ? this.props.status.get('reblog') : this.props.status;
       const outerStyle = { boxSizing: 'border-box' };
-
+      
       if (!status) {
         return null;
       }
@@ -164,7 +164,7 @@ class DetailedStatus extends ImmutablePureComponent {
             );
           }
         }
-      }
+
       this.context.router.history.push(`/@${this.quote_status.getIn(['account', 'acct'])}`);
     }
 
