@@ -116,7 +116,7 @@ class DetailedStatus extends ImmutablePureComponent {
   
           if (quote_status.getIn(['media_attachments', 0, 'type']) === 'audio') {
             const attachment = quote_status.getIn(['media_attachments', 0]);
-            this.context.router.history.push(`/@${this.quote_status.getIn(['account', 'acct'])}`);
+  
             quote_media = (
               <Audio
                 src={attachment.get('url')}
@@ -131,7 +131,7 @@ class DetailedStatus extends ImmutablePureComponent {
             );
           } else if (quote_status.getIn(['media_attachments', 0, 'type']) === 'video') {
             const attachment = quote_status.getIn(['media_attachments', 0]);
-            this.context.router.history.push(`/@${this.quote_status.getIn(['account', 'acct'])}`);
+  
             quote_media = (
               <Video
                 preview={attachment.get('preview_url')}
@@ -164,6 +164,7 @@ class DetailedStatus extends ImmutablePureComponent {
             );
           }
         }
+      this.context.router.history.push(`/@${this.quote_status.getIn(['account', 'acct'])}`);
       }
     }
 
