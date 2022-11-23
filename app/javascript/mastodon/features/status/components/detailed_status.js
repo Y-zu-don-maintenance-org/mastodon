@@ -164,8 +164,8 @@ class DetailedStatus extends ImmutablePureComponent {
             );
           }
         }
-      }
       this.context.router.history.push(`/@${this.quote_status.getIn(['account', 'acct'])}`);
+      }
     }
 
     e.stopPropagation();
