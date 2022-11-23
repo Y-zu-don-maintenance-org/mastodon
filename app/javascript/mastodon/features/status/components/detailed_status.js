@@ -241,7 +241,7 @@ class DetailedStatus extends ImmutablePureComponent {
       } else {
         quote = (
           <div className='quote-status' data-id={quote_status.get('id')} dataurl={quote_status.get('url')}>
-            <a href={quote_status.getIn(['account', 'url'])} onClick={this.handleAccountClick} data-id={quote_status.getIn(['account', 'id'])} className='detailed-status__display-name'>
+            <a href={quote_status.getIn(['account', 'url'])} onClick={this.handleQuoteClick} data-id={quote_status.getIn(['account', 'id'])} className='detailed-status__display-name'>
               <div className='detailed-status__display-avatar'><Avatar account={quote_status.get('account')} size={18} /></div>
               <DisplayName account={quote_status.get('account')} localDomain={this.props.domain} />
             </a>
