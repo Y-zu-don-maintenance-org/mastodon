@@ -93,6 +93,16 @@ class DetailedStatus extends ImmutablePureComponent {
     e.stopPropagation();
   }
 
+  // 上のhandleAccountClickをパクりました
+  handleQuoteAccountClick = (e) => {
+    if (e.button === 0 && !(e.ctrlKey || e.metaKey) && this.context.router) {
+      e.preventDefault();
+      this.context.router.history.push(`/@${this.quote.status.getIn(['account', 'acct'])}`);
+    }
+
+    e.stopPropagation();
+  }
+
   handleOpenVideo = (options) => {
     this.props.onOpenVideo(this.props.status.getIn(['media_attachments', 0]), options);
   }
@@ -175,16 +185,6 @@ class DetailedStatus extends ImmutablePureComponent {
     let quote = null;
     if (status.get('quote', null) !== null) {
       let quote_status = status.get('quote');
-
-      // 上のhandleAccountClickをパクりました
-      handleQuoteAccountClick = (e) => {
-        if (e.button === 0 && !(e.ctrlKey || e.metaKey) && this.context.router) {
-          e.preventDefault();
-          this.context.router.history.push(`/@${this.quote_status.getIn(['account', 'acct'])}`);
-        }
-
-        e.stopPropagation();
-      }
 
       let quote_media = null;
       if (quote_status.get('media_attachments').size > 0) {
