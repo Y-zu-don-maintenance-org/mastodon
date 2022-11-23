@@ -97,7 +97,7 @@ class DetailedStatus extends ImmutablePureComponent {
   handleQuoteAccountClick = (e) => {
     if (e.button === 0 && !(e.ctrlKey || e.metaKey) && this.context.router) {
       e.preventDefault();
-      this.context.router.history.push(`/@${this.quote_status.getIn(['account', 'acct'])}`);
+      this.context.router.history.push(`/@${this.quote.status.getIn(['account', 'acct'])}`);
     }
 
     e.stopPropagation();
