@@ -17,7 +17,7 @@
         %span.p-summary> #{prerender_custom_emojis(h(status), status.emojis)}&nbsp;
         %button.status__content__spoiler-link= t('statuses.show_more')
     .e-content{ lang: status.language, style: "display: #{!current_account&.user&.setting_expand_spoilers && status.spoiler_text? ? 'none' : 'block'}" }
-      = prerender_custom_emojis(h(option.title), status.emojis)
+      = prerender_custom_emojis(h(status), status.emojis)
   
   - if !status.media_attachments.empty?
     - if status.media_attachments.first.video?
