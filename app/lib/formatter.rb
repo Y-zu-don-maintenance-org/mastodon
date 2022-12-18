@@ -1,16 +1,25 @@
 # frozen_string_literal: true
 
 require 'singleton'
+#Singleton パターンを提供するモジュールです。Mix-in により singleton パターンを提供します。
 require_relative './formatter_markdown'
+#Markdownの呼び出し
 
 class Formatter
+# Rubyなどのオブジェクト指向型の言語では、この入れ物であるクラスの中に処理を書くことが基本となってきます。 クラスを定義するということは、具体的にはクラスの定義よりRuby言語に新しい「型」を加えることです。 その型をnewすると、変数に新しい型の「値」を代入できるようになります。
+# instanceメソッドが定義され、newメソッドがprivateに設定される
   include Singleton
   include RoutingHelper
 
   include ActionView::Helpers::TextHelper
+#TextHelper モジュールは、文字列のフィルタリング、フォーマット、変換を行うためのメソッド群を提供し、ビュー内のインライン Ruby コードの量を減らすことができます。これらのヘルパーメソッドは Action View を拡張し、テンプレートファイル内で呼び出すことができます。
 
   def format(status, **options)
-    if status.reblog?
+    # defとは、メソッドを定義するための記述です。メソッドは、何度も使うような処理をまとめるための仕組みです。その定義の最初に使う記述がdefです。
+    # def メソッド名(引数1, 引数2, ...)
+    # formatメソッドを定義し、引数1にstatus,2に**optionsを定義
+    # オプション引数を利用するにはメソッドを定義する際に引数を受ける変数名に「**」を付けます。そして、この方法で指定された引数は、「**」の付いた変数名のハッシュとしてメソッドの中で利用できます
+    if status.respond_to?(:reblog?) && status.reblog?
       prepend_reblog = status.reblog.account.acct
       status         = status.proper
     else
@@ -31,7 +40,7 @@ class Formatter
       return html.html_safe # rubocop:disable Rails/OutputSafety
     end
 
-    linkable_accounts = status.active_mentions.map(&:account)
+    linkable_accounts = status.respond_to?(:active_mentions) ? status.active_mentions.map(&:account) : []
     linkable_accounts << status.account
 
     html = raw_content
@@ -55,6 +64,7 @@ class Formatter
   end
 
   def format_in_quote(status, **options)
+  # format_in_quoteを定義、引数statusと**options
     html = format(status)
     return '' if html.empty?
     doc = Nokogiri::HTML.parse(html, nil, 'utf-8')
@@ -79,6 +89,8 @@ class Formatter
   end
 
   def simplified_format(account, **options)
+    return '' if account.note.blank?
+
     html = account.local? ? linkify(account.note) : reformat(account.note)
     html = encode_custom_emojis(html, account.emojis, options[:autoplay]) if options[:custom_emojify]
     html.html_safe # rubocop:disable Rails/OutputSafety
@@ -247,39 +259,10 @@ class Formatter
     result.flatten.join
   end
 
-  UNICODE_ESCAPE_BLACKLIST_RE = /\p{Z}|\p{P}/
-
   def utf8_friendly_extractor(text, options = {})
-    old_to_new_index = [0]
-
-    escaped = text.chars.map do |c|
-      output = begin
-        if c.ord.to_s(16).length > 2 && !UNICODE_ESCAPE_BLACKLIST_RE.match?(c)
-          CGI.escape(c)
-        else
-          c
-        end
-      end
-
-      old_to_new_index << old_to_new_index.last + output.length
-
-      output
-    end.join
-
     # Note: I couldn't obtain list_slug with @user/list-name format
     # for mention so this requires additional check
-    special = Extractor.extract_urls_with_indices(escaped, options).map do |extract|
-      new_indices = [
-        old_to_new_index.find_index(extract[:indices].first),
-        old_to_new_index.find_index(extract[:indices].last),
-      ]
-
-      next extract.merge(
-        indices: new_indices,
-        url: text[new_indices.first..new_indices.last - 1]
-      )
-    end
-
+    special = Extractor.extract_urls_with_indices(text, options)
     standard = Extractor.extract_entities_with_indices(text, options)
     extra = Extractor.extract_extra_uris_with_indices(text, options)
 
