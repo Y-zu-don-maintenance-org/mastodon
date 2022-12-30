@@ -13,6 +13,10 @@ import {
   STATUS_REVEAL,
   STATUS_HIDE,
   STATUS_COLLAPSE,
+  STATUS_TRANSLATE_SUCCESS,
+  STATUS_TRANSLATE_UNDO,
+  STATUS_FETCH_REQUEST,
+  STATUS_FETCH_FAIL,
   QUOTE_REVEAL,
   QUOTE_HIDE,
 } from '../actions/statuses';
@@ -37,6 +41,10 @@ const initialState = ImmutableMap();
 
 export default function statuses(state = initialState, action) {
   switch(action.type) {
+  case STATUS_FETCH_REQUEST:
+    return state.setIn([action.id, 'isLoading'], true);
+  case STATUS_FETCH_FAIL:
+    return state.delete(action.id);
   case STATUS_IMPORT:
     return importStatus(state, action.status);
   case STATUSES_IMPORT:
@@ -87,6 +95,10 @@ export default function statuses(state = initialState, action) {
     });
   case TIMELINE_DELETE:
     return deleteStatus(state, action.id, action.references);
+  case STATUS_TRANSLATE_SUCCESS:
+    return state.setIn([action.id, 'translation'], fromJS(action.translation));
+  case STATUS_TRANSLATE_UNDO:
+    return state.deleteIn([action.id, 'translation']);
   default:
     return state;
   }
