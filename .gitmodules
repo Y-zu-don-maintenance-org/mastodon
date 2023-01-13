@@ -1,0 +1,8 @@
+[submodule "app/javascript/styles/y-zu-light"]
+	path = app/javascript/styles/y-zu-light
+	url = https://github.com/Y-zu-don-maintenance-org/Mastodon-Material
+	branch = y-zu-light
+[submodule "app/javascript/styles/y-zu-dark"]
+	path = app/javascript/styles/y-zu-dark
+	url = https://github.com/Y-zu-don-maintenance-org/Mastodon-Material
+	branch = y-zu-dark
