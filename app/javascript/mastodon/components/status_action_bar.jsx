@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 
+import EmojiPickerDropdown from '../features/compose/containers/emoji_picker_dropdown_container';
 import { defineMessages, injectIntl } from 'react-intl';
 
 import classNames from 'classnames';
@@ -263,6 +264,16 @@ class StatusActionBar extends ImmutablePureComponent {
     }
   }
 
+  handleEmojiPick = (data) => {
+    /*
+    const { text }     = this.props;
+    const position     = this.autosuggestTextarea.textarea.selectionStart;
+    const needsSpace   = data.custom && position > 0 && !allowedAroundShortCode.includes(text[position - 1]);
+
+    this.props.onPickEmoji(position, data, needsSpace);
+    */
+  };
+
   render () {
     const { status, relationship, intl, withDismiss, withCounters, scrollKey } = this.props;
     const { signedIn, permissions } = this.context.identity;
@@ -408,6 +419,7 @@ class StatusActionBar extends ImmutablePureComponent {
         <IconButton className='status__action-bar__button star-icon' animate active={status.get('favourited')} title={intl.formatMessage(messages.favourite)} icon='star' iconComponent={status.get('favourited') ? StarIcon : StarBorderIcon} onClick={this.handleFavouriteClick} counter={withCounters ? status.get('favourites_count') : undefined} />
         <IconButton className='status__action-bar__button' disabled={!publicStatus} title={StatusActionBar.quoteTitle(intl, messages, publicStatus)} icon='quote' iconComponent={QuoteIcon} onClick={this.handleQuoteClick} />
         <IconButton className='status__action-bar__button bookmark-icon' disabled={!signedIn} active={status.get('bookmarked')} title={intl.formatMessage(messages.bookmark)} icon='bookmark' iconComponent={status.get('bookmarked') ? BookmarkIcon : BookmarkBorderIcon} onClick={this.handleBookmarkClick} />
+        <EmojiPickerDropdown onPickEmoji={this.handleEmojiPick} />
 
         {filterButton}
 
