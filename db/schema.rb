@@ -965,8 +965,14 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_12_073317) do
     t.bigint "replies_count", default: 0, null: false
     t.bigint "reblogs_count", default: 0, null: false
     t.bigint "favourites_count", default: 0, null: false
+<<<<<<< HEAD
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
+=======
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "emoji_reactions"
+>>>>>>> 092f9916b0 (Add emoji_reactions property to status api object)
     t.index ["status_id"], name: "index_status_stats_on_status_id", unique: true
   end
 
