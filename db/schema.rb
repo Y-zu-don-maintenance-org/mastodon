@@ -11,6 +11,7 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[7.1].define(version: 2023_12_12_073317) do
+
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -436,6 +437,17 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_12_073317) do
     t.datetime "updated_at", precision: nil, null: false
     t.bigint "parent_id"
     t.index ["domain"], name: "index_email_domain_blocks_on_domain", unique: true
+  end
+
+  create_table "emoji_reactions", force: :cascade do |t|
+    t.bigint "account_id", null: false
+    t.bigint "status_id", null: false
+    t.string "name", default: "", null: false
+    t.bigint "custom_emoji_id"
+    t.string "uri"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.index ["status_id"], name: "index_emoji_reactions_on_status_id"
   end
 
   create_table "encrypted_messages", id: :bigint, default: -> { "timestamp_id('encrypted_messages'::text)" }, force: :cascade do |t|
@@ -1214,6 +1226,9 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_12_073317) do
   add_foreign_key "devices", "accounts", on_delete: :cascade
   add_foreign_key "devices", "oauth_access_tokens", column: "access_token_id", on_delete: :cascade
   add_foreign_key "email_domain_blocks", "email_domain_blocks", column: "parent_id", on_delete: :cascade
+  add_foreign_key "emoji_reactions", "accounts", on_delete: :cascade
+  add_foreign_key "emoji_reactions", "custom_emojis", on_delete: :cascade
+  add_foreign_key "emoji_reactions", "statuses", on_delete: :cascade
   add_foreign_key "encrypted_messages", "accounts", column: "from_account_id", on_delete: :cascade
   add_foreign_key "encrypted_messages", "devices", on_delete: :cascade
   add_foreign_key "favourites", "accounts", name: "fk_5eb6c2b873", on_delete: :cascade
