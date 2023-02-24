@@ -21,7 +21,7 @@ class EmojiReaction < ApplicationRecord
 
   belongs_to :account,       inverse_of: :emoji_reactions
   belongs_to :status,        inverse_of: :emoji_reactions
-  belongs_to :custom_emojis, optional: true
+  belongs_to :custom_emoji,  optional: true
 
   has_one :notification, as: :activity, dependent: :destroy
 

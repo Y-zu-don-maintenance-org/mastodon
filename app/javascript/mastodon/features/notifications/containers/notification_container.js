@@ -62,6 +62,10 @@ const mapDispatchToProps = dispatch => ({
     }
   },
 
+  onEmojiReact (status, emoji) {
+    
+  },
+
   onToggleHidden (status) {
     if (status.get('hidden')) {
       dispatch(revealStatus(status.get('id')));

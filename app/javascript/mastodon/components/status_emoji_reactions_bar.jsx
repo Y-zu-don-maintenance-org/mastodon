@@ -8,7 +8,7 @@ import classNames from 'classnames';
 class EmojiReactionButton extends React.PureComponent {
 
   static propTypes = {
-    name: ImmutablePropTypes.map,
+    name: PropTypes.string,
     url: PropTypes.string,
     staticUrl: PropTypes.string,
     count: PropTypes.number.isRequired,
@@ -22,7 +22,7 @@ class EmojiReactionButton extends React.PureComponent {
     let emojiHtml = null;
     if (url) {
       let customEmojis = {};
-      customEmojis[name] = { url, static_url: staticUrl };
+      customEmojis[`:${name}:`] = { url, static_url: staticUrl };
       emojiHtml = emojify(`:${name}:`, customEmojis);
     } else {
       emojiHtml = emojify(name);
@@ -46,16 +46,16 @@ class EmojiReactionButton extends React.PureComponent {
 class StatusEmojiReactionsBar extends React.PureComponent {
 
   static propTypes = {
-    emojiReactions: ImmutablePropTypes.map.isRequired,
+    emojiReactions: ImmutablePropTypes.list.isRequired,
     statusId: PropTypes.string,
   };
 
   render () {
     const { emojiReactions, statusId } = this.props;
 
-    const emojiButtons = React.Children.map(emojiReactions, (emoji) => (
+    const emojiButtons = Array.from(emojiReactions).map((emoji, index) => (
       <EmojiReactionButton
-        key={emoji.get('id')}
+        key={index}
         name={emoji.get('name')}
         count={emoji.get('count')}
         me={emoji.get('me')}

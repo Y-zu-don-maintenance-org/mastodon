@@ -15,6 +15,10 @@ export const FAVOURITE_REQUEST = 'FAVOURITE_REQUEST';
 export const FAVOURITE_SUCCESS = 'FAVOURITE_SUCCESS';
 export const FAVOURITE_FAIL    = 'FAVOURITE_FAIL';
 
+export const EMOJIREACT_REQUEST = 'EMOJIREACT_REQUEST';
+export const EMOJIREACT_SUCCESS = 'EMOJIREACT_SUCCESS';
+export const EMOJIREACT_FAIL    = 'EMOJIREACT_FAIL';
+
 export const UNREBLOG_REQUEST = 'UNREBLOG_REQUEST';
 export const UNREBLOG_SUCCESS = 'UNREBLOG_SUCCESS';
 export const UNREBLOG_FAIL    = 'UNREBLOG_FAIL';
@@ -22,6 +26,10 @@ export const UNREBLOG_FAIL    = 'UNREBLOG_FAIL';
 export const UNFAVOURITE_REQUEST = 'UNFAVOURITE_REQUEST';
 export const UNFAVOURITE_SUCCESS = 'UNFAVOURITE_SUCCESS';
 export const UNFAVOURITE_FAIL    = 'UNFAVOURITE_FAIL';
+
+export const UNEMOJIREACT_REQUEST = 'UNEMOJIREACT_REQUEST';
+export const UNEMOJIREACT_SUCCESS = 'UNEMOJIREACT_SUCCESS';
+export const UNEMOJIREACT_FAIL    = 'UNEMOJIREACT_FAIL';
 
 export const REBLOGS_FETCH_REQUEST = 'REBLOGS_FETCH_REQUEST';
 export const REBLOGS_FETCH_SUCCESS = 'REBLOGS_FETCH_SUCCESS';
@@ -200,6 +208,89 @@ export function unfavouriteFail(status, error) {
   return {
     type: UNFAVOURITE_FAIL,
     status: status,
+    error: error,
+    skipLoading: true,
+  };
+}
+
+export function emojiReact(status, emoji) {
+  return function (dispatch, getState) {
+    dispatch(emojiReactRequest(status, emoji));
+    console.dir(emoji.custom ? (emoji.name + (emoji.domain || '')) : emoji.native);
+
+    api(getState).put(`/api/v1/statuses/${status.get('id')}/emoji_reactions/${emoji.custom ? (emoji.name + (emoji.domain || '')) : emoji.native}`).then(function (response) {
+      dispatch(importFetchedStatus(response.data));
+      dispatch(emojiReactSuccess(status, emoji));
+    }).catch(function (error) {
+      dispatch(emojiReactFail(status, emoji, error));
+    });
+  };
+}
+
+export function unEmojiReact(status, emoji) {
+  return (dispatch, getState) => {
+    dispatch(unEmojiReactRequest(status, emoji));
+
+    api(getState).post(`/api/v1/statuses/${status.get('id')}/emoji_unreactions/${emoji.native}`).then(response => {
+      dispatch(importFetchedStatus(response.data));
+      dispatch(unEmojiReactSuccess(status, emoji));
+    }).catch(error => {
+      dispatch(unEmojiReactFail(status, emoji, error));
+    });
+  };
+}
+
+export function emojiReactRequest(status, emoji) {
+  return {
+    type: EMOJIREACT_REQUEST,
+    status: status,
+    emoji: emoji,
+    skipLoading: true,
+  };
+}
+
+export function emojiReactSuccess(status, emoji) {
+  return {
+    type: EMOJIREACT_SUCCESS,
+    status: status,
+    emoji: emoji,
+    skipLoading: true,
+  };
+}
+
+export function emojiReactFail(status, emoji, error) {
+  return {
+    type: EMOJIREACT_FAIL,
+    status: status,
+    emoji: emoji,
+    error: error,
+    skipLoading: true,
+  };
+}
+
+export function unEmojiReactRequest(status, emoji) {
+  return {
+    type: UNEMOJIREACT_REQUEST,
+    status: status,
+    emoji: emoji,
+    skipLoading: true,
+  };
+}
+
+export function unEmojiReactSuccess(status, emoji) {
+  return {
+    type: UNEMOJIREACT_SUCCESS,
+    status: status,
+    emoji: emoji,
+    skipLoading: true,
+  };
+}
+
+export function unEmojiReactFail(status, emoji, error) {
+  return {
+    type: UNEMOJIREACT_FAIL,
+    status: status,
+    emoji: emoji,
     error: error,
     skipLoading: true,
   };

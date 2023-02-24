@@ -29,6 +29,9 @@ namespace :api, format: false do
         resource :source, only: :show
 
         post :translate, to: 'translations#create'
+
+        resources :emoji_reactions, only: :update, constraints: { id: /[^\/]+/ }
+        post :emoji_unreaction, to: 'emoji_reactions#destroy'
       end
 
       member do

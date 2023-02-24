@@ -37,6 +37,9 @@ class CustomEmoji < ApplicationRecord
 
   belongs_to :category, class_name: 'CustomEmojiCategory', optional: true
 
+  has_one :local_counterpart, -> { where(domain: nil) }, class_name: 'CustomEmoji', primary_key: :shortcode, foreign_key: :shortcode
+  has_many :emoji_reactions, inverse_of: :custom_emoji, dependent: :destroy
+
   has_one :local_counterpart, -> { where(domain: nil) }, class_name: 'CustomEmoji', primary_key: :shortcode, foreign_key: :shortcode, inverse_of: false, dependent: nil
 
   has_attached_file :image, styles: { static: { format: 'png', convert_options: '-coalesce +profile "!icc,*" +set date:modify +set date:create +set date:timestamp' } }, validate_media_type: false
