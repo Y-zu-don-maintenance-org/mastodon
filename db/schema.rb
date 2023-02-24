@@ -445,8 +445,10 @@ ActiveRecord::Schema[7.1].define(version: 2023_12_12_073317) do
     t.string "name", default: "", null: false
     t.bigint "custom_emoji_id"
     t.string "uri"
-    t.datetime "created_at"
-    t.datetime "updated_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_emoji_reactions_on_account_id"
+    t.index ["custom_emoji_id"], name: "index_emoji_reactions_on_custom_emoji_id"
     t.index ["status_id"], name: "index_emoji_reactions_on_status_id"
   end
 

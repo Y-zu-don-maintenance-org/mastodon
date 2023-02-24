@@ -9,9 +9,9 @@
 #  replies_count    :bigint(8)        default(0), not null
 #  reblogs_count    :bigint(8)        default(0), not null
 #  favourites_count :bigint(8)        default(0), not null
-#  emoji_reactions  :string
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
+#  emoji_reactions  :string
 #
 
 class StatusStat < ApplicationRecord
