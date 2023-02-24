@@ -1417,6 +1417,38 @@ body > [data-popper-placement] {
     color: $highlight-text-color;
   }
 }
+.status__emoji-reactions-bar {
+  display: flex;
+  gap: 8px;
+  margin: 8px 0 2px 4px;
+
+  .emoji-reactions-bar__button {
+    background: lighten($ui-base-color, 16%);
+    border: 0;
+    cursor: pointer;
+    display: flex;
+    justify-items: center;
+    align-items: center;
+    height: 20px;
+
+    &.toggled {
+      background: darken($ui-primary-color, 16%);
+    }
+
+    .emoji {
+      display: block;
+      height: 16px;
+      img {
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+    }
+    .count {
+      display: block;
+      margin: 0 2px;
+    }
+  }
+}
 
 .status__action-bar {
   display: flex;

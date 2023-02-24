@@ -6,6 +6,7 @@ import classNames from 'classnames';
 import { Link, withRouter } from 'react-router-dom';
 
 import ImmutablePropTypes from 'react-immutable-proptypes';
+import StatusEmojiReactionsBar from '../../../components/status_emoji_reactions_bar';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 
 import { ReactComponent as AlternateEmailIcon } from '@material-symbols/svg-600/outlined/alternate_email.svg';
@@ -254,9 +255,14 @@ class DetailedStatus extends ImmutablePureComponent {
       } else if (status.get('spoiler_text').length === 0) {
         return <Card sensitive={status.get('sensitive')} onOpenMedia={this.props.onOpenMedia} card={status.get('card', null)} quote={quote} />;
       }
-
     }
     
+    let emojiReactionsBar = null;
+    if (status.get('emoji_reactions')) {
+      const emojiReactions = status.get('emoji_reactions');
+      emojiReactionsBar = <StatusEmojiReactionsBar emojiReactions={emojiReactions} statusId={status.get('id')} />;
+    }
+
     if (status.get('application')) {
       applicationLink = <> · <a className='detailed-status__application' href={status.getIn(['application', 'website'])} target='_blank' rel='noopener noreferrer'>{status.getIn(['application', 'name'])}</a></>;
     }
@@ -350,6 +356,8 @@ class DetailedStatus extends ImmutablePureComponent {
           {quote(status, false, quoteMuted, this.handleQuoteClick, this.handleExpandedQuoteToggle, identity, media, this.props)}
 
           {expanded && hashtagBar}
+
+          {emojiReactionsBar}
 
           <div className='detailed-status__meta'>
             <a className='detailed-status__datetime' href={`/@${status.getIn(['account', 'acct'])}/${status.get('id')}`} target='_blank' rel='noopener noreferrer'>
