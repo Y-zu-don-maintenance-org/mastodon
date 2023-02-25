@@ -5,12 +5,16 @@ class Api::V1::Statuses::EmojiReactionsController < Api::BaseController
 
   before_action -> { doorkeeper_authorize! :write, :'write:emoji_reactions' }
   before_action :require_user!
-  before_action :set_status, only: [:update]
+  before_action :set_status, only: [:create, :update]
   before_action :set_status_without_authorize, only: [:destroy]
+
+  def create
+    create_private(params[:emoji])
+  end
 
   # For compatible with Fedibird API
   def update
-    create_private
+    create_private(params[:id])
   end
 
   def destroy
@@ -35,8 +39,8 @@ class Api::V1::Statuses::EmojiReactionsController < Api::BaseController
 
   private
 
-  def create_private
-    EmojiReactService.new.call(current_account, @status, params[:id])
+  def create_private(emoji)
+    EmojiReactService.new.call(current_account, @status, emoji)
     render json: @status, serializer: REST::StatusSerializer
   end
 
