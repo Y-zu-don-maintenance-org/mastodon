@@ -216,7 +216,6 @@ export function unfavouriteFail(status, error) {
 export function emojiReact(status, emoji) {
   return function (dispatch, getState) {
     dispatch(emojiReactRequest(status, emoji));
-    console.dir(emoji.custom ? (emoji.name + (emoji.domain || '')) : emoji.native);
 
     api(getState).put(`/api/v1/statuses/${status.get('id')}/emoji_reactions/${emoji.custom ? (emoji.name + (emoji.domain || '')) : emoji.native}`).then(function (response) {
       dispatch(importFetchedStatus(response.data));
@@ -231,7 +230,7 @@ export function unEmojiReact(status, emoji) {
   return (dispatch, getState) => {
     dispatch(unEmojiReactRequest(status, emoji));
 
-    api(getState).post(`/api/v1/statuses/${status.get('id')}/emoji_unreactions/${emoji.native}`).then(response => {
+    api(getState).post(`/api/v1/statuses/${status.get('id')}/emoji_unreaction`, { emoji }).then(response => {
       dispatch(importFetchedStatus(response.data));
       dispatch(unEmojiReactSuccess(status, emoji));
     }).catch(error => {

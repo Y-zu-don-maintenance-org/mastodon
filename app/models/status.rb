@@ -388,6 +388,10 @@ class Status < ApplicationRecord
       StatusPin.select('status_id').where(status_id: status_ids).where(account_id: account_id).each_with_object({}) { |p, h| h[p.status_id] = true }
     end
 
+    def emoji_reactions_map(status_ids, account_id)
+      EmojiReaction.select('status_id').where(status_id: status_ids).where(account_id: account_id).each_with_object({}) { |e, h| h[e.status_id] = true }
+    end
+
     def reload_stale_associations!(cached_items)
       account_ids = []
 

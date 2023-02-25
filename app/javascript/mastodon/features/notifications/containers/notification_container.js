@@ -7,6 +7,7 @@ import {
   favourite,
   unreblog,
   unfavourite,
+  emojiReact,
 } from '../../../actions/interactions';
 import {
   hideStatus,
@@ -63,7 +64,7 @@ const mapDispatchToProps = dispatch => ({
   },
 
   onEmojiReact (status, emoji) {
-    
+    dispatch(emojiReact(status, emoji));
   },
 
   onToggleHidden (status) {

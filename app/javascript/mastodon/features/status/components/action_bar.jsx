@@ -83,6 +83,7 @@ class ActionBar extends PureComponent {
     onReblog: PropTypes.func.isRequired,
     onQuote: PropTypes.func,
     onFavourite: PropTypes.func.isRequired,
+    onEmojiReact: PropTypes.func.isRequired,
     onBookmark: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
     onEdit: PropTypes.func.isRequired,
@@ -206,13 +207,7 @@ class ActionBar extends PureComponent {
   };
 
   handleEmojiPick = (data) => {
-    /*
-    const { text }     = this.props;
-    const position     = this.autosuggestTextarea.textarea.selectionStart;
-    const needsSpace   = data.custom && position > 0 && !allowedAroundShortCode.includes(text[position - 1]);
-
-    this.props.onPickEmoji(position, data, needsSpace);
-    */
+    this.props.onEmojiReact(this.props.status, data);
   };
 
   render () {

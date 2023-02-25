@@ -49,7 +49,7 @@ class EmojiReactService < BaseService
 
     return unless status.account.local?
 
-    ActivityPub::RawDistributionWorker.perform_async(emoji_reaction, status.account_id)
+    ActivityPub::RawDistributionWorker.perform_async(build_json(emoji_reaction), status.account_id)
   end
 
   def broadcast_updates!(emoji_reaction)

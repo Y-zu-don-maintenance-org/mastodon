@@ -6,26 +6,30 @@ class Api::V1::Statuses::EmojiReactionsController < Api::BaseController
   before_action -> { doorkeeper_authorize! :write, :'write:emoji_reactions' }
   before_action :require_user!
   before_action :set_status, only: [:update]
+  before_action :set_status_without_authorize, only: [:destroy]
 
   # For compatible with Fedibird API
   def update
     create_private
   end
 
-  # TODO: destroy emoji reaction api
   def destroy
-    # fav = current_account.favourites.find_by(status_id: params[:status_id])
+    emoji = params[:emoji]
 
-    # if fav
-    #  @status = fav.status
-    #  UnfavouriteWorker.perform_async(current_account.id, @status.id)
-    # else
-    #  @status = Status.find(params[:status_id])
-    #  authorize @status, :show?
-    # end
+    if emoji
+      shortcode, domain = emoji.split('@')
+      emoji_reaction = EmojiReaction.where(account_id: current_account.id).where(status_id: @status.id).where(name: shortcode)
+                                    .find { |reaction| domain == '' ? reaction.custom_emoji.nil? : reaction.custom_emoji&.domain == domain }
 
-    # render json: @status, serializer: REST::StatusSerializer, relationships: StatusRelationshipsPresenter.new([@status], current_account.id, favourites_map: { @status.id => false })
-    # rescue Mastodon::NotPermittedError
+      authorize @status, :show? if emoji_reaction.nil?
+    end
+
+    UnEmojiReactWorker.perform_async(current_account.id, @status.id, emoji)
+
+    render json: @status, serializer: REST::StatusSerializer, relationships: StatusRelationshipsPresenter.new(
+      [@status], current_account.id, emoji_reactions_map: { @status.id => false }
+    )
+  rescue Mastodon::NotPermittedError
     not_found
   end
 
@@ -37,9 +41,13 @@ class Api::V1::Statuses::EmojiReactionsController < Api::BaseController
   end
 
   def set_status
-    @status = Status.find(params[:status_id])
+    set_status_without_authorize
     authorize @status, :show?
   rescue Mastodon::NotPermittedError
     not_found
+  end
+
+  def set_status_without_authorize
+    @status = Status.find(params[:status_id])
   end
 end

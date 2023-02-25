@@ -260,7 +260,7 @@ class DetailedStatus extends ImmutablePureComponent {
     let emojiReactionsBar = null;
     if (status.get('emoji_reactions')) {
       const emojiReactions = status.get('emoji_reactions');
-      emojiReactionsBar = <StatusEmojiReactionsBar emojiReactions={emojiReactions} statusId={status.get('id')} />;
+      emojiReactionsBar = <StatusEmojiReactionsBar emojiReactions={emojiReactions} status={status} onEmojiReaction={this.props.onEmojiReaction} OnUnEmojiReaction={this.props.OnUnEmojiReaction} />;
     }
 
     if (status.get('application')) {
