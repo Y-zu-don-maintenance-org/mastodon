@@ -100,7 +100,7 @@ class ActivityPub::Activity::Undo < ActivityPub::Activity
     end
   end
 
-  def undo_like
+  def undo_like_original
     status = status_from_uri(target_uri)
 
     return if status.nil? || !status.account.local?
@@ -110,6 +110,59 @@ class ActivityPub::Activity::Undo < ActivityPub::Activity
       favourite&.destroy
     else
       delete_later!(object_uri)
+    end
+  end
+
+  def undo_like
+    @original_status = status_from_uri(target_uri)
+
+    return if @original_status.nil?
+
+    if shortcode.present?
+      emoji_tag = @object['tag'].is_a?(Array) ? @object['tag']&.first : @object['tag']
+
+      if emoji_tag.present? && emoji_tag['id'].present?
+        emoji = CustomEmoji.find_by(shortcode: shortcode, domain: @account.domain)
+      end
+
+      if @account.reacted?(@original_status, shortcode, emoji)
+        @original_status.emoji_reactions.where(account: @account, name: shortcode, custom_emoji: emoji).first&.destroy
+  
+        if @original_status.account.local?
+          forward_for_undo_emoji_reaction
+          relay_for_undo_emoji_reaction
+        end
+      else
+        delete_later!(object_uri)
+      end
+    else
+      undo_like_original
+    end
+  end
+
+  def forward_for_undo_emoji_reaction
+    return unless @json['signature'].present?
+
+    ActivityPub::RawDistributionWorker.perform_async(Oj.dump(@json), @original_status.account.id, [@account.preferred_inbox_url])
+  end
+
+  def relay_for_undo_emoji_reaction
+    return unless @json['signature'].present? && @original_status.public_visibility?
+
+    ActivityPub::DeliveryWorker.push_bulk(Relay.enabled.pluck(:inbox_url)) do |inbox_url|
+      [Oj.dump(@json), @original_status.account.id, inbox_url]
+    end
+  end
+
+  def shortcode
+    return @shortcode if defined?(@shortcode)
+
+    @shortcode = begin
+      if @object['_misskey_reaction'] == '⭐'
+        nil
+      else
+        @object['content']&.delete(':')
+      end
     end
   end
 

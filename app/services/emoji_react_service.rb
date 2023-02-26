@@ -53,12 +53,6 @@ class EmojiReactService < BaseService
     ActivityPub::RawDistributionWorker.perform_async(build_json(emoji_reaction), status.account_id)
   end
 
-  def broadcast_updates!(emoji_reaction)
-    status = emoji_reaction.status
-
-    DistributionWorker.perform_async(status.id, { 'update' => true })
-  end
-
   def write_stream(emoji_reaction)
     emoji_group = emoji_reaction.status.emoji_reactions_grouped_by_name
                                 .find { |reaction_group| reaction_group['name'] == emoji_reaction.name && (!reaction_group.key?(:domain) || reaction_group['domain'] == emoji_reaction.domain) }
