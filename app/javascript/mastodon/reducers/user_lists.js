@@ -163,8 +163,6 @@ export default function userLists(state = initialState, action) {
   case notificationsUpdate.type:
     return action.payload.notification.type === 'follow_request' ? normalizeFollowRequest(state, action.payload.notification) : state;
   case EMOJI_REACTIONS_FETCH_SUCCESS:
-    console.log('===================')
-    console.dir(state);
     return state.setIn(['emoji_reactioned_by', action.id], ImmutableList(action.accounts));
   case FOLLOW_REQUESTS_FETCH_SUCCESS:
     return normalizeList(state, ['follow_requests'], action.accounts, action.next);
