@@ -1419,7 +1419,8 @@ body > [data-popper-placement] {
 }
 .status__emoji-reactions-bar {
   display: flex;
-  gap: 8px;
+  flex-wrap: wrap;
+  gap: 4px 8px;
   margin: 8px 0 2px 4px;
 
   .emoji-reactions-bar__button {

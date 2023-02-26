@@ -14,7 +14,6 @@ class EmojiReactionButton extends React.PureComponent {
     staticUrl: PropTypes.string,
     count: PropTypes.number.isRequired,
     me: PropTypes.bool,
-    status: PropTypes.map,
     onEmojiReact: PropTypes.func,
     onUnEmojiReact: PropTypes.func,
   };

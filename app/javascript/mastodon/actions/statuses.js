@@ -42,6 +42,8 @@ export const STATUS_TRANSLATE_SUCCESS = 'STATUS_TRANSLATE_SUCCESS';
 export const STATUS_TRANSLATE_FAIL    = 'STATUS_TRANSLATE_FAIL';
 export const STATUS_TRANSLATE_UNDO    = 'STATUS_TRANSLATE_UNDO';
 
+export const STATUS_EMOJI_REACTION_UPDATE = 'STATUS_EMOJI_REACTION_UPDATE';
+
 export function fetchStatusRequest(id, skipLoading) {
   return {
     type: STATUS_FETCH_REQUEST,
@@ -373,3 +375,8 @@ export function revealQuote(ids) {
     ids,
   };
 };
+
+export const updateEmojiReaction = (emoji_reaction) => ({
+  type: STATUS_EMOJI_REACTION_UPDATE,
+  emoji_reaction,
+});

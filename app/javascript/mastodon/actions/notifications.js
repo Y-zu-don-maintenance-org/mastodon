@@ -21,6 +21,7 @@ import { submitMarkers } from './markers';
 import { notificationsUpdate } from "./notifications_typed";
 import { register as registerPushNotifications } from './push_notifications';
 import { saveSettings } from './settings';
+import { STATUS_EMOJI_REACTION_UPDATE } from './statuses';
 
 export * from "./notifications_typed";
 
@@ -60,6 +61,15 @@ const fetchRelatedRelationships = (dispatch, notifications) => {
 export const loadPending = () => ({
   type: NOTIFICATIONS_LOAD_PENDING,
 });
+
+export function updateEmojiReactions(emoji_reaction, accountId) {
+  return (dispatch) =>
+    dispatch({
+      type: STATUS_EMOJI_REACTION_UPDATE,
+      emoji_reaction,
+      accountId,
+    });
+}
 
 export function updateNotifications(notification, intlMessages, intlLocale) {
   return (dispatch, getState) => {

@@ -217,8 +217,7 @@ export function emojiReact(status, emoji) {
   return function (dispatch, getState) {
     dispatch(emojiReactRequest(status, emoji));
 
-    api(getState).post(`/api/v1/statuses/${status.get('id')}/emoji_reactions`, { emoji: emoji.custom ? (emoji.name + (emoji.domain || '')) : emoji.native }).then(function (response) {
-      dispatch(importFetchedStatus(response.data));
+    api(getState).post(`/api/v1/statuses/${status.get('id')}/emoji_reactions`, { emoji: emoji.custom ? (emoji.name + (emoji.domain || '')) : emoji.native }).then(function () {
       dispatch(emojiReactSuccess(status, emoji));
     }).catch(function (error) {
       dispatch(emojiReactFail(status, emoji, error));
@@ -230,8 +229,7 @@ export function unEmojiReact(status, emoji) {
   return (dispatch, getState) => {
     dispatch(unEmojiReactRequest(status, emoji));
 
-    api(getState).post(`/api/v1/statuses/${status.get('id')}/emoji_unreaction`, { emoji }).then(response => {
-      dispatch(importFetchedStatus(response.data));
+    api(getState).post(`/api/v1/statuses/${status.get('id')}/emoji_unreaction`, { emoji }).then(() => {
       dispatch(unEmojiReactSuccess(status, emoji));
     }).catch(error => {
       dispatch(unEmojiReactFail(status, emoji, error));

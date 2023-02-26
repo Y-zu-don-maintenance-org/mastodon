@@ -3,6 +3,7 @@
 class EmojiReactService < BaseService
   include Authorization
   include Payloadable
+  include Redisable
 
   # React a status with emoji and notify remote user
   # @param [Account] account
@@ -27,6 +28,7 @@ class EmojiReactService < BaseService
     create_notification(emoji_reaction)
     notify_to_followers(emoji_reaction)
     bump_potential_friendship(account, status)
+    write_stream(emoji_reaction)
 
     emoji_reaction
   end
@@ -37,8 +39,7 @@ class EmojiReactService < BaseService
     status = emoji_reaction.status
 
     if status.account.local?
-      # TODO: Change favourite event to notify
-      LocalNotificationWorker.perform_async(status.account_id, emoji_reaction.id, 'Favourite', 'favourite')
+      LocalNotificationWorker.perform_async(status.account_id, emoji_reaction.id, 'EmojiReaction', 'emoji_reaction')
     elsif status.account.activitypub?
       ActivityPub::DeliveryWorker.perform_async(build_json(emoji_reaction), emoji_reaction.account_id, status.account.inbox_url)
     end
@@ -58,6 +59,13 @@ class EmojiReactService < BaseService
     DistributionWorker.perform_async(status.id, { 'update' => true })
   end
 
+  def write_stream(emoji_reaction)
+    emoji_group = emoji_reaction.status.emoji_reactions_grouped_by_name
+                                .find { |reaction_group| reaction_group['name'] == emoji_reaction.name && (!reaction_group.key?(:domain) || reaction_group['domain'] == emoji_reaction.domain) }
+    emoji_group['status_id'] = emoji_reaction.status_id.to_s
+    redis.publish("timeline:#{emoji_reaction.status.account_id}", render_emoji_reaction(emoji_group))
+  end
+
   def bump_potential_friendship(account, status)
     ActivityTracker.increment('activity:interactions')
     return if account.following?(status.account_id)
@@ -66,7 +74,11 @@ class EmojiReactService < BaseService
   end
 
   def build_json(emoji_reaction)
-    # TODO: change to original serializer for other servers
-    Oj.dump(serialize_payload(emoji_reaction, ActivityPub::LikeSerializer))
+    Oj.dump(serialize_payload(emoji_reaction, ActivityPub::EmojiReactionSerializer))
+  end
+
+  def render_emoji_reaction(emoji_group)
+    # @rendered_emoji_reaction ||= InlineRenderer.render(HashObject.new(emoji_group), nil, :emoji_reaction)
+    @render_emoji_reaction ||= Oj.dump(event: :emoji_reaction, payload: emoji_group.to_json)
   end
 end
