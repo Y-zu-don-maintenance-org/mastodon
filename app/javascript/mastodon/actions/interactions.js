@@ -217,7 +217,9 @@ export function emojiReact(status, emoji) {
   return function (dispatch, getState) {
     dispatch(emojiReactRequest(status, emoji));
 
-    api(getState).post(`/api/v1/statuses/${status.get('id')}/emoji_reactions`, { emoji: emoji.custom ? (emoji.name + (emoji.domain || '')) : emoji.native }).then(function () {
+    const api_emoji = typeof emoji !== 'string' ? (emoji.custom ? (emoji.name + (emoji.domain || '')) : emoji.native) : emoji;
+
+    api(getState).post(`/api/v1/statuses/${status.get('id')}/emoji_reactions`, { emoji: api_emoji }).then(function () {
       dispatch(emojiReactSuccess(status, emoji));
     }).catch(function (error) {
       dispatch(emojiReactFail(status, emoji, error));

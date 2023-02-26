@@ -12,7 +12,7 @@ class UnEmojiReactWorker
                                     .find { |reaction| domain == '' ? reaction.custom_emoji.nil? : reaction.custom_emoji&.domain == domain }
     end
 
-    UnEmojiReactService.new.call(Account.find(account_id), Status.find(status_id), emoji_reaction)
+    UnEmojiReactService.new.call(account_id.to_i, status_id.to_i, emoji_reaction)
   rescue ActiveRecord::RecordNotFound
     true
   end

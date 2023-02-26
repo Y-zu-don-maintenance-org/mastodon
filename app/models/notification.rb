@@ -25,6 +25,7 @@ class Notification < ApplicationRecord
     'Follow' => :follow,
     'FollowRequest' => :follow_request,
     'Favourite' => :favourite,
+    'EmojiReaction' => :emoji_reaction,
     'Poll' => :poll,
   }.freeze
 
@@ -35,6 +36,7 @@ class Notification < ApplicationRecord
     follow
     follow_request
     favourite
+    emoji_reaction
     poll
     update
     admin.sign_up
@@ -46,6 +48,7 @@ class Notification < ApplicationRecord
     reblog: [status: :reblog],
     mention: [mention: :status],
     favourite: [favourite: :status],
+    emoji_reaction: [emoji_reaction: :status],
     poll: [poll: :status],
     update: :status,
     'admin.report': [report: :target_account],

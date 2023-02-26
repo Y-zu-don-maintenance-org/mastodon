@@ -75,11 +75,10 @@ const updateStatusEmojiReaction = (state, emoji_reaction, myId) => {
   let emoji_reactions = Array.from(status.get('emoji_reactions') || []);
 
   if (emoji_reaction.count > 0) {
-    const old_emoji = emoji_reactions.find((er) => er.name === emoji_reaction.name && er.url === emoji_reaction.url);
+    const old_emoji = emoji_reactions.find((er) => er.get('name') === emoji_reaction.name && (!er.get('domain') || er.get('domain') === emoji_reaction.domain));
     if (old_emoji) {
-      old_emoji.account_ids = emoji_reaction.account_ids;
-      old_emoji.count       = emoji_reaction.count;
-      old_emoji.me          = emoji_reaction.me;
+      const index = emoji_reactions.indexOf(old_emoji);
+      emoji_reactions[index] = old_emoji.merge({ account_ids: emoji_reaction.account_ids, count: emoji_reaction.count, me: emoji_reaction.me });
     } else {
       emoji_reactions.push(ImmutableMap(emoji_reaction));
     }

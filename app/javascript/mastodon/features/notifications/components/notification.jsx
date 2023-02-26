@@ -30,6 +30,7 @@ import Report from './report';
 
 const messages = defineMessages({
   favourite: { id: 'notification.favourite', defaultMessage: '{name} favorited your status' },
+  emojiReaction: { id: 'notification.emoji_reaction', defaultMessage: '{name} reacted your status with emoji' },
   follow: { id: 'notification.follow', defaultMessage: '{name} followed you' },
   ownPoll: { id: 'notification.own_poll', defaultMessage: 'Your poll has ended' },
   poll: { id: 'notification.poll', defaultMessage: 'A poll you have voted in has ended' },
@@ -198,6 +199,38 @@ class Notification extends ImmutablePureComponent {
 
             <span title={notification.get('created_at')}>
               <FormattedMessage id='notification.favourite' defaultMessage='{name} favorited your status' values={{ name: link }} />
+            </span>
+          </div>
+
+          <StatusContainer
+            id={notification.get('status')}
+            account={notification.get('account')}
+            muted
+            withDismiss
+            hidden={!!this.props.hidden}
+            getScrollPosition={this.props.getScrollPosition}
+            updateScrollBottom={this.props.updateScrollBottom}
+            cachedMediaWidth={this.props.cachedMediaWidth}
+            cacheMediaWidth={this.props.cacheMediaWidth}
+          />
+        </div>
+      </HotKeys>
+    );
+  }
+
+  renderEmojiReaction (notification, link) {
+    const { intl, unread } = this.props;
+
+    return (
+      <HotKeys handlers={this.getHandlers()}>
+        <div className={classNames('notification notification-emoji_reaction focusable', { unread })} tabIndex='0' aria-label={notificationForScreenReader(intl, intl.formatMessage(messages.emojiReaction, { name: notification.getIn(['account', 'acct']) }), notification.get('created_at'))}>
+          <div className='notification__message'>
+            <div className='notification__emoji_reaction-icon-wrapper'>
+              <Icon id='star' className='star-icon' fixedWidth />
+            </div>
+
+            <span title={notification.get('created_at')}>
+              <FormattedMessage id='notification.emoji_reaction' defaultMessage='{name} reacted your status with emoji' values={{ name: link }} />
             </span>
           </div>
 
@@ -421,6 +454,8 @@ class Notification extends ImmutablePureComponent {
       return this.renderMention(notification);
     case 'favourite':
       return this.renderFavourite(notification, link);
+    case 'emoji_reaction':
+      return this.renderEmojiReaction(notification, link);
     case 'reblog':
       return this.renderReblog(notification, link);
     case 'status':
