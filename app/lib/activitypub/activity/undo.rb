@@ -127,7 +127,7 @@ class ActivityPub::Activity::Undo < ActivityPub::Activity
 
       if @account.reacted?(@original_status, shortcode, emoji)
         @original_status.emoji_reactions.where(account: @account, name: shortcode, custom_emoji: emoji).first&.destroy
-  
+
         if @original_status.account.local?
           forward_for_undo_emoji_reaction
           relay_for_undo_emoji_reaction
