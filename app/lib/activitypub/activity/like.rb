@@ -42,8 +42,11 @@ class ActivityPub::Activity::Like < ActivityPub::Activity
 
     return if @account.reacted?(@original_status, shortcode, emoji)
 
+    return if EmojiReaction.where(account: @account, status: @original_status).count >= BaseController::DEFAULT_EMOJI_REACTION_LIMIT
+
     EmojiReaction.find_by(account: @account, status: @original_status)&.destroy
     reaction = @original_status.emoji_reactions.create!(account: @account, name: shortcode, custom_emoji: emoji, uri: @json['id'])
+    write_stream(reaction)
 
     if @original_status.account.local?
       NotifyService.new.call(@original_status.account, :emoji_reaction, reaction)
@@ -90,5 +93,16 @@ class ActivityPub::Activity::Like < ActivityPub::Activity
     return @emoji_tag if defined?(@emoji_tag)
 
     @emoji_tag = @json['tag'].is_a?(Array) ? @json['tag']&.first : @json['tag']
+  end
+
+  def write_stream(emoji_reaction)
+    emoji_group = @original_status.emoji_reactions_grouped_by_name
+                                  .find { |reaction_group| reaction_group['name'] == emoji_reaction.name && (!reaction_group.key?(:domain) || reaction_group['domain'] == emoji_reaction.custom_emoji&.domain) }
+    emoji_group['status_id'] = @original_status.id.to_s
+    FeedAnyJsonWorker.perform_async(render_emoji_reaction(emoji_group), @original_status.id, emoji_reaction.account_id)
+  end
+
+  def render_emoji_reaction(emoji_group)
+    @render_emoji_reaction ||= Oj.dump(event: :emoji_reaction, payload: emoji_group.to_json)
   end
 end

@@ -82,6 +82,10 @@ export function Favourites () {
   return import(/* webpackChunkName: "features/favourites" */'../../favourites');
 }
 
+export function EmojiReactions () {
+  return import(/* webpackChunkName: "features/favourites" */'../../emoji_reactions');
+}
+
 export function FollowRequests () {
   return import(/* webpackChunkName: "features/follow_requests" */'../../follow_requests');
 }

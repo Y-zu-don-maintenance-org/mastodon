@@ -1,8 +1,9 @@
 # frozen_string_literal: true
 
 class Api::BaseController < ApplicationController
-  DEFAULT_STATUSES_LIMIT = 20
-  DEFAULT_ACCOUNTS_LIMIT = 40
+  DEFAULT_STATUSES_LIMIT       = 20
+  DEFAULT_ACCOUNTS_LIMIT       = 40
+  DEFAULT_EMOJI_REACTION_LIMIT = 10
 
   include Api::RateLimitHeaders
   include Api::AccessTokenTrackingConcern

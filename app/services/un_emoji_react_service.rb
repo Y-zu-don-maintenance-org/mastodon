@@ -40,7 +40,7 @@ class UnEmojiReactService < BaseService
 
   def write_stream(emoji_reaction)
     emoji_group = @status.emoji_reactions_grouped_by_name
-                                .find { |reaction_group| reaction_group['name'] == emoji_reaction.name && (!reaction_group.key?(:domain) || reaction_group['domain'] == emoji_reaction.domain) }
+                                .find { |reaction_group| reaction_group['name'] == emoji_reaction.name && (!reaction_group.key?(:domain) || reaction_group['domain'] == emoji_reaction.custom_emoji&.domain) }
     if emoji_group
       emoji_group['status_id'] = @status.id.to_s
     else

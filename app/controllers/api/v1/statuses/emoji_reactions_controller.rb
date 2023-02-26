@@ -40,6 +40,13 @@ class Api::V1::Statuses::EmojiReactionsController < Api::BaseController
   private
 
   def create_private(emoji)
+    count = EmojiReaction.where(account: current_account, status: @status).count
+
+    if count >= DEFAULT_EMOJI_REACTION_LIMIT
+      bad_request
+      return
+    end
+
     EmojiReactService.new.call(current_account, @status, emoji)
     render json: @status, serializer: REST::StatusSerializer
   end

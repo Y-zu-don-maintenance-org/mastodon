@@ -41,6 +41,8 @@ import {
 import {
   favourite,
   unfavourite,
+  emojiReact,
+  unEmojiReact,
   bookmark,
   unbookmark,
   reblog,
@@ -277,6 +279,16 @@ class Status extends ImmutablePureComponent {
         },
       }));
     }
+  };
+
+  handleEmojiReact = (status, emoji) => {
+    const { dispatch } = this.props;
+    dispatch(emojiReact(status, emoji));
+  };
+
+  handleUnEmojiReact = (status, emoji) => {
+    const { dispatch } = this.props;
+    dispatch(unEmojiReact(status, emoji));
   };
 
   handlePin = (status) => {
@@ -746,6 +758,8 @@ class Status extends ImmutablePureComponent {
                   onToggleMediaVisibility={this.handleToggleMediaVisibility}
                   onToggleQuoteMediaVisibility={this.handleToggleQuoteMediaVisibility}
                   pictureInPicture={pictureInPicture}
+                  onEmojiReact={this.handleEmojiReact}
+                  onUnEmojiReact={this.handleUnEmojiReact}
                 />
 
                 <ActionBar
@@ -753,6 +767,7 @@ class Status extends ImmutablePureComponent {
                   status={status}
                   onReply={this.handleReplyClick}
                   onFavourite={this.handleFavouriteClick}
+                  onEmojiReact={this.handleEmojiReact}
                   onReblog={this.handleReblogClick}
                   onQuote={this.handleQuoteClick}
                   onBookmark={this.handleBookmarkClick}

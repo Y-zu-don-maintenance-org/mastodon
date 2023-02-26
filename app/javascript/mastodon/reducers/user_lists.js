@@ -1,5 +1,4 @@
 import { Map as ImmutableMap, List as ImmutableList, fromJS } from 'immutable';
-
 import {
   DIRECTORY_FETCH_REQUEST,
   DIRECTORY_FETCH_SUCCESS,
@@ -57,6 +56,7 @@ import {
   FAVOURITES_EXPAND_REQUEST,
   FAVOURITES_EXPAND_SUCCESS,
   FAVOURITES_EXPAND_FAIL,
+  EMOJI_REACTIONS_FETCH_SUCCESS,
 } from '../actions/interactions';
 import {
   MUTES_FETCH_REQUEST,
@@ -79,6 +79,7 @@ const initialState = ImmutableMap({
   following: initialListState,
   reblogged_by: initialListState,
   favourited_by: initialListState,
+  emoji_reactioned_by: initialListState,
   follow_requests: initialListState,
   blocks: initialListState,
   mutes: initialListState,
@@ -161,6 +162,10 @@ export default function userLists(state = initialState, action) {
     return state.setIn(['favourited_by', action.id, 'isLoading'], false);
   case notificationsUpdate.type:
     return action.payload.notification.type === 'follow_request' ? normalizeFollowRequest(state, action.payload.notification) : state;
+  case EMOJI_REACTIONS_FETCH_SUCCESS:
+    console.log('===================')
+    console.dir(state);
+    return state.setIn(['emoji_reactioned_by', action.id], ImmutableList(action.accounts));
   case FOLLOW_REQUESTS_FETCH_SUCCESS:
     return normalizeList(state, ['follow_requests'], action.accounts, action.next);
   case FOLLOW_REQUESTS_EXPAND_SUCCESS:

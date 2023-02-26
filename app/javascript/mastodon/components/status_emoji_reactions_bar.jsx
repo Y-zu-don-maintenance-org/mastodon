@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { injectIntl } from 'react-intl';
 import emojify from '../features/emoji/emoji';
 import classNames from 'classnames';
+import EmojiView from './emoji_view';
 
 class EmojiReactionButton extends React.PureComponent {
 
@@ -32,15 +33,6 @@ class EmojiReactionButton extends React.PureComponent {
   render () {
     const { name, url, staticUrl, count, me } = this.props;
 
-    let emojiHtml = null;
-    if (url) {
-      let customEmojis = {};
-      customEmojis[`:${name}:`] = { url, static_url: staticUrl };
-      emojiHtml = emojify(`:${name}:`, customEmojis);
-    } else {
-      emojiHtml = emojify(name);
-    }
-
     const classList = {
       'emoji-reactions-bar__button': true,
       'toggled': me,
@@ -48,7 +40,9 @@ class EmojiReactionButton extends React.PureComponent {
 
     return (
       <button className={classNames(classList)} type='button' onClick={this.onClick}>
-        <span className='emoji' dangerouslySetInnerHTML={{ __html: emojiHtml }} />
+        <span className='emoji'>
+          <EmojiView name={name} url={url} staticUrl={staticUrl} />
+        </span>
         <span className='count'>{count}</span>
       </button>
     );
