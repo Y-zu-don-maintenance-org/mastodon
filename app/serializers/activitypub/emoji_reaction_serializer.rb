@@ -11,7 +11,7 @@ class ActivityPub::EmojiReactionSerializer < ActivityPub::Serializer
   end
 
   def type
-    'Like'
+    'EmojiReact'
   end
 
   def actor

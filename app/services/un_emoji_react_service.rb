@@ -44,7 +44,7 @@ class UnEmojiReactService < BaseService
       emoji_group = { 'name' => emoji_reaction.name, 'count' => 0, 'account_ids' => [], 'status_id' => emoji_reaction.status_id.to_s }
       emoji_group['domain'] = emoji_reaction.custom_emoji.domain if emoji_reaction.custom_emoji
     end
-    redis.publish("timeline:#{emoji_reaction.status.account_id}", render_emoji_reaction(emoji_reaction, emoji_group))
+    FeedAnyJsonWorker.perform_async(render_emoji_reaction(emoji_group), emoji_reaction.status_id, emoji_reaction.account_id)
   end
 
   def build_json(emoji_reaction)
