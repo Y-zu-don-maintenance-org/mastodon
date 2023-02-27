@@ -6,7 +6,7 @@ class REST::NotificationSerializer < ActiveModel::Serializer
   belongs_to :from_account, key: :account, serializer: REST::AccountSerializer
   belongs_to :target_status, key: :status, if: :status_type?, serializer: REST::StatusSerializer
   belongs_to :report, if: :report_type?, serializer: REST::ReportSerializer
-  belongs_to :emoji_reaction, if: :emoji_reaction_type?, serializer: REST::EmojiReactionSerializer
+  belongs_to :emoji_reaction, if: :emoji_reaction_type?, serializer: REST::NotifyEmojiReactionSerializer
 
   def id
     object.id.to_s
