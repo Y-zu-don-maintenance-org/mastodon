@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { injectIntl, FormattedMessage, defineMessages } from 'react-intl';
 
 import classNames from 'classnames';
+
 import { Link, withRouter } from 'react-router-dom';
 
 import ImmutablePropTypes from 'react-immutable-proptypes';
@@ -27,6 +28,7 @@ import { WithRouterPropTypes } from 'mastodon/utils/react_router';
 import FollowRequestContainer from '../containers/follow_request_container';
 
 import Report from './report';
+import EmojiView from '../../../components/emoji_view';
 
 const messages = defineMessages({
   favourite: { id: 'notification.favourite', defaultMessage: '{name} favorited your status' },
@@ -219,14 +221,16 @@ class Notification extends ImmutablePureComponent {
   }
 
   renderEmojiReaction (notification, link) {
+    console.dir(notification)
     const { intl, unread } = this.props;
+    const emoji_reaction = notification.get('emoji_reaction');
 
     return (
       <HotKeys handlers={this.getHandlers()}>
         <div className={classNames('notification notification-emoji_reaction focusable', { unread })} tabIndex='0' aria-label={notificationForScreenReader(intl, intl.formatMessage(messages.emojiReaction, { name: notification.getIn(['account', 'acct']) }), notification.get('created_at'))}>
           <div className='notification__message'>
             <div className='notification__emoji_reaction-icon-wrapper'>
-              <Icon id='star' className='star-icon' fixedWidth />
+              <EmojiView name={emoji_reaction.get('name')} url={emoji_reaction.get('url')} staticUrl={emoji_reaction.get('static_url')} className='star-icon' fixedWidth />
             </div>
 
             <span title={notification.get('created_at')}>
