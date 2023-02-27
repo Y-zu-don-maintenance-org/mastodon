@@ -11,7 +11,7 @@ class REST::InstanceSerializer < ActiveModel::Serializer
 
   attributes :domain, :title, :version, :source_url, :description,
              :usage, :thumbnail, :languages, :configuration,
-             :registrations, :feature_quote
+             :registrations, :feature_quote, :fedibird_capabilities
 
   has_one :contact, serializer: ContactSerializer
   has_many :rules, serializer: REST::RuleSerializer
@@ -93,8 +93,20 @@ class REST::InstanceSerializer < ActiveModel::Serializer
     }
   end
 
+<<<<<<< HEAD
   def feature_quote
     true
+=======
+  # for third party apps
+  def fedibird_capabilities
+    capabilities = [
+      :emoji_reaction,
+    ]
+
+    capabilities << :profile_search unless Chewy.enabled?
+
+    capabilities
+>>>>>>> 5c5b42d42c (Fix third party app emoji reaction feature)
   end
 
   private

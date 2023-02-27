@@ -6,7 +6,7 @@ class REST::V1::InstanceSerializer < ActiveModel::Serializer
   attributes :uri, :title, :short_description, :description, :email,
              :version, :urls, :stats, :thumbnail,
              :languages, :registrations, :approval_required, :invites_enabled,
-             :configuration
+             :configuration, :fedibird_capabilities
 
   has_one :contact_account, serializer: REST::AccountSerializer
 
@@ -96,6 +96,17 @@ class REST::V1::InstanceSerializer < ActiveModel::Serializer
 
   def invites_enabled
     UserRole.everyone.can?(:invite_users)
+  end
+
+  # for third party apps
+  def fedibird_capabilities
+    capabilities = [
+      :emoji_reaction,
+    ]
+
+    capabilities << :profile_search unless Chewy.enabled?
+
+    capabilities
   end
 
   private
