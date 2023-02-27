@@ -204,6 +204,7 @@ class Status extends ImmutablePureComponent {
     }),
     contextType: PropTypes.string,
     ...WithOptionalRouterPropTypes,
+    withoutEmojiReactions: PropTypes.bool,
   };
 
   // Avoid checking props that are functions (and whose equality will always
@@ -675,7 +676,7 @@ class Status extends ImmutablePureComponent {
     const expanded = !status.get('hidden') || status.get('spoiler_text').length === 0;
 
     let emojiReactionsBar = null;
-    if (status.get('emoji_reactions')) {
+    if (!this.props.withoutEmojiReactions && status.get('emoji_reactions')) {
       const emojiReactions = status.get('emoji_reactions');
       emojiReactionsBar = <StatusEmojiReactionsBar emojiReactions={emojiReactions} status={status} onEmojiReact={this.props.onEmojiReact} onUnEmojiReact={this.props.onUnEmojiReact} />;
     }

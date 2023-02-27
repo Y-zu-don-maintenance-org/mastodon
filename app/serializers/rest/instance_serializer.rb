@@ -93,10 +93,9 @@ class REST::InstanceSerializer < ActiveModel::Serializer
     }
   end
 
-<<<<<<< HEAD
   def feature_quote
     true
-=======
+  end
   # for third party apps
   def fedibird_capabilities
     capabilities = [
@@ -106,7 +105,6 @@ class REST::InstanceSerializer < ActiveModel::Serializer
     capabilities << :profile_search unless Chewy.enabled?
 
     capabilities
->>>>>>> 5c5b42d42c (Fix third party app emoji reaction feature)
   end
 
   private
