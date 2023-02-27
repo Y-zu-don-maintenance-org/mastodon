@@ -9,10 +9,11 @@ class UnEmojiReactService < BaseService
     @account    = Account.find(account_id)
     @status     = Status.find(status_id)
 
+    p '==================================== DEBUG'
+    p emoji_reaction
+
     if emoji_reaction
-      p '================================ DEBUG2 G'
-      emoji_reaction.destroy
-      p '================================ DEBUG2 H'
+      emoji_reaction.destroy!
       create_notification(emoji_reaction) if !@account.local? && @account.activitypub?
       notify_to_followers(emoji_reaction) if @account.local?
       write_stream(emoji_reaction)
@@ -25,8 +26,8 @@ class UnEmojiReactService < BaseService
   private
 
   def bulk(account, status)
-    EmojiReaction.where(account: account).where(status: status).tap do |emoji_reaction|
-      call(account, status, emoji_reaction)
+    EmojiReaction.where(account: account).where(status: status).each do |emoji_reaction|
+      call(account.id, status.id, emoji_reaction)
     end
   end
 
