@@ -8,7 +8,7 @@ class REST::StatusReactionSerializer < ActiveModel::Serializer
   attribute :me, if: :current_user?
   attribute :url, if: :custom_emoji?
   attribute :static_url, if: :custom_emoji?
-  attribute :remote
+  attribute :domain, if: :custom_emoji?
 
   def count
     object.respond_to?(:count) ? object.count : 0
@@ -30,7 +30,7 @@ class REST::StatusReactionSerializer < ActiveModel::Serializer
     full_asset_url(object.custom_emoji.image.url(:static))
   end
 
-  def remote
-    object.custom_emoji.present? && object.custom_emoji.domain.present?
+  def domain
+    object.custom_emoji.domain
   end
 end
