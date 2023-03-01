@@ -541,7 +541,7 @@ class Status extends ImmutablePureComponent {
 
             {media}
 
-            { signedIn && <StatusReactionBar status={status} /> }
+            <StatusReactionBar status={status} signedIn={signedIn}/>
             <StatusActionBar scrollKey={scrollKey} status={status} account={account} onFilter={matchedFilters ? this.handleFilterClick : null} {...other} />
           </div>
         </div>

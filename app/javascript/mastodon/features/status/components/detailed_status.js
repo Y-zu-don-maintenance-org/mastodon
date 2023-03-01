@@ -299,9 +299,9 @@ class DetailedStatus extends ImmutablePureComponent {
 
           {media}
 
-          { signedIn && <div className='detailed-status-reaction-bar'>
-            <StatusReactionBar status={status} />
-          </div> }
+          <div className='detailed-status-reaction-bar'>
+            <StatusReactionBar status={status} signedIn={signedIn}/>
+          </div>
 
           <div className='detailed-status__meta'>
             <a className='detailed-status__datetime' href={`/@${status.getIn(['account', 'acct'])}\/${status.get('id')}`} target='_blank' rel='noopener noreferrer'>

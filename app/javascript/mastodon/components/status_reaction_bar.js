@@ -40,38 +40,22 @@ class Emoji extends React.PureComponent {
           decoding='async'
         />
       );
-    } else if (domain) {
+    } else {
       const filename  = (autoPlayGif || hovered) ? url : static_url;
       const shortCode = `:${emoji}:`;
+      const title = domain ? `:${emoji}@${domain}:` : `:${emoji}:`
 
       return (
         <img
           draggable='false'
           className='emojione custom-emoji'
           alt={shortCode}
-          title={shortCode}
+          title={title}
           src={filename}
           loading='lazy'
           decoding='async'
         />
       );
-    } else if (emojiMap.get(emoji)) {
-      const filename  = (autoPlayGif || hovered) ? emojiMap.getIn([emoji, 'url']) : emojiMap.getIn([emoji, 'static_url']);
-      const shortCode = `:${emoji}:`;
-
-      return (
-        <img
-          draggable='false'
-          className='emojione custom-emoji'
-          alt={shortCode}
-          title={shortCode}
-          src={filename}
-          loading='lazy'
-          decoding='async'
-        />
-      );
-    } else {
-      return null;
     }
   }
 
@@ -81,6 +65,7 @@ class Reaction extends ImmutablePureComponent {
 
   static propTypes = {
     status: ImmutablePropTypes.map.isRequired,
+    signedIn: PropTypes.bool.isRequired,
     reaction: ImmutablePropTypes.map.isRequired,
     addReaction: PropTypes.func.isRequired,
     removeReaction: PropTypes.func.isRequired,
@@ -107,7 +92,7 @@ class Reaction extends ImmutablePureComponent {
   handleMouseLeave = () => this.setState({ hovered: false });
 
   render () {
-    const { reaction } = this.props;
+    const { reaction, signedIn } = this.props;
 
     let shortCode = reaction.get('name');
 
@@ -116,8 +101,8 @@ class Reaction extends ImmutablePureComponent {
     }
 
     return (
-      <button className={classNames('status-reaction-bar__item', { active: reaction.get('me') })} disabled={reaction.get('domain')} onClick={this.handleClick} onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave} title={`:${shortCode}:`} style={this.props.style}>
-        <span className='status-reaction-bar__item__emoji'><Emoji hovered={this.state.hovered} emoji={reaction.get('name')} emojiMap={this.props.emojiMap} domain={reaction.get('domain')} url={reaction.get('url')} static_url={reaction.get('static_url')} /></span>
+      <button className={classNames('status-reaction-bar__item', { active: reaction.get('me') })} disabled={reaction.get('domain') || !signedIn} onClick={this.handleClick} onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave} title={`:${shortCode}:`} style={this.props.style}>
+        <span className='status-reaction-bar__item__emoji'><Emoji hovered={this.state.hovered} emoji={reaction.get('name')} emojiMap={this.props.emojiMap} domain={reaction.get('domain')} url={reaction.get('url')} static_url={reaction.get('static_url')} signedIn={signedIn}/></span>
         <span className='status-reaction-bar__item__count'><AnimatedNumber value={reaction.get('count')} /></span>
       </button>
     );
@@ -130,6 +115,7 @@ class StatusReactionBar extends ImmutablePureComponent {
 
   static propTypes = {
     status: ImmutablePropTypes.map.isRequired,
+    signedIn: PropTypes.bool.isRequired,
     addReaction: PropTypes.func.isRequired,
     removeReaction: PropTypes.func.isRequired,
     emojiMap: ImmutablePropTypes.map.isRequired,
@@ -145,6 +131,7 @@ class StatusReactionBar extends ImmutablePureComponent {
 
   render () {
     const status = this.props.status;
+    const signedIn = this.props.signedIn;
 
     const reactions = status.get('reactions');
     const visibleReactions = reactions.filter(x => x.get('count') > 0);
@@ -165,6 +152,7 @@ class StatusReactionBar extends ImmutablePureComponent {
                 reaction={data}
                 style={{ transform: `scale(${style.scale})`, position: style.scale < 0.5 ? 'absolute' : 'static' }}
                 status={status}
+                signedIn={signedIn}
                 addReaction={this.props.addReaction}
                 removeReaction={this.props.removeReaction}
                 emojiMap={this.props.emojiMap}
