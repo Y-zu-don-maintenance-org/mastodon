@@ -32,7 +32,7 @@ namespace :api, format: false do
 
         post :translate, to: 'translations#create'
 
-        resources :emoji_reactions, only: [:create, :update], constraints: { id: /[^\/]+/ }
+        resources :emoji_reactions, only: [:create, :update, :destroy], constraints: { id: /[^\/]+/ }
         post :emoji_unreaction, to: 'emoji_reactions#destroy'
       end
 
