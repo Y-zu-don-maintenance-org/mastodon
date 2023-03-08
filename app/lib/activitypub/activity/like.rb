@@ -40,9 +40,7 @@ class ActivityPub::Activity::Like < ActivityPub::Activity
       end
     end
 
-    return if @account.reacted?(@original_status, shortcode, emoji)
-
-    return if EmojiReaction.where(account: @account, status: @original_status).count >= BaseController::DEFAULT_EMOJI_REACTION_LIMIT
+    return if EmojiReaction.where(account: @account, status: @original_status).count >= EmojiReaction::EMOJI_REACTION_PER_ACCOUNT_LIMIT
 
     EmojiReaction.find_by(account: @account, status: @original_status)&.destroy
     reaction = @original_status.emoji_reactions.create!(account: @account, name: shortcode, custom_emoji: emoji, uri: @json['id'])
