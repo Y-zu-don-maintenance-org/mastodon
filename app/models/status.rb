@@ -331,8 +331,8 @@ class Status < ApplicationRecord
       if account.present?
         emoji_reactions.each do |emoji_reaction|
           emoji_reaction['me'] = emoji_reaction['account_ids'].include?(account.id.to_s)
-          emoji_reaction['count'] = emoji_reaction['account_ids'].size
           emoji_reaction['account_ids'] -= account.excluded_from_timeline_account_ids.map(&:to_s)
+          emoji_reaction['count'] = emoji_reaction['account_ids'].size
         end
       end
     end
