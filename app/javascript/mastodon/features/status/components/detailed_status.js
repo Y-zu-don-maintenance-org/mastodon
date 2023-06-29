@@ -65,6 +65,7 @@ class DetailedStatus extends ImmutablePureComponent {
     onOpenMediaQuote: PropTypes.func.isRequired,
     onOpenVideoQuote: PropTypes.func.isRequired,
     onToggleHidden: PropTypes.func.isRequired,
+    onTranslate: PropTypes.func.isRequired,
     measureHeight: PropTypes.bool,
     onHeightChange: PropTypes.func,
     domain: PropTypes.string.isRequired,
@@ -91,11 +92,11 @@ class DetailedStatus extends ImmutablePureComponent {
     }
 
     e.stopPropagation();
-  }
+  };
 
   handleOpenVideo = (options) => {
     this.props.onOpenVideo(this.props.status.getIn(['media_attachments', 0]), options);
-  }
+  };
 
   handleOpenVideoQuote = (options) => {
     this.props.onOpenVideoQuote(this.props.status.getIn(['quote', 'media_attachments', 0]), options);
@@ -103,7 +104,7 @@ class DetailedStatus extends ImmutablePureComponent {
 
   handleExpandedToggle = () => {
     this.props.onToggleHidden(this.props.status);
-  }
+  };
 
   _measureHeight (heightJustChanged) {
     if (this.props.measureHeight && this.node) {
@@ -118,7 +119,7 @@ class DetailedStatus extends ImmutablePureComponent {
   setRef = c => {
     this.node = c;
     this._measureHeight();
-  }
+  };
 
   componentDidUpdate (prevProps, prevState) {
     this._measureHeight(prevState.height !== this.state.height);
@@ -136,7 +137,12 @@ class DetailedStatus extends ImmutablePureComponent {
     }
 
     window.open(href, 'mastodon-intent', 'width=445,height=600,resizable=no,menubar=no,status=no,scrollbars=yes');
-  }
+  };
+
+  handleTranslate = () => {
+    const { onTranslate, status } = this.props;
+    onTranslate(status);
+  };
 
   handleExpandedQuoteToggle = () => {
     this.props.onQuoteToggleHidden(this.props.status);
@@ -276,7 +282,11 @@ class DetailedStatus extends ImmutablePureComponent {
             backgroundColor={attachment.getIn(['meta', 'colors', 'background'])}
             foregroundColor={attachment.getIn(['meta', 'colors', 'foreground'])}
             accentColor={attachment.getIn(['meta', 'colors', 'accent'])}
+            sensitive={status.get('sensitive')}
+            visible={this.props.showMedia}
+            blurhash={attachment.get('blurhash')}
             height={150}
+            onToggleVisibility={this.props.onToggleMediaVisibility}
           />
         );
       } else if (status.getIn(['media_attachments', 0, 'type']) === 'video') {
@@ -389,18 +399,23 @@ class DetailedStatus extends ImmutablePureComponent {
     return (
       <div style={outerStyle}>
         <div ref={this.setRef} className={classNames('detailed-status', `detailed-status-${status.get('visibility')}`, { compact })}>
-          <a href={status.getIn(['account', 'url'])} onClick={this.handleAccountClick} className='detailed-status__display-name'>
-            <div className='detailed-status__display-avatar'><Avatar account={status.get('account')} size={48} /></div>
+          <a href={`/@${status.getIn(['account', 'acct'])}`} onClick={this.handleAccountClick} className='detailed-status__display-name'>
+            <div className='detailed-status__display-avatar'><Avatar account={status.get('account')} size={46} /></div>
             <DisplayName account={status.get('account')} localDomain={this.props.domain} />
           </a>
 
-          <StatusContent status={status} expanded={!status.get('hidden')} onExpandedToggle={this.handleExpandedToggle} />
+          <StatusContent
+            status={status}
+            expanded={!status.get('hidden')}
+            onExpandedToggle={this.handleExpandedToggle}
+            onTranslate={this.handleTranslate}
+          />
 
           {quote}
           {media}
 
           <div className='detailed-status__meta'>
-            <a className='detailed-status__datetime' href={status.get('url')} target='_blank' rel='noopener noreferrer'>
+            <a className='detailed-status__datetime' href={`/@${status.getIn(['account', 'acct'])}\/${status.get('id')}`} target='_blank' rel='noopener noreferrer'>
               <FormattedDate value={new Date(status.get('created_at'))} hour12={false} year='numeric' month='short' day='2-digit' hour='2-digit' minute='2-digit' />
             </a>{edited}{visibilityLink}{applicationLink}{reblogLink} · {favouriteLink}
           </div>

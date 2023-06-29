@@ -28,6 +28,8 @@ import {
   hideQuote,
   revealQuote,
   editStatus,
+  translateStatus,
+  undoStatusTranslation,
 } from '../actions/statuses';
 import {
   unmuteAccount,
@@ -37,6 +39,9 @@ import {
   blockDomain,
   unblockDomain,
 } from '../actions/domain_blocks';
+import {
+  initAddFilter,
+} from '../actions/filters';
 import { initMuteModal } from '../actions/mutes';
 import { initBlockModal } from '../actions/blocks';
 import { initBoostModal } from '../actions/boosts';
@@ -54,6 +59,8 @@ const messages = defineMessages({
   redraftMessage: { id: 'confirmations.redraft.message', defaultMessage: 'Are you sure you want to delete this status and re-draft it? Favourites and boosts will be lost, and replies to the original post will be orphaned.' },
   replyConfirm: { id: 'confirmations.reply.confirm', defaultMessage: 'Reply' },
   replyMessage: { id: 'confirmations.reply.message', defaultMessage: 'Replying now will overwrite the message you are currently composing. Are you sure you want to proceed?' },
+  editConfirm: { id: 'confirmations.edit.confirm', defaultMessage: 'Edit' },
+  editMessage: { id: 'confirmations.edit.message', defaultMessage: 'Editing now will overwrite the message you are currently composing. Are you sure you want to proceed?' },
   quoteConfirm: { id: 'confirmations.quote.confirm', defaultMessage: 'Quote' },
   quoteMessage: { id: 'confirmations.quote.message', defaultMessage: 'Quoting now will overwrite the message you are currently composing. Are you sure you want to proceed?' },
   blockDomainConfirm: { id: 'confirmations.domain_block.confirm', defaultMessage: 'Hide entire domain' },
@@ -71,7 +78,7 @@ const makeMapStateToProps = () => {
   return mapStateToProps;
 };
 
-const mapDispatchToProps = (dispatch, { intl }) => ({
+const mapDispatchToProps = (dispatch, { intl, contextType }) => ({
 
   onReply (status, router) {
     dispatch((_, getState) => {
@@ -165,7 +172,26 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
   },
 
   onEdit (status, history) {
-    dispatch(editStatus(status.get('id'), history));
+    dispatch((_, getState) => {
+      let state = getState();
+      if (state.getIn(['compose', 'text']).trim().length !== 0) {
+        dispatch(openModal('CONFIRM', {
+          message: intl.formatMessage(messages.editMessage),
+          confirm: intl.formatMessage(messages.editConfirm),
+          onConfirm: () => dispatch(editStatus(status.get('id'), history)),
+        }));
+      } else {
+        dispatch(editStatus(status.get('id'), history));
+      }
+    });
+  },
+
+  onTranslate (status) {
+    if (status.get('translation')) {
+      dispatch(undoStatusTranslation(status.get('id')));
+    } else {
+      dispatch(translateStatus(status.get('id')));
+    }
   },
 
   onDirect (account, router) {
@@ -195,6 +221,10 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
 
   onReport (status) {
     dispatch(initReport(status.get('account'), status));
+  },
+
+  onAddFilter (status) {
+    dispatch(initAddFilter(status, { contextType }));
   },
 
   onMute (account) {
@@ -239,6 +269,14 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
 
   deployPictureInPicture (status, type, mediaProps) {
     dispatch(deployPictureInPicture(status.get('id'), status.getIn(['account', 'id']), type, mediaProps));
+  },
+
+  onInteractionModal (type, status) {
+    dispatch(openModal('INTERACTION', {
+      type,
+      accountId: status.getIn(['account', 'id']),
+      url: status.get('url'),
+    }));
   },
 
   onQuoteToggleHidden (status) {
