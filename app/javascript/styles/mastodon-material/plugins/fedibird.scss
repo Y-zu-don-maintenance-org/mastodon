@@ -1,0 +1,27 @@
+.drawer__tab.short-label {
+    padding: 8px;
+
+    .drawer__tab__short-label {
+        overflow-x: visible;
+        display: none;
+    }
+
+    i { margin: 0 }
+}
+
+.tabs-bar__link span { margin-left: 0 }
+
+.tabs-bar.bottom-bar {
+    @include shadow-4dp;
+    
+    .tabs-bar {
+        &__link,
+        &__link.active { border-bottom: 4px solid transparent }
+    }
+
+    &__link span { margin-left: 0 }
+}
+
+@media screen and (max-width: 1190px) {
+    .tabs-bar__wrapper .tabs-bar.bottom-bar { width: 100% }
+}

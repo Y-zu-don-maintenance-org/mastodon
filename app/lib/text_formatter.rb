@@ -21,6 +21,8 @@ class TextFormatter
   # @option options [Boolean] :with_domains
   # @option options [Boolean] :with_rel_me
   # @option options [Array<Account>] :preloaded_accounts
+  # @option options [Status] :quote
+
   def initialize(text, options = {})
     @text    = text
     @options = DEFAULT_OPTIONS.merge(options)
@@ -31,7 +33,7 @@ class TextFormatter
   end
 
   def to_s
-    return ''.html_safe if text.blank?
+    return ''.html_safe if text.blank? & !quote?
 
     html = rewrite do |entity|
       if entity[:url]
@@ -42,6 +44,8 @@ class TextFormatter
         link_to_mention(entity)
       end
     end
+
+    html += quotify if quote?
 
     html = simple_format(html, {}, sanitize: false).delete("\n") if multiline?
 
@@ -126,6 +130,14 @@ class TextFormatter
     HTML
   end
 
+  def quotify
+    link = link_to_url({ url: ActivityPub::TagManager.instance.url_for(quote) })
+
+    <<~HTML.squish
+      <span class="quote-inline"><br/>QT: #{link}</span>
+    HTML
+  end
+
   def entity_cache
     @entity_cache ||= EntityCache.instance
   end
@@ -154,5 +166,13 @@ class TextFormatter
 
   def preloaded_accounts?
     preloaded_accounts.present?
+  end
+
+  def quote
+    options[:quote]
+  end
+
+  def quote?
+    quote.present?
   end
 end

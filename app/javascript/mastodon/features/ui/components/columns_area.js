@@ -2,6 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
+
+import ReactSwipeableViews from 'react-swipeable-views';
+import TabsBar, { links, getIndex, getLink } from './tabs_bar';
+import { Link } from 'react-router-dom';
+
+import { disableSwiping, place_tab_bar_at_bottom } from 'mastodon/initial_state';
+
 import BundleContainer from '../containers/bundle_container';
 import ColumnLoading from './column_loading';
 import DrawerLoading from './drawer_loading';
@@ -23,6 +30,8 @@ import ComposePanel from './compose_panel';
 import NavigationPanel from './navigation_panel';
 import { supportsPassiveEvents } from 'detect-passive-events';
 import { scrollRight } from '../../../scroll';
+
+import classNames from 'classnames';
 
 const componentMap = {
   'COMPOSE': Compose,
@@ -138,6 +147,15 @@ export default class ColumnsArea extends ImmutablePureComponent {
     const { renderComposePanel } = this.state;
 
     if (singleColumn) {
+      const floatingActionButton = shouldHideFAB(this.context.router.history.location.pathname) ? null : <Link key='floating-action-button' to='/publish' className={classNames('floating-action-button', { 'bottom-bar': place_tab_bar_at_bottom })} aria-label={intl.formatMessage(messages.publish)}><Icon id='pencil' /></Link>;
+      const content = columnIndex !== -1 ? (
+        <ReactSwipeableViews key='content' className={classNames('swipeable-view__wrapper', { 'bottom-bar': place_tab_bar_at_bottom })} hysteresis={0.2} threshold={15} index={columnIndex} onChangeIndex={this.handleSwipe} onTransitionEnd={this.handleAnimationEnd} animateTransitions={shouldAnimate} springConfig={{ duration: '400ms', delay: '0s', easeFunction: 'ease' }} style={{ height: '100%' }} disabled={disableSwiping}>
+          {links.map(this.renderView)}
+        </ReactSwipeableViews>
+      ) : (
+        <div key='content' className={classNames('columns-area columns-area--mobile', { 'bottom-bar': place_tab_bar_at_bottom })}>{children}</div>
+      );
+
       return (
         <div className='columns-area__panels'>
           <div className='columns-area__panels__pane columns-area__panels__pane--compositional'>

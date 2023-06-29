@@ -2,7 +2,7 @@
 
 class REST::InstanceSerializer < ActiveModel::Serializer
   class ContactSerializer < ActiveModel::Serializer
-    attributes :email
+    attributes :email, :feature_quote
 
     has_one :account, serializer: REST::AccountSerializer
   end
@@ -99,6 +99,12 @@ class REST::InstanceSerializer < ActiveModel::Serializer
       markdown.render(Setting.closed_registrations_message)
     end
   end
+
+  def feature_quote
+    true
+  end
+
+  private
 
   def markdown
     @markdown ||= Redcarpet::Markdown.new(Redcarpet::Render::HTML, no_images: true)

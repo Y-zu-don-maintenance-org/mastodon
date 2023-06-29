@@ -64,6 +64,7 @@ class StatusContent extends React.PureComponent {
     collapsable: PropTypes.bool,
     onCollapsedToggle: PropTypes.func,
     intl: PropTypes.object,
+    quote: PropTypes.bool,
   };
 
   state = {
@@ -169,6 +170,15 @@ class StatusContent extends React.PureComponent {
     }
   };
 
+  onQuoteClick = (statusId, e) => {
+    let statusUrl = `/statuses/${statusId}`;
+
+    if (this.context.router && e.button === 0) {
+      e.preventDefault();
+      this.context.router.history.push(statusUrl);
+    }
+  }
+
   handleMouseDown = (e) => {
     this.startXY = [e.clientX, e.clientY];
   };
@@ -221,6 +231,12 @@ class StatusContent extends React.PureComponent {
     const hidden = this.props.onExpandedToggle ? !this.props.expanded : this.state.hidden;
     const renderReadMore = this.props.onClick && status.get('collapsed');
     const renderTranslate = translationEnabled && this.context.identity.signedIn && this.props.onTranslate && ['public', 'unlisted'].includes(status.get('visibility')) && status.get('contentHtml').length > 0 && status.get('language') !== null && intl.locale !== status.get('language');
+    const { status, quote } = this.props;
+
+    const hidden = this.props.onExpandedToggle ? !this.props.expanded : this.state.hidden;
+    const renderReadMore = this.props.onClick && status.get('collapsed');
+    const renderViewThread = this.props.showThread && status.get('in_reply_to_id') && status.get('in_reply_to_account_id') === status.getIn(['account', 'id']);
+    const renderShowPoll = !!status.get('poll');
 
     const content = { __html: status.get('translation') ? status.getIn(['translation', 'content']) : status.get('contentHtml') };
     const spoilerContent = { __html: status.get('spoilerHtml') };
@@ -274,6 +290,7 @@ class StatusContent extends React.PureComponent {
 
           {!hidden && poll}
           {!hidden && translateButton}
+          {!hidden && renderShowPoll && quote ? showPollButton : pollContainer}
         </div>
       );
     } else if (this.props.onClick) {
@@ -281,6 +298,7 @@ class StatusContent extends React.PureComponent {
         <>
           <div className={classNames} ref={this.setRef} tabIndex='0' onMouseDown={this.handleMouseDown} onMouseUp={this.handleMouseUp} key='status-content' onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave}>
             <div className='status__content__text status__content__text--visible translate' lang={lang} dangerouslySetInnerHTML={content} />
+          {renderShowPoll && quote ? showPollButton : pollContainer}
 
             {poll}
             {translateButton}
@@ -293,6 +311,7 @@ class StatusContent extends React.PureComponent {
       return (
         <div className={classNames} ref={this.setRef} tabIndex='0' onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave}>
           <div className='status__content__text status__content__text--visible translate' lang={lang} dangerouslySetInnerHTML={content} />
+          {renderShowPoll && quote ? showPollButton : pollContainer}
 
           {poll}
           {translateButton}

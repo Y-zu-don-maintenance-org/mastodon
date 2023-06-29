@@ -19,6 +19,7 @@ const emojiFilename = (filename) => {
   return borderedEmoji.includes(filename) ? (filename + '_border') : filename;
 };
 
+const domParser = new DOMParser();
 const emojifyTextNode = (node, customEmojis) => {
   let str = node.textContent;
 
@@ -38,6 +39,7 @@ const emojifyTextNode = (node, customEmojis) => {
     }
 
     let rend, replacement = null;
+
     if (i === str.length) {
       break;
     } else if (str[i] === ':') {
