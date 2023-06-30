@@ -736,10 +736,29 @@ body > [data-popper-placement] {
     justify-content: flex-end;
     min-width: 0;
     flex: 0 0 auto;
+    padding-top: 10px;
 
     .compose-form__publish-button-wrapper {
       overflow: hidden;
       padding-top: 15px;
+      button {
+        display: inline-block;
+        width: auto;
+
+        margin-right: 0.5em;
+      }
+
+      button:last-child {
+        margin-right: auto;
+      }
+    }
+  }
+
+  .compose-form__utilBtns {
+    padding-top: 10px;
+
+    * {
+      margin-bottom: 1em;
     }
   }
 }

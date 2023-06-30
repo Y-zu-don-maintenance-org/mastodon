@@ -29,6 +29,8 @@ const messages = defineMessages({
   publish: { id: 'compose_form.publish', defaultMessage: 'Publish' },
   publishLoud: { id: 'compose_form.publish_loud', defaultMessage: '{publish}!' },
   saveChanges: { id: 'compose_form.save_changes', defaultMessage: 'Save changes' },
+  utilBtns_goji: { id: 'compose_form.utilBtns_goji', defaultMessage: 'Typo!!!' },
+  utilBtns_harukin: { id: 'compose_form.utilBtns_harukin', defaultMessage: 'Burn Harukin' }
 });
 
 export default @injectIntl
@@ -65,6 +67,8 @@ class ComposeForm extends ImmutablePureComponent {
     isInReply: PropTypes.bool,
     singleColumn: PropTypes.bool,
     lang: PropTypes.string,
+    onGojiSubmit: PropTypes.func.isRequired,
+    onHarukinSubmit: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
@@ -206,6 +210,9 @@ class ComposeForm extends ImmutablePureComponent {
     this.props.onPickEmoji(position, data, needsSpace);
   };
 
+  handleOnGojiSubmit = () => this.props.onGojiSubmit(this.autosuggestTextarea.textarea);
+  handleOnHarukinSubmit = () => this.props.onHarukinSubmit(this.autosuggestTextarea.textarea);
+
   render () {
     const { intl, onPaste, autoFocus } = this.props;
     const disabled = this.props.isSubmitting;
@@ -292,6 +299,10 @@ class ComposeForm extends ImmutablePureComponent {
               disabled={!this.canSubmit()}
               block
             />
+          </div>
+          <div className="compose-form__utilBtns">
+            <Button className="compose-form__utilBtns-goji" text={intl.formatMessage(messages.utilBtns_goji)} onClick={this.handleOnGojiSubmit} block />
+            <Button className="compose-form__utilBtns-harukin" text={intl.formatMessage(messages.utilBtns_harukin)} onClick={this.handleOnHarukinSubmit} block />
           </div>
         </div>
       </form>

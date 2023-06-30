@@ -148,6 +148,8 @@
   "compose_form.spoiler.marked": "本文は警告の後ろに隠されます",
   "compose_form.spoiler.unmarked": "本文は隠されていません",
   "compose_form.spoiler_placeholder": "ここに警告を書いてください",
+  "compose_form.utilBtns_goji": "誤字盛！",
+  "compose_form.utilBtns_harukin": "はるきん焼却",
   "confirmation_modal.cancel": "キャンセル",
   "confirmations.block.block_and_report": "ブロックし通報",
   "confirmations.block.confirm": "ブロック",
