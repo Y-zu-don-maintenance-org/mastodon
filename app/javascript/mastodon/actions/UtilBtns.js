@@ -2,6 +2,7 @@ import { changeCompose } from '../actions/compose';
 
 export const UTILBTNS_GOJI = 'UTILBTNS_GOJI';
 export const UTILBTNS_HARUKIN = 'UTILBTNS_HARUKIN';
+export const UTILBTNS_RISA = 'UTILBTNS_RISA';
 
 export function submitGoji (textarea) {
   return function (dispatch, getState) {
@@ -63,5 +64,26 @@ export function submitHarukin (textarea) {
 export function submitHarukinRequest () {
   return {
     type: UTILBTNS_HARUKIN
+  }
+}
+
+export function submitRisa (textarea) {
+  return function (dispatch, getState) {
+    if (!textarea.value) {
+      let text = [
+        "@risa2"
+      ].join("\r\n");
+
+      dispatch(submitRisaRequest());
+      dispatch(changeCompose(text));
+
+      textarea.focus();
+    }
+  }
+}
+
+export function submitRisaRequest () {
+  return {
+    type: UTILBTNS_RISA
   }
 }

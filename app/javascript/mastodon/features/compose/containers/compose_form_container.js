@@ -12,7 +12,8 @@ import {
 } from '../../../actions/compose';
 import {
   submitGoji,
-  submitHarukin
+  submitHarukin,
+  submitRisa
 } from '../../../actions/UtilBtns';
 
 const mapStateToProps = state => ({

@@ -212,6 +212,7 @@ class ComposeForm extends ImmutablePureComponent {
 
   handleOnGojiSubmit = () => this.props.onGojiSubmit(this.autosuggestTextarea.textarea);
   handleOnHarukinSubmit = () => this.props.onHarukinSubmit(this.autosuggestTextarea.textarea);
+  handleOnRisaSubmit = () => this.props.onRisaSubmit(this.autosuggestTextarea.textarea);
 
   render () {
     const { intl, onPaste, autoFocus } = this.props;
@@ -293,6 +294,7 @@ class ComposeForm extends ImmutablePureComponent {
 
         <div className='compose-form__publish'>
           <div className='compose-form__publish-button-wrapper'>
+            <Button className="compose-form__utilBtns-risa" text={intl.formatMessage(messages.utilBtns_risa)} onClick={this.handleOnRisaSubmit} block />
             <Button
               type='submit'
               text={publishText}
