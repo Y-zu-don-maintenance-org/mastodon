@@ -30,7 +30,8 @@ const messages = defineMessages({
   publishLoud: { id: 'compose_form.publish_loud', defaultMessage: '{publish}!' },
   saveChanges: { id: 'compose_form.save_changes', defaultMessage: 'Save changes' },
   utilBtns_goji: { id: 'compose_form.utilBtns_goji', defaultMessage: 'Typo!!!' },
-  utilBtns_harukin: { id: 'compose_form.utilBtns_harukin', defaultMessage: 'Burn Harukin' }
+  utilBtns_harukin: { id: 'compose_form.utilBtns_harukin', defaultMessage: 'Burn Harukin' },
+  utilBtns_risa: { id: 'compose_form.utilBtns_risa', defaultMessage: 'Risa' }
 });
 
 export default @injectIntl
@@ -69,6 +70,7 @@ class ComposeForm extends ImmutablePureComponent {
     lang: PropTypes.string,
     onGojiSubmit: PropTypes.func.isRequired,
     onHarukinSubmit: PropTypes.func.isRequired,
+    onRisaSubmit: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
