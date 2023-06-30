@@ -71,7 +71,7 @@ export function submitRisa (textarea) {
   return function (dispatch, getState) {
     if (!textarea.value) {
       let text = [
-        "@risa2"
+        "@risa2 "
       ].join("\r\n");
 
       dispatch(submitRisaRequest());
