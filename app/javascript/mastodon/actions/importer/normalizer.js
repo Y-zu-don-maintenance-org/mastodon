@@ -75,6 +75,8 @@ export function normalizeStatus(status, normalOldStatus) {
     normalStatus.spoilerHtml = normalOldStatus.get('spoilerHtml');
     normalStatus.spoiler_text = normalOldStatus.get('spoiler_text');
     normalStatus.hidden = normalOldStatus.get('hidden');
+    normalStatus.quote = normalOldStatus.get('quote');
+    normalStatus.quote_hidden = normalOldStatus.get('quote_hidden');
   } else {
     // If the status has a CW but no contents, treat the CW as if it were the
     // status' contents, to avoid having a CW toggle with seemingly no effect.
@@ -91,6 +93,11 @@ export function normalizeStatus(status, normalOldStatus) {
     normalStatus.contentHtml  = emojify(normalStatus.content, emojiMap);
     normalStatus.spoilerHtml  = emojify(escapeTextContentForBrowser(spoilerText), emojiMap);
     normalStatus.hidden       = expandSpoilers ? false : spoilerText.length > 0 || normalStatus.sensitive;
+
+    if (status.quote) {
+      normalStatus.quote = normalizeStatus(status.quote, null);
+      normalStatus.quote_hidden = normalStatus.quote.hidden;
+    }
   }
 
   return normalStatus;

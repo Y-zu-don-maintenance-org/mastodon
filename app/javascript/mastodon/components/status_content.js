@@ -9,6 +9,7 @@ import Icon from 'mastodon/components/icon';
 import { autoPlayGif, languages as preloadedLanguages, translationEnabled } from 'mastodon/initial_state';
 
 const MAX_HEIGHT = 706; // 22px * 32 (+ 2px padding at the top)
+const QUOTE_MAX_HEIGHT = 112; // 22px * 5 (+ 2px padding at the top)
 
 class TranslateButton extends React.PureComponent {
 
@@ -64,6 +65,7 @@ class StatusContent extends React.PureComponent {
     collapsable: PropTypes.bool,
     onCollapsedToggle: PropTypes.func,
     intl: PropTypes.object,
+    quote: PropTypes.bool,
   };
 
   state = {
@@ -107,12 +109,12 @@ class StatusContent extends React.PureComponent {
     }
 
     if (status.get('collapsed', null) === null && onCollapsedToggle) {
-      const { collapsable, onClick } = this.props;
+      const { collapsable, onClick, quote } = this.props;
 
       const collapsed =
           collapsable
           && onClick
-          && node.clientHeight > MAX_HEIGHT
+          && node.clientHeight > (quote ? QUOTE_MAX_HEIGHT : MAX_HEIGHT)
           && status.get('spoiler_text').length === 0;
 
       onCollapsedToggle(collapsed);
@@ -216,7 +218,7 @@ class StatusContent extends React.PureComponent {
   };
 
   render () {
-    const { status, intl } = this.props;
+    const { status, intl, quote } = this.props;
 
     const hidden = this.props.onExpandedToggle ? !this.props.expanded : this.state.hidden;
     const renderReadMore = this.props.onClick && status.get('collapsed');
@@ -244,6 +246,12 @@ class StatusContent extends React.PureComponent {
     const poll = !!status.get('poll') && (
       <PollContainer pollId={status.get('poll')} />
     );
+
+    if (quote) {
+      const doc = new DOMParser().parseFromString(content.__html, 'text/html').documentElement;
+      Array.from(doc.querySelectorAll('br')).forEach(nl => nl.replaceWith(' '));
+      content.__html = doc.outerHTML;
+    }
 
     if (status.get('spoiler_text').length > 0) {
       let mentionsPlaceholder = '';
