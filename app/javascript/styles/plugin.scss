@@ -14,21 +14,32 @@
   border-radius: 50%;
 }
 
-.tab-ber-bottom .timeline{
-  width:100%;
-  height: calc(100% - 55px);
-  margin: 0 0 50px 0;
+.tab-ber-bottom .navber {
+  display: none;
 }
 
-.tab-ber-bottom .navber{
-  width:100%;
-  bottom: 0;
-  position: fixed;
-}
+@media screen and (max-width: 630px) {
+  .tab-ber-bottom .timeline{
+    width:100%;
+    height: calc(100% - 55px);
+    margin: 0 0 50px 0;
+  }
 
-.tab-ber-bottom .navber .tabs-bar__wrapper{
-  bottom: 0;
-  width: 100%;
+  .tab-ber-bottom .navber{
+    display: flex;
+    width:100%;
+    bottom: 0;
+    position: fixed;
+  }
+
+  .tab-ber-bottom .navber .tabs-bar__wrapper{
+    bottom: 0;
+    width: 100%;
+  }
+
+  .columns-area__panels__pane--navigational{
+    display: none;
+  }
 }
 
 //ここまで下タブバーの実装
