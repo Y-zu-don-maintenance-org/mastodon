@@ -1,0 +1,34 @@
+// ここから下タブバーの実装
+
+//投稿ボタン
+.columns-area__panels__main .button.bottom_right {
+  position: fixed;
+  right: 18px;
+  bottom: 65px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  font-size: 24px;
+  border-radius: 50%;
+}
+
+.tab-ber-bottom .timeline{
+  width:100%;
+  height: calc(100% - 55px);
+  margin: 0 0 50px 0;
+}
+
+.tab-ber-bottom .navber{
+  width:100%;
+  bottom: 0;
+  position: fixed;
+}
+
+.tab-ber-bottom .navber .tabs-bar__wrapper{
+  bottom: 0;
+  width: 100%;
+}
+
+//ここまで下タブバーの実装

@@ -21,8 +21,15 @@ import {
 } from '../../ui/util/async-components';
 import ComposePanel from './compose_panel';
 import NavigationPanel from './navigation_panel';
+import TabsBar from './tabs_bar';
+import { place_tab_bar_at_bottom } from 'mastodon/initial_state';
 import { supportsPassiveEvents } from 'detect-passive-events';
 import { scrollRight } from '../../../scroll';
+import { Link } from 'react-router-dom';
+import classNames from 'classnames';
+import Icon from 'mastodon/components/icon';
+
+const shouldHideFAB = path => path.match(/^\/statuses\/|^\/search|^\/getting-started/);
 
 const componentMap = {
   'COMPOSE': Compose,
@@ -138,26 +145,49 @@ export default class ColumnsArea extends ImmutablePureComponent {
     const { renderComposePanel } = this.state;
 
     if (singleColumn) {
-      return (
-        <div className='columns-area__panels'>
-          <div className='columns-area__panels__pane columns-area__panels__pane--compositional'>
-            <div className='columns-area__panels__pane__inner'>
-              {renderComposePanel && <ComposePanel />}
+      if (place_tab_bar_at_bottom) {
+        return (
+          <div className='columns-area__panels tab-ber-bottom'>
+            <div className='columns-area__panels__pane columns-area__panels__pane--compositional'>
+              <div className='columns-area__panels__pane__inner'>
+                {renderComposePanel && <ComposePanel />}
+              </div>
+            </div>
+
+            <div className='columns-area__panels__main timeline'>
+              <div className='tabs-bar__wrapper'><div id='tabs-bar__portal' /></div>
+              <div className='columns-area columns-area--mobile'>{children}</div>
+            </div>
+
+            <div className='columns-area__panels__main navber'>
+              {location.pathname !== '/publish' && <Link to='/publish' className='button bottom_right'><Icon id='pencil' fixedWidth /></Link>}
+              <TabsBar key='tabs' />
+            </div>
+
+          </div>
+        ); 
+      } else {
+        return (
+          <div className='columns-area__panels'>
+            <div className='columns-area__panels__pane columns-area__panels__pane--compositional'>
+              <div className='columns-area__panels__pane__inner'>
+                {renderComposePanel && <ComposePanel />}
+              </div>
+            </div>
+  
+            <div className='columns-area__panels__main'>
+              <div className='tabs-bar__wrapper'><div id='tabs-bar__portal' /></div>
+              <div className='columns-area columns-area--mobile'>{children}</div>
+            </div>
+  
+            <div className='columns-area__panels__pane columns-area__panels__pane--start columns-area__panels__pane--navigational'>
+              <div className='columns-area__panels__pane__inner'>
+                <NavigationPanel />
+              </div>
             </div>
           </div>
-
-          <div className='columns-area__panels__main'>
-            <div className='tabs-bar__wrapper'><div id='tabs-bar__portal' /></div>
-            <div className='columns-area columns-area--mobile'>{children}</div>
-          </div>
-
-          <div className='columns-area__panels__pane columns-area__panels__pane--start columns-area__panels__pane--navigational'>
-            <div className='columns-area__panels__pane__inner'>
-              <NavigationPanel />
-            </div>
-          </div>
-        </div>
-      );
+        ); 
+      }
     }
 
     return (

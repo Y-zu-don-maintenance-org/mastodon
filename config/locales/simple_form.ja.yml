@@ -209,6 +209,7 @@ ja:
         setting_expand_spoilers: 閲覧注意としてマークされたトゥートを常に展開する
         setting_hide_network: 繋がりを隠す
         setting_noindex: 検索エンジンによるインデックスを拒否する
+        setting_place_tab_bar_at_bottom: タブバーを下に配置する
         setting_reduce_motion: アニメーションの動きを減らす
         setting_show_application: 送信したアプリを開示する
         setting_system_font_ui: システムのデフォルトフォントを使う
