@@ -14,33 +14,38 @@ module FormattingHelper
   end
   module_function :extract_status_plain_text
 
-  def status_content_format(status, outgoing: false)
+  def status_content_format(status)
     html_aware_format(
       status.text,
       status.local?,
       preloaded_accounts: [status.account] + (status.respond_to?(:active_mentions) ? status.active_mentions.map(&:account) : []),
-      nyaize: !outgoing && status.account.cat,
+      quote: status.respond_to?(:quote) && status.quote
     )
   end
 
   def rss_status_content_format(status)
     html = status_content_format(status)
 
-    before_html = begin
-      if status.spoiler_text?
-        "<p><strong>#{I18n.t('rss.content_warning', locale: available_locale_or_nil(status.language) || I18n.default_locale)}</strong> #{h(status.spoiler_text)}</p><hr />"
-      else
-        ''
-      end
-    end.html_safe # rubocop:disable Rails/OutputSafety
+    before_html = if status.spoiler_text?
+                    tag.p do
+                      tag.strong do
+                        I18n.t('rss.content_warning', locale: available_locale_or_nil(status.language) || I18n.default_locale)
+                      end
 
-    after_html = begin
-      if status.preloadable_poll
-        "<p>#{status.preloadable_poll.options.map { |o| "<input type=#{status.preloadable_poll.multiple? ? 'checkbox' : 'radio'} disabled /> #{h(o)}" }.join('<br />')}</p>"
-      else
-        ''
-      end
-    end.html_safe # rubocop:disable Rails/OutputSafety
+                      status.spoiler_text
+                    end + tag.hr
+                  end
+
+    after_html = if status.preloadable_poll
+                   tag.p do
+                     safe_join(
+                       status.preloadable_poll.options.map do |o|
+                         tag.send(status.preloadable_poll.multiple? ? 'checkbox' : 'radio', o, disabled: true)
+                       end,
+                       tag.br
+                     )
+                   end
+                 end
 
     prerender_custom_emojis(
       safe_join([before_html, html, after_html]),

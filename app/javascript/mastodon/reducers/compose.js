@@ -1,9 +1,13 @@
+import { Map as ImmutableMap, List as ImmutableList, OrderedSet as ImmutableOrderedSet, fromJS } from 'immutable';
+
 import {
   COMPOSE_MOUNT,
   COMPOSE_UNMOUNT,
   COMPOSE_CHANGE,
   COMPOSE_REPLY,
   COMPOSE_REPLY_CANCEL,
+  COMPOSE_QUOTE,
+  COMPOSE_QUOTE_CANCEL,
   COMPOSE_DIRECT,
   COMPOSE_MENTION,
   COMPOSE_SUBMIT_REQUEST,
@@ -46,14 +50,14 @@ import {
   COMPOSE_CHANGE_MEDIA_DESCRIPTION,
   COMPOSE_CHANGE_MEDIA_FOCUS,
   COMPOSE_SET_STATUS,
+  COMPOSE_FOCUS,
 } from '../actions/compose';
-import { TIMELINE_DELETE } from '../actions/timelines';
-import { STORE_HYDRATE } from '../actions/store';
 import { REDRAFT } from '../actions/statuses';
-import { Map as ImmutableMap, List as ImmutableList, OrderedSet as ImmutableOrderedSet, fromJS } from 'immutable';
-import uuid from '../uuid';
+import { STORE_HYDRATE } from '../actions/store';
+import { TIMELINE_DELETE } from '../actions/timelines';
 import { me } from '../initial_state';
 import { unescapeHTML } from '../utils/html';
+import { uuid } from '../uuid';
 
 const initialState = ImmutableMap({
   mounted: 0,
@@ -67,6 +71,8 @@ const initialState = ImmutableMap({
   caretPosition: null,
   preselectDate: null,
   in_reply_to: null,
+  quote_from: null,
+  quote_from_url: null,
   is_composing: false,
   is_submitting: false,
   is_changing_upload: false,
@@ -108,7 +114,7 @@ function statusToTextMentions(state, status) {
   }
 
   return set.union(status.get('mentions').filterNot(mention => mention.get('id') === me).map(mention => `@${mention.get('acct')} `)).join('');
-};
+}
 
 function clearAll(state) {
   return state.withMutations(map => {
@@ -119,6 +125,8 @@ function clearAll(state) {
     map.set('is_submitting', false);
     map.set('is_changing_upload', false);
     map.set('in_reply_to', null);
+    map.set('quote_from', null);
+    map.set('quote_from_url', null);
     map.set('privacy', state.get('default_privacy'));
     map.set('sensitive', state.get('default_sensitive'));
     map.set('language', state.get('default_language'));
@@ -126,7 +134,7 @@ function clearAll(state) {
     map.set('poll', null);
     map.set('idempotencyKey', uuid());
   });
-};
+}
 
 function appendMedia(state, media, file) {
   const prevSize = state.get('media_attachments').size;
@@ -146,7 +154,7 @@ function appendMedia(state, media, file) {
       map.set('sensitive', true);
     }
   });
-};
+}
 
 function removeMedia(state, mediaId) {
   const prevSize = state.get('media_attachments').size;
@@ -159,7 +167,7 @@ function removeMedia(state, mediaId) {
       map.set('sensitive', false);
     }
   });
-};
+}
 
 const insertSuggestion = (state, position, token, completion, path) => {
   return state.withMutations(map => {
@@ -186,11 +194,12 @@ const ignoreSuggestion = (state, position, token, completion, path) => {
 };
 
 const sortHashtagsByUse = (state, tags) => {
-  const personalHistory = state.get('tagHistory');
+  const personalHistory = state.get('tagHistory').map(tag => tag.toLowerCase());
 
-  return tags.sort((a, b) => {
-    const usedA = personalHistory.includes(a.name);
-    const usedB = personalHistory.includes(b.name);
+  const tagsWithLowercase = tags.map(t => ({ ...t, lowerName: t.name.toLowerCase() }));
+  const sorted = tagsWithLowercase.sort((a, b) => {
+    const usedA = personalHistory.includes(a.lowerName);
+    const usedB = personalHistory.includes(b.lowerName);
 
     if (usedA === usedB) {
       return 0;
@@ -200,6 +209,8 @@ const sortHashtagsByUse = (state, tags) => {
       return 1;
     }
   });
+  sorted.forEach(tag => delete tag.lowerName);
+  return sorted;
 };
 
 const insertEmoji = (state, position, emojiData, needsSpace) => {
@@ -222,8 +233,8 @@ const privacyPreference = (a, b) => {
 const hydrate = (state, hydratedState) => {
   state = clearAll(state.merge(hydratedState));
 
-  if (hydratedState.has('text')) {
-    state = state.set('text', hydratedState.get('text'));
+  if (hydratedState.get('text')) {
+    state = state.set('text', hydratedState.get('text')).set('focusDate', new Date());
   }
 
   return state;
@@ -245,6 +256,17 @@ const expiresInFromExpiresAt = expires_at => {
   if (!expires_at) return 24 * 3600;
   const delta = (new Date(expires_at).getTime() - Date.now()) / 1000;
   return [300, 1800, 3600, 21600, 86400, 259200, 604800].find(expires_in => expires_in >= delta) || 24 * 3600;
+};
+
+const rejectQuoteAltText = html => {
+  const fragment = domParser.parseFromString(html, 'text/html').documentElement;
+
+  const quote_inline = fragment.querySelector('span.quote-inline');
+  if (quote_inline) {
+    quote_inline.remove();
+  }
+
+  return fragment.innerHTML;
 };
 
 const mergeLocalHashtagResults = (suggestions, prefix, tagHistory) => {
@@ -320,23 +342,41 @@ export default function compose(state = initialState, action) {
   case COMPOSE_COMPOSING_CHANGE:
     return state.set('is_composing', action.value);
   case COMPOSE_REPLY:
+  case COMPOSE_QUOTE:
     return state.withMutations(map => {
       map.set('id', null);
-      map.set('in_reply_to', action.status.get('id'));
-      map.set('text', statusToTextMentions(state, action.status));
+      if (action.type === COMPOSE_REPLY) {
+        map.set('in_reply_to', action.status.get('id'));
+        map.set('quote_from', null);
+        map.set('quote_from_url', null);
+        map.set('text', statusToTextMentions(state, action.status));
+      } else {
+        map.set('in_reply_to', null);
+        map.set('quote_from', action.status.get('id'));
+        map.set('quote_from_url', action.status.get('url'));
+        map.set('text', '');
+      }
       map.set('privacy', privacyPreference(action.status.get('visibility'), state.get('default_privacy')));
       map.set('focusDate', new Date());
       map.set('caretPosition', null);
       map.set('preselectDate', new Date());
       map.set('idempotencyKey', uuid());
 
-      if (action.status.get('language')) {
+      map.update('media_attachments', list => list.filter(media => media.get('unattached')));
+
+      if (action.status.get('language') && !action.status.has('translation')) {
         map.set('language', action.status.get('language'));
+      } else {
+        map.set('language', state.get('default_language'));
       }
 
       if (action.status.get('spoiler_text').length > 0) {
         map.set('spoiler', true);
         map.set('spoiler_text', action.status.get('spoiler_text'));
+
+        if (map.get('media_attachments').size >= 1) {
+          map.set('sensitive', true);
+        }
       } else {
         map.set('spoiler', false);
         map.set('spoiler_text', '');
@@ -347,6 +387,7 @@ export default function compose(state = initialState, action) {
   case COMPOSE_UPLOAD_CHANGE_REQUEST:
     return state.set('is_changing_upload', true);
   case COMPOSE_REPLY_CANCEL:
+  case COMPOSE_QUOTE_CANCEL:
   case COMPOSE_RESET:
   case COMPOSE_SUBMIT_SUCCESS:
     return clearAll(state);
@@ -425,6 +466,8 @@ export default function compose(state = initialState, action) {
   case TIMELINE_DELETE:
     if (action.id === state.get('in_reply_to')) {
       return state.set('in_reply_to', null);
+    } else if (action.id === state.get('id')) {
+      return state.set('id', null);
     } else {
       return state;
     }
@@ -436,15 +479,17 @@ export default function compose(state = initialState, action) {
       .setIn(['media_modal', 'dirty'], false)
       .update('media_attachments', list => list.map(item => {
         if (item.get('id') === action.media.id) {
-          return fromJS(action.media).set('unattached', true);
+          return fromJS(action.media).set('unattached', !action.attached);
         }
 
         return item;
       }));
   case REDRAFT:
     return state.withMutations(map => {
-      map.set('text', action.raw_text || unescapeHTML(expandMentions(action.status)));
+      map.set('text', action.raw_text || unescapeHTML(rejectQuoteAltText(expandMentions(action.status))));
       map.set('in_reply_to', action.status.get('in_reply_to_id'));
+      map.set('quote_from', action.status.getIn(['quote', 'id']));
+      map.set('quote_from_url', action.status.getIn(['quote', 'url']));
       map.set('privacy', action.status.get('visibility'));
       map.set('media_attachments', action.status.get('media_attachments').map((media) => media.set('unattached', true)));
       map.set('focusDate', new Date());
@@ -513,7 +558,9 @@ export default function compose(state = initialState, action) {
     return state.update('poll', poll => poll.set('expires_in', action.expiresIn).set('multiple', action.isMultiple));
   case COMPOSE_LANGUAGE_CHANGE:
     return state.set('language', action.language);
+  case COMPOSE_FOCUS:
+    return state.set('focusDate', new Date()).update('text', text => text.length > 0 ? text : action.defaultText);
   default:
     return state;
   }
-};
+}

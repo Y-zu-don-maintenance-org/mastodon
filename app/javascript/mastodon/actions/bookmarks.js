@@ -1,4 +1,7 @@
 import api, { getLinks } from '../api';
+import { uniq } from '../utils/uniq';
+
+import { fetchRelationships } from './accounts';
 import { importFetchedStatuses } from './importer';
 
 export const BOOKMARKED_STATUSES_FETCH_REQUEST = 'BOOKMARKED_STATUSES_FETCH_REQUEST';
@@ -20,18 +23,19 @@ export function fetchBookmarkedStatuses() {
     api(getState).get('/api/v1/bookmarks').then(response => {
       const next = getLinks(response).refs.find(link => link.rel === 'next');
       dispatch(importFetchedStatuses(response.data));
+      dispatch(fetchRelationships(uniq(response.data.map(item => item.reblog ? item.reblog.account.id : item.account.id))));
       dispatch(fetchBookmarkedStatusesSuccess(response.data, next ? next.uri : null));
     }).catch(error => {
       dispatch(fetchBookmarkedStatusesFail(error));
     });
   };
-};
+}
 
 export function fetchBookmarkedStatusesRequest() {
   return {
     type: BOOKMARKED_STATUSES_FETCH_REQUEST,
   };
-};
+}
 
 export function fetchBookmarkedStatusesSuccess(statuses, next) {
   return {
@@ -39,14 +43,14 @@ export function fetchBookmarkedStatusesSuccess(statuses, next) {
     statuses,
     next,
   };
-};
+}
 
 export function fetchBookmarkedStatusesFail(error) {
   return {
     type: BOOKMARKED_STATUSES_FETCH_FAIL,
     error,
   };
-};
+}
 
 export function expandBookmarkedStatuses() {
   return (dispatch, getState) => {
@@ -61,18 +65,19 @@ export function expandBookmarkedStatuses() {
     api(getState).get(url).then(response => {
       const next = getLinks(response).refs.find(link => link.rel === 'next');
       dispatch(importFetchedStatuses(response.data));
+      dispatch(fetchRelationships(uniq(response.data.map(item => item.reblog ? item.reblog.account.id : item.account.id))));
       dispatch(expandBookmarkedStatusesSuccess(response.data, next ? next.uri : null));
     }).catch(error => {
       dispatch(expandBookmarkedStatusesFail(error));
     });
   };
-};
+}
 
 export function expandBookmarkedStatusesRequest() {
   return {
     type: BOOKMARKED_STATUSES_EXPAND_REQUEST,
   };
-};
+}
 
 export function expandBookmarkedStatusesSuccess(statuses, next) {
   return {
@@ -80,11 +85,11 @@ export function expandBookmarkedStatusesSuccess(statuses, next) {
     statuses,
     next,
   };
-};
+}
 
 export function expandBookmarkedStatusesFail(error) {
   return {
     type: BOOKMARKED_STATUSES_EXPAND_FAIL,
     error,
   };
-};
+}

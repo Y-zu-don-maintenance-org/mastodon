@@ -11,7 +11,7 @@ class REST::InstanceSerializer < ActiveModel::Serializer
 
   attributes :domain, :title, :version, :source_url, :description,
              :usage, :thumbnail, :languages, :configuration,
-             :registrations
+             :registrations, :feature_quote
 
   has_one :contact, serializer: ContactSerializer
   has_many :rules, serializer: REST::RuleSerializer
@@ -45,6 +45,7 @@ class REST::InstanceSerializer < ActiveModel::Serializer
     {
       urls: {
         streaming: Rails.configuration.x.streaming_api_base_url,
+        status: object.status_page_url,
       },
 
       accounts: {
@@ -84,7 +85,12 @@ class REST::InstanceSerializer < ActiveModel::Serializer
       enabled: registrations_enabled?,
       approval_required: Setting.registrations_mode == 'approved',
       message: registrations_enabled? ? nil : registrations_message,
+      url: ENV.fetch('SSO_ACCOUNT_SIGN_UP', nil),
     }
+  end
+
+  def feature_quote
+    true
   end
 
   private
@@ -94,11 +100,7 @@ class REST::InstanceSerializer < ActiveModel::Serializer
   end
 
   def registrations_message
-    if Setting.closed_registrations_message.present?
-      markdown.render(Setting.closed_registrations_message)
-    else
-      nil
-    end
+    markdown.render(Setting.closed_registrations_message) if Setting.closed_registrations_message.present?
   end
 
   def markdown

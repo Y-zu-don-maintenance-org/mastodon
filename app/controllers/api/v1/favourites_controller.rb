@@ -6,8 +6,11 @@ class Api::V1::FavouritesController < Api::BaseController
   after_action :insert_pagination_headers
 
   def index
-    @statuses = load_statuses
-    render json: @statuses, each_serializer: REST::StatusSerializer, relationships: StatusRelationshipsPresenter.new(@statuses, current_user&.account_id)
+    @statuses   = load_statuses
+    account_ids = @statuses.filter(&:quote?).map { |status| status.quote.account_id }.uniq
+    render json: @statuses, each_serializer: REST::StatusSerializer,
+           relationships: StatusRelationshipsPresenter.new(@statuses, current_user&.account_id),
+           account_relationships: AccountRelationshipsPresenter.new(account_ids, current_user&.account_id)
   end
 
   private
@@ -36,15 +39,11 @@ class Api::V1::FavouritesController < Api::BaseController
   end
 
   def next_path
-    if records_continue?
-      api_v1_favourites_url pagination_params(max_id: pagination_max_id)
-    end
+    api_v1_favourites_url pagination_params(max_id: pagination_max_id) if records_continue?
   end
 
   def prev_path
-    unless results.empty?
-      api_v1_favourites_url pagination_params(min_id: pagination_since_id)
-    end
+    api_v1_favourites_url pagination_params(min_id: pagination_since_id) unless results.empty?
   end
 
   def pagination_max_id
