@@ -381,23 +381,22 @@ class StatusActionBar extends ImmutablePureComponent {
         <IconButton className={classNames('status__action-bar__button', { reblogPrivate })} disabled={!publicStatus && !reblogPrivate} active={status.get('reblogged')} title={reblogTitle} icon='retweet' onClick={this.handleReblogClick} counter={withCounters ? status.get('reblogs_count') : undefined} />
         <IconButton className='status__action-bar__button star-icon' animate active={status.get('favourited')} pressed={status.get('favourited')} title={intl.formatMessage(messages.favourite)} icon='star' onClick={this.handleFavouriteClick} counter={withCounters ? status.get('favourites_count') : undefined} />
         <IconButton className='status__action-bar__button' disabled={!publicStatus} title={StatusActionBar.quoteTitle(intl, messages, publicStatus)} icon='quote-right' onClick={this.handleQuoteClick} />
-        <IconButton className='status__action-bar__button bookmark-icon' disabled={!signedIn} active={status.get('bookmarked')} title={intl.formatMessage(messages.bookmark)} icon='bookmark' onClick={this.handleBookmarkClick} />
-
-        {shareButton}
-
-        {filterButton}
 
         <div className='status__action-bar__dropdown'>
           <ReactionDropdownMenuContainer
             disabled={anonymousAccess}
             status={status}
             onReaction={this.props.onReaction}
-            icon='smile-o'
+            icon='plus'
             size={18}
             direction='right'
             title={intl.formatMessage(messages.reaction)}
           />
         </div>
+
+        {shareButton}
+
+        {filterButton}
 
         <div className='status__action-bar__dropdown'>
           <DropdownMenuContainer
