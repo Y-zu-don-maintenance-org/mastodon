@@ -9,6 +9,7 @@ import { defineMessages, injectIntl } from 'react-intl';
 import { me } from '../../../initial_state';
 import classNames from 'classnames';
 import { PERMISSION_MANAGE_USERS, PERMISSION_MANAGE_FEDERATION } from 'mastodon/permissions';
+import ReactionDropdownMenuContainer from '../../../containers/reaction_dropdown_menu_container';
 
 const messages = defineMessages({
   delete: { id: 'status.delete', defaultMessage: 'Delete' },
@@ -24,6 +25,7 @@ const messages = defineMessages({
   quote: { id: 'status.quote', defaultMessage: 'Quote' },
   cannot_quote: { id: 'status.cannot_quote', defaultMessage: 'This post cannot be quoted' },
   favourite: { id: 'status.favourite', defaultMessage: 'Favourite' },
+  reaction: { id: 'status.reaction', defaultMessage: 'Reaction' },
   bookmark: { id: 'status.bookmark', defaultMessage: 'Bookmark' },
   more: { id: 'status.more', defaultMessage: 'More' },
   mute: { id: 'status.mute', defaultMessage: 'Mute @{name}' },
@@ -66,6 +68,7 @@ class ActionBar extends React.PureComponent {
     onReblog: PropTypes.func.isRequired,
     onQuote: PropTypes.func,
     onFavourite: PropTypes.func.isRequired,
+    onReaction: PropTypes.func.isRequired,
     onBookmark: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
     onEdit: PropTypes.func.isRequired,
@@ -298,6 +301,10 @@ class ActionBar extends React.PureComponent {
         <div className='detailed-status__button'><IconButton className='bookmark-icon' disabled={!signedIn} active={status.get('bookmarked')} title={intl.formatMessage(messages.bookmark)} icon='bookmark' onClick={this.handleBookmarkClick} /></div>
 
         {shareButton}
+
+        <div className='detailed-status__action-bar__dropdown'>
+          <ReactionDropdownMenuContainer size={18} icon='smile-o' disabled={!signedIn} status={status} onReaction={this.props.onReaction} direction='right' title={intl.formatMessage(messages.reaction)} />
+        </div>
 
         <div className='detailed-status__action-bar-dropdown'>
           <DropdownMenuContainer size={18} icon='ellipsis-h' disabled={!signedIn} status={status} items={menu} direction='left' title={intl.formatMessage(messages.more)} />
