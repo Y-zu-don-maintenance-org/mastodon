@@ -142,10 +142,6 @@ class UserSettingsDecorator
     boolean_cast_setting 'setting_place_tab_bar_at_bottom'
   end
 
-  def show_tab_bar_label_preference
-    boolean_cast_setting 'setting_show_tab_bar_label'
-  end
-
   def boolean_cast_setting(key)
     ActiveModel::Type::Boolean.new.cast(settings[key])
   end
