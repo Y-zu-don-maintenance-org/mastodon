@@ -388,18 +388,6 @@ class StatusActionBar extends ImmutablePureComponent {
         {filterButton}
 
         <div className='status__action-bar__dropdown'>
-          <ReactionDropdownMenuContainer
-            disabled={anonymousAccess}
-            status={status}
-            onReaction={this.props.onReaction}
-            icon='smile-o'
-            size={18}
-            direction='right'
-            title={intl.formatMessage(messages.reaction)}
-          />
-        </div>
-
-        <div className='status__action-bar__dropdown'>
           <DropdownMenuContainer
             scrollKey={scrollKey}
             disabled={anonymousAccess}

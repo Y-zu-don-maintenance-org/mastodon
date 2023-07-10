@@ -212,6 +212,7 @@ ja:
         setting_place_tab_bar_at_bottom: タブバーを下に配置する
         setting_reduce_motion: アニメーションの動きを減らす
         setting_show_application: 送信したアプリを開示する
+        setting_show_status_reaction: 絵文字リアクションを表示する
         setting_system_font_ui: システムのデフォルトフォントを使う
         setting_theme: サイトテーマ
         setting_trends: 本日のトレンドタグを表示する

@@ -411,7 +411,7 @@
   "notification.mention": "{name}さんがあなたに返信しました",
   "notification.own_poll": "アンケートが終了しました",
   "notification.poll": "アンケートが終了しました",
-  "notification.reaction": "{name}さんがあなたのトゥートをリアクションしました",
+  "notification.reaction": "{name}さんがあなたのトゥートにリアクションしました",
   "notification.reblog": "{name}さんがあなたのトゥートをブーストしました",
   "notification.status": "{name}さんがトゥートしました",
   "notification.update": "{name}さんがトゥートを編集しました",

@@ -137,5 +137,6 @@ export const languages = initialState?.languages;
 export const statusPageUrl = getMeta('status_page_url');
 export const place_tab_bar_at_bottom = getMeta('place_tab_bar_at_bottom');
 export const show_tab_bar_label = getMeta('show_tab_bar_label');
+export const show_status_reaction = getMeta('show_status_reaction');
 
 export default initialState;

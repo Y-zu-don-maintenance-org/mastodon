@@ -137,6 +137,7 @@ class User < ApplicationRecord
            :advanced_layout, :use_blurhash, :use_pending_items, :trends, :crop_images,
            :disable_swiping, :always_send_emails,
            :place_tab_bar_at_bottom,
+           :show_status_reaction,
            to: :settings, prefix: :setting, allow_nil: false
 
   delegate :can?, to: :role

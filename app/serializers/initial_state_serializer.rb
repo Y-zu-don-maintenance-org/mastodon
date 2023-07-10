@@ -52,6 +52,7 @@ class InitialStateSerializer < ActiveModel::Serializer
       store[:trends]            = Setting.trends && object.current_account.user.setting_trends
       store[:crop_images]       = object.current_account.user.setting_crop_images
       store[:place_tab_bar_at_bottom]           = object.current_account.user.setting_place_tab_bar_at_bottom
+      store[:show_status_reaction] = object.current_account.user.setting_show_status_reaction
     else
       store[:auto_play_gif] = Setting.auto_play_gif
       store[:display_media] = Setting.display_media

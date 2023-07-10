@@ -3,7 +3,7 @@ import ImmutablePureComponent from 'react-immutable-pure-component';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import PropTypes from 'prop-types';
 import { injectIntl } from 'react-intl';
-import { autoPlayGif, reduceMotion } from 'mastodon/initial_state';
+import { autoPlayGif, reduceMotion, show_status_reaction } from 'mastodon/initial_state';
 import unicodeMapping from 'mastodon/features/emoji/emoji_unicode_mapping_light';
 import classNames from 'classnames';
 import AnimatedNumber from 'mastodon/components/animated_number';
@@ -77,15 +77,15 @@ class Reaction extends ImmutablePureComponent {
     hovered: false,
   };
 
-  handleClick = () => {
-    const { reaction, status, addReaction, removeReaction } = this.props;
+  // handleClick = () => {
+  //   const { reaction, status, addReaction, removeReaction } = this.props;
 
-    if (status.get('reacted')) {
-      removeReaction(status, reaction.get('name'));
-    } else {
-      addReaction(status, reaction.get('name'));
-    }
-  };
+  //   if (status.get('reacted')) {
+  //     removeReaction(status, reaction.get('name'));
+  //   } else {
+  //     addReaction(status, reaction.get('name'));
+  //   }
+  // };
 
   handleMouseEnter = () => this.setState({ hovered: true });
 
@@ -101,7 +101,7 @@ class Reaction extends ImmutablePureComponent {
     }
 
     return (
-      <button className={classNames('status-reaction-bar__item', { active: reaction.get('me') })} disabled={reaction.get('domain') || !signedIn} onClick={this.handleClick} onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave} title={`:${shortCode}:`} style={this.props.style}>
+      <button className={classNames('status-reaction-bar__item', { active: reaction.get('me') })} disabled={reaction.get('domain') || !signedIn} onMouseEnter={this.handleMouseEnter} onMouseLeave={this.handleMouseLeave} title={`:${shortCode}:`} style={this.props.style}>
         <span className='status-reaction-bar__item__emoji'><Emoji hovered={this.state.hovered} emoji={reaction.get('name')} emojiMap={this.props.emojiMap} domain={reaction.get('domain')} url={reaction.get('url')} static_url={reaction.get('static_url')} signedIn={signedIn}/></span>
         <span className='status-reaction-bar__item__count'><AnimatedNumber value={reaction.get('count')} /></span>
       </button>
@@ -141,27 +141,31 @@ class StatusReactionBar extends ImmutablePureComponent {
       data: reaction,
       style: { scale: reduceMotion ? 1 : spring(1, { stiffness: 150, damping: 13 }) },
     })).toArray();
+    if (show_status_reaction){
+      return (
+        <TransitionMotion styles={styles} willEnter={this.willEnter} willLeave={this.willLeave}>
+          {items => (
+            <div className={classNames('status-reaction-bar', { 'status-reaction-bar--empty': visibleReactions.isEmpty() })}>
+              {items.map(({ key, data, style }) => (
+                <Reaction
+                  key={key}
+                  reaction={data}
+                  style={{ transform: `scale(${style.scale})`, position: style.scale < 0.5 ? 'absolute' : 'static' }}
+                  status={status}
+                  signedIn={signedIn}
+                  addReaction={this.props.addReaction}
+                  removeReaction={this.props.removeReaction}
+                  emojiMap={this.props.emojiMap}
+                />
+              ))}
+            </div>
+          )}
+        </TransitionMotion>
+      );
+    }else{
+      return null;
+    }
 
-    return (
-      <TransitionMotion styles={styles} willEnter={this.willEnter} willLeave={this.willLeave}>
-        {items => (
-          <div className={classNames('status-reaction-bar', { 'status-reaction-bar--empty': visibleReactions.isEmpty() })}>
-            {items.map(({ key, data, style }) => (
-              <Reaction
-                key={key}
-                reaction={data}
-                style={{ transform: `scale(${style.scale})`, position: style.scale < 0.5 ? 'absolute' : 'static' }}
-                status={status}
-                signedIn={signedIn}
-                addReaction={this.props.addReaction}
-                removeReaction={this.props.removeReaction}
-                emojiMap={this.props.emojiMap}
-              />
-            ))}
-          </div>
-        )}
-      </TransitionMotion>
-    );
   }
 
 }
