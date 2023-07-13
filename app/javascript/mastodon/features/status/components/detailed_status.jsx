@@ -7,6 +7,7 @@ import { Link } from 'react-router-dom';
 
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
+import { connect } from 'react-redux';
 
 import { AnimatedNumber } from 'mastodon/components/animated_number';
 import EditedTimestamp from 'mastodon/components/edited_timestamp';
@@ -16,6 +17,7 @@ import PictureInPicturePlaceholder from 'mastodon/components/picture_in_picture_
 import { Avatar } from '../../../components/avatar';
 import { DisplayName } from '../../../components/display_name';
 import MediaGallery from '../../../components/media_gallery';
+import { mapStateToProps, quote } from '../../../components/status';
 import StatusContent from '../../../components/status_content';
 import Audio from '../../audio';
 import scheduleIdleTask from '../../ui/util/schedule_idle_task';
@@ -41,17 +43,21 @@ class DetailedStatus extends ImmutablePureComponent {
     onOpenMedia: PropTypes.func.isRequired,
     onOpenVideo: PropTypes.func.isRequired,
     onToggleHidden: PropTypes.func.isRequired,
+    onQuoteToggleHidden: PropTypes.func.isRequired,
     onTranslate: PropTypes.func.isRequired,
     measureHeight: PropTypes.bool,
     onHeightChange: PropTypes.func,
     domain: PropTypes.string.isRequired,
     compact: PropTypes.bool,
+    quoteMuted: PropTypes.bool,
     showMedia: PropTypes.bool,
+    showQuoteMedia: PropTypes.bool,
     pictureInPicture: ImmutablePropTypes.contains({
       inUse: PropTypes.bool,
       available: PropTypes.bool,
     }),
     onToggleMediaVisibility: PropTypes.func,
+    onQuoteToggleMediaVisibility: PropTypes.func,
   };
 
   state = {
@@ -60,8 +66,9 @@ class DetailedStatus extends ImmutablePureComponent {
 
   handleAccountClick = (e) => {
     if (e.button === 0 && !(e.ctrlKey || e.metaKey) && this.context.router) {
+      const acct = e.currentTarget.getAttribute('data-acct');
       e.preventDefault();
-      this.context.router.history.push(`/@${this.props.status.getIn(['account', 'acct'])}`);
+      this.context.router.history.push(`/@${acct}`);
     }
 
     e.stopPropagation();
@@ -74,6 +81,19 @@ class DetailedStatus extends ImmutablePureComponent {
   handleExpandedToggle = () => {
     this.props.onToggleHidden(this.props.status);
   };
+
+  handleExpandedQuoteToggle = () => {
+    this.props.onQuoteToggleHidden(this.props.status);
+  }
+
+  handleQuoteClick = () => {
+    if (!this.context.router) {
+      return;
+    }
+
+    const { status } = this.props;
+    this.context.router.history.push(`/statuses/${status.getIn(['quote', 'id'])}`);
+  }
 
   _measureHeight (heightJustChanged) {
     if (this.props.measureHeight && this.node) {
@@ -116,13 +136,12 @@ class DetailedStatus extends ImmutablePureComponent {
   render () {
     const status = (this.props.status && this.props.status.get('reblog')) ? this.props.status.get('reblog') : this.props.status;
     const outerStyle = { boxSizing: 'border-box' };
-    const { intl, compact, pictureInPicture } = this.props;
+    const { intl, compact, pictureInPicture, quoteMuted } = this.props;
 
     if (!status) {
       return null;
     }
 
-    let media           = '';
     let applicationLink = '';
     let reblogLink = '';
     let reblogIcon = 'retweet';
@@ -135,68 +154,91 @@ class DetailedStatus extends ImmutablePureComponent {
 
     const language = status.getIn(['translation', 'language']) || status.get('language');
 
-    if (pictureInPicture.get('inUse')) {
-      media = <PictureInPicturePlaceholder />;
-    } else if (status.get('media_attachments').size > 0) {
-      if (status.getIn(['media_attachments', 0, 'type']) === 'audio') {
-        const attachment = status.getIn(['media_attachments', 0]);
-        const description = attachment.getIn(['translation', 'description']) || attachment.get('description');
+    const identity = (status) => (
+      <>
+        {status.get('visibility') === 'direct' && (
+          <div className='status__prepend'>
+            <div className='status__prepend-icon-wrapper'><Icon id='at' className='status__prepend-icon' fixedWidth /></div>
+            <FormattedMessage id='status.direct_indicator' defaultMessage='Private mention' />
+          </div>
+        )}
+        <a href={`/@${status.getIn(['account', 'acct'])}`} onClick={this.handleAccountClick} className='detailed-status__display-name'>
+          <div className='detailed-status__display-avatar'><Avatar account={status.get('account')} size={46} /></div>
+          <DisplayName account={status.get('account')} localDomain={this.props.domain} />
+        </a>
+      </>
+    );
 
-        media = (
-          <Audio
-            src={attachment.get('url')}
-            alt={description}
-            lang={language}
-            duration={attachment.getIn(['meta', 'original', 'duration'], 0)}
-            poster={attachment.get('preview_url') || status.getIn(['account', 'avatar_static'])}
-            backgroundColor={attachment.getIn(['meta', 'colors', 'background'])}
-            foregroundColor={attachment.getIn(['meta', 'colors', 'foreground'])}
-            accentColor={attachment.getIn(['meta', 'colors', 'accent'])}
-            sensitive={status.get('sensitive')}
-            visible={this.props.showMedia}
-            blurhash={attachment.get('blurhash')}
-            height={150}
-            onToggleVisibility={this.props.onToggleMediaVisibility}
-          />
-        );
-      } else if (status.getIn(['media_attachments', 0, 'type']) === 'video') {
-        const attachment = status.getIn(['media_attachments', 0]);
-        const description = attachment.getIn(['translation', 'description']) || attachment.get('description');
+    const media = (status, quote = false) => {
+      if (pictureInPicture.get('inUse')) {
+        return <PictureInPicturePlaceholder />;
+      } else if (status.get('media_attachments').size > 0) {
+        if (status.getIn(['media_attachments', 0, 'type']) === 'audio') {
+          const attachment = status.getIn(['media_attachments', 0]);
+          const description = attachment.getIn(['translation', 'description']) || attachment.get('description');
 
-        media = (
-          <Video
-            preview={attachment.get('preview_url')}
-            frameRate={attachment.getIn(['meta', 'original', 'frame_rate'])}
-            blurhash={attachment.get('blurhash')}
-            src={attachment.get('url')}
-            alt={description}
-            lang={language}
-            width={300}
-            height={150}
-            inline
-            onOpenVideo={this.handleOpenVideo}
-            sensitive={status.get('sensitive')}
-            visible={this.props.showMedia}
-            onToggleVisibility={this.props.onToggleMediaVisibility}
-          />
-        );
-      } else {
-        media = (
-          <MediaGallery
-            standalone
-            sensitive={status.get('sensitive')}
-            media={status.get('media_attachments')}
-            lang={language}
-            height={300}
-            onOpenMedia={this.props.onOpenMedia}
-            visible={this.props.showMedia}
-            onToggleVisibility={this.props.onToggleMediaVisibility}
-          />
-        );
+          return (
+            <Audio
+              src={attachment.get('url')}
+              alt={description}
+              lang={language}
+              duration={attachment.getIn(['meta', 'original', 'duration'], 0)}
+              poster={attachment.get('preview_url') || status.getIn(['account', 'avatar_static'])}
+              backgroundColor={attachment.getIn(['meta', 'colors', 'background'])}
+              foregroundColor={attachment.getIn(['meta', 'colors', 'foreground'])}
+              accentColor={attachment.getIn(['meta', 'colors', 'accent'])}
+              sensitive={status.get('sensitive')}
+              visible={this.props.showMedia}
+              blurhash={attachment.get('blurhash')}
+              height={150}
+              onToggleVisibility={this.props.onToggleMediaVisibility}
+              quote={quote}
+            />
+          );
+        } else if (status.getIn(['media_attachments', 0, 'type']) === 'video') {
+          const attachment = status.getIn(['media_attachments', 0]);
+          const description = attachment.getIn(['translation', 'description']) || attachment.get('description');
+
+          return (
+            <Video
+              preview={attachment.get('preview_url')}
+              frameRate={attachment.getIn(['meta', 'original', 'frame_rate'])}
+              blurhash={attachment.get('blurhash')}
+              src={attachment.get('url')}
+              alt={description}
+              lang={language}
+              width={300}
+              height={150}
+              inline
+              onOpenVideo={this.handleOpenVideo}
+              sensitive={status.get('sensitive')}
+              visible={this.props.showMedia}
+              onToggleVisibility={this.props.onToggleMediaVisibility}
+              quote={quote}
+            />
+          );
+        } else {
+          return (
+            <MediaGallery
+              standalone
+              sensitive={status.get('sensitive')}
+              media={status.get('media_attachments')}
+              lang={language}
+              height={300}
+              onOpenMedia={this.props.onOpenMedia}
+              visible={this.props.showMedia}
+              onToggleVisibility={this.props.onToggleMediaVisibility}
+              quote={quote}
+            />
+          );
+        }
+      } else if (status.get('spoiler_text').length === 0) {
+        return (<Card sensitive={status.get('sensitive')} onOpenMedia={this.props.onOpenMedia}
+                     card={status.get('card', null)} quote={quote} />);
       }
-    } else if (status.get('spoiler_text').length === 0) {
-      media = <Card sensitive={status.get('sensitive')} onOpenMedia={this.props.onOpenMedia} card={status.get('card', null)} />;
-    }
+
+      return null;
+    };
 
     if (status.get('application')) {
       applicationLink = <> · <a className='detailed-status__application' href={status.getIn(['application', 'website'])} target='_blank' rel='noopener noreferrer'>{status.getIn(['application', 'name'])}</a></>;
@@ -272,16 +314,7 @@ class DetailedStatus extends ImmutablePureComponent {
     return (
       <div style={outerStyle}>
         <div ref={this.setRef} className={classNames('detailed-status', { compact })}>
-          {status.get('visibility') === 'direct' && (
-            <div className='status__prepend'>
-              <div className='status__prepend-icon-wrapper'><Icon id='at' className='status__prepend-icon' fixedWidth /></div>
-              <FormattedMessage id='status.direct_indicator' defaultMessage='Private mention' />
-            </div>
-          )}
-          <a href={`/@${status.getIn(['account', 'acct'])}`} onClick={this.handleAccountClick} className='detailed-status__display-name'>
-            <div className='detailed-status__display-avatar'><Avatar account={status.get('account')} size={46} /></div>
-            <DisplayName account={status.get('account')} localDomain={this.props.domain} />
-          </a>
+          {identity(status)}
 
           <StatusContent
             status={status}
@@ -290,7 +323,9 @@ class DetailedStatus extends ImmutablePureComponent {
             onTranslate={this.handleTranslate}
           />
 
-          {media}
+          {media(status, false)}
+
+          {quote(status, false, quoteMuted, this.handleQuoteClick, this.handleExpandedQuoteToggle, identity, media, this.context.router)}
 
           <div className='detailed-status__meta'>
             <a className='detailed-status__datetime' href={`/@${status.getIn(['account', 'acct'])}/${status.get('id')}`} target='_blank' rel='noopener noreferrer'>
@@ -304,4 +339,4 @@ class DetailedStatus extends ImmutablePureComponent {
 
 }
 
-export default injectIntl(DetailedStatus);
+export default connect(mapStateToProps)(injectIntl(DetailedStatus));

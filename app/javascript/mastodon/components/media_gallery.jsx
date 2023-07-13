@@ -221,10 +221,12 @@ class MediaGallery extends PureComponent {
     visible: PropTypes.bool,
     autoplay: PropTypes.bool,
     onToggleVisibility: PropTypes.func,
+    quote: PropTypes.bool,
   };
 
   static defaultProps = {
     standalone: false,
+    quote: false,
   };
 
   state = {
@@ -295,7 +297,7 @@ class MediaGallery extends PureComponent {
   }
 
   render () {
-    const { media, lang, intl, sensitive, defaultWidth, standalone, autoplay } = this.props;
+    const { media, lang, intl, sensitive, defaultWidth, standalone, autoplay, quote } = this.props;
     const { visible } = this.state;
     const width = this.state.width || defaultWidth;
 
@@ -307,6 +309,14 @@ class MediaGallery extends PureComponent {
       style.aspectRatio = `${this.props.media.getIn([0, 'meta', 'small', 'aspect'])}`;
     } else {
       style.aspectRatio = '16 / 9';
+    }
+
+    if (quote && style.height) {
+      style.height /= 2;
+    }
+
+    if (quote && style.height) {
+      style.height /= 2;
     }
 
     const size     = media.take(4).size;

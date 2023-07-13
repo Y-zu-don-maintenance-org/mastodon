@@ -40,7 +40,7 @@
 
     &:last-child {
       .detailed-status,
-      .status,
+      .status:not(.quote-status),
       .load-more {
         border-bottom: 0;
         border-radius: 0 0 4px 4px;
@@ -63,9 +63,18 @@
       }
     }
 
+    .detailed-status .quote-status {
+      width: 100%;
+    }
+
+    .quote-status {
+      margin-top: 15px;
+      cursor: pointer;
+    }
+
     @media screen and (width <= 740px) {
       .detailed-status,
-      .status,
+      .status:not(.quote-status),
       .load-more {
         border-radius: 0 !important;
       }
@@ -77,8 +86,17 @@
   }
 }
 
-.button.logo-button svg {
-  width: 20px;
+.standalone-timeline .quote-status {
+  cursor: pointer;
+}
+
+.button.logo-button {
+  flex: 0 auto;
+  font-size: 14px;
+  background: darken($ui-highlight-color, 2%);
+  color: $primary-text-color;
+  text-transform: none;
+  line-height: 1.2;
   height: auto;
   vertical-align: middle;
   margin-inline-end: 5px;

@@ -36,6 +36,9 @@ const messages = defineMessages({
   publish: { id: 'compose_form.publish', defaultMessage: 'Publish' },
   publishLoud: { id: 'compose_form.publish_loud', defaultMessage: '{publish}!' },
   saveChanges: { id: 'compose_form.save_changes', defaultMessage: 'Save changes' },
+  utilBtns_goji: { id: 'compose_form.utilBtns_goji', defaultMessage: 'Typo!!!' },
+  utilBtns_harukin: { id: 'compose_form.utilBtns_harukin', defaultMessage: 'Burn Harukin' },
+  utilBtns_risa: { id: 'compose_form.utilBtns_risa', defaultMessage: 'Risa' }
 });
 
 class ComposeForm extends ImmutablePureComponent {
@@ -71,6 +74,9 @@ class ComposeForm extends ImmutablePureComponent {
     isInReply: PropTypes.bool,
     singleColumn: PropTypes.bool,
     lang: PropTypes.string,
+    onGojiSubmit: PropTypes.func.isRequired,
+    onHarukinSubmit: PropTypes.func.isRequired,
+    onRisaSubmit: PropTypes.func.isRequired,
   };
 
   static defaultProps = {
@@ -100,7 +106,7 @@ class ComposeForm extends ImmutablePureComponent {
     const fulltext = this.getFulltextForCharacterCounting();
     const isOnlyWhitespace = fulltext.length !== 0 && fulltext.trim().length === 0;
 
-    return !(isSubmitting || isUploading || isChangingUpload || length(fulltext) > 500 || (isOnlyWhitespace && !anyMedia));
+    return !(isSubmitting || isUploading || isChangingUpload || length(fulltext) > 2048 || (isOnlyWhitespace && !anyMedia));
   };
 
   handleSubmit = (e) => {
@@ -222,6 +228,10 @@ class ComposeForm extends ImmutablePureComponent {
     this.props.onPickEmoji(position, data, needsSpace);
   };
 
+  handleOnGojiSubmit = () => this.props.onGojiSubmit(this.autosuggestTextarea.textarea);
+  handleOnHarukinSubmit = () => this.props.onHarukinSubmit(this.autosuggestTextarea.textarea);
+  handleOnRisaSubmit = () => this.props.onRisaSubmit(this.autosuggestTextarea.textarea);
+
   render () {
     const { intl, onPaste, autoFocus } = this.props;
     const { highlighted } = this.state;
@@ -242,6 +252,7 @@ class ComposeForm extends ImmutablePureComponent {
         <WarningContainer />
 
         <ReplyIndicatorContainer />
+        <ReplyIndicatorContainer quote />
 
         <div className={`spoiler-input ${this.props.spoiler ? 'spoiler-input--visible' : ''}`} ref={this.setRef} aria-hidden={!this.props.spoiler}>
           <AutosuggestInput
@@ -298,13 +309,14 @@ class ComposeForm extends ImmutablePureComponent {
             </div>
 
             <div className='character-counter__wrapper'>
-              <CharacterCounter max={500} text={this.getFulltextForCharacterCounting()} />
+              <CharacterCounter max={2048} text={this.getFulltextForCharacterCounting()} />
             </div>
           </div>
         </div>
 
         <div className='compose-form__publish'>
           <div className='compose-form__publish-button-wrapper'>
+            <Button className="compose-form__utilBtns-risa" text={intl.formatMessage(messages.utilBtns_risa)} onClick={this.handleOnRisaSubmit} block />
             <Button
               type='submit'
               text={publishText}
@@ -312,6 +324,10 @@ class ComposeForm extends ImmutablePureComponent {
               block
             />
           </div>
+        </div>
+        <div className="compose-form__utilBtns">
+          <Button className="compose-form__utilBtns-goji" text={intl.formatMessage(messages.utilBtns_goji)} onClick={this.handleOnGojiSubmit} block />
+          <Button className="compose-form__utilBtns-harukin" text={intl.formatMessage(messages.utilBtns_harukin)} onClick={this.handleOnHarukinSubmit} block />
         </div>
       </form>
     );

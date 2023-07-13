@@ -59,6 +59,7 @@ export default class Card extends PureComponent {
     onOpenMedia: PropTypes.func.isRequired,
     compact: PropTypes.bool,
     sensitive: PropTypes.bool,
+    quote: PropTypes.bool,
   };
 
   static defaultProps = {
@@ -148,7 +149,7 @@ export default class Card extends PureComponent {
   }
 
   render () {
-    const { card, compact } = this.props;
+    const { card, compact, quote } = this.props;
     const { embedded, revealed } = this.state;
 
     if (card === null) {
@@ -175,7 +176,7 @@ export default class Card extends PureComponent {
     };
 
     if (horizontal) {
-      thumbnailStyle.aspectRatio = (compact && !embedded) ? '16 / 9' : `${card.get('width')} / ${card.get('height')}`;
+      thumbnailStyle.aspectRatio = (compact && !embedded) ? '16 / 9' : `${card.get('width')} / ${card.get('height') / (quote ? 2 : 1)}`;
     }
 
     let embed     = '';

@@ -124,6 +124,7 @@ class Video extends PureComponent {
     autoPlay: PropTypes.bool,
     volume: PropTypes.number,
     muted: PropTypes.bool,
+    quote: PropTypes.bool,
     componentIndex: PropTypes.number,
     autoFocus: PropTypes.bool,
   };
@@ -500,13 +501,18 @@ class Video extends PureComponent {
   }
 
   render () {
-    const { preview, src, inline, onOpenVideo, onCloseVideo, intl, alt, lang, detailed, sensitive, editable, blurhash, autoFocus } = this.props;
+    const { preview, src, inline, onOpenVideo, onCloseVideo, intl, alt, lang, detailed, sensitive, editable, blurhash, autoFocus, quote } = this.props;
     const { currentTime, duration, volume, buffer, dragging, paused, fullscreen, hovered, muted, revealed } = this.state;
     const progress = Math.min((currentTime / duration) * 100, 100);
     const playerStyle = {};
 
     if (inline) {
-      playerStyle.aspectRatio = '16 / 9';
+      playerStyle.aspectRatio = quote ? '32 / 9' : '16 / 9';
+    }
+
+    if (quote && height) {
+      height /= 2;
+      playerStyle.height = height;
     }
 
     let preload;

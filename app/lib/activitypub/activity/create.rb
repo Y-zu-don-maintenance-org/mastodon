@@ -76,6 +76,7 @@ class ActivityPub::Activity::Create < ActivityPub::Activity
     @silenced_account_ids = []
     @params               = {}
 
+    process_quote
     process_status_params
     process_tags
     process_audience
@@ -125,6 +126,7 @@ class ActivityPub::Activity::Create < ActivityPub::Activity
       conversation: conversation_from_uri(@object['conversation']),
       media_attachment_ids: process_attachments.take(4).map(&:id),
       poll: process_poll,
+      quote: @quote,
     }
   end
 
@@ -423,5 +425,21 @@ class ActivityPub::Activity::Create < ActivityPub::Activity
   rescue ActiveRecord::StaleObjectError
     poll.reload
     retry
+  end
+
+  def process_quote
+    return unless (@quote = quote_from_url(@object['quoteUrl']))
+
+    %r{<br><br>RE:\s</span><a.*</a>}.match(@object['content']) do |m|
+      @object['content'] = @object['content'].sub(m[0], "</span><span class=\"quote-inline\">#{m[0].sub(%r{</span>}, '')}</span>")
+    end
+  end
+
+  def quote_from_url(url)
+    return nil if url.nil?
+    quote = ResolveURLService.new.call(url)
+    status_from_uri(quote.uri) if quote
+  rescue
+    nil
   end
 end

@@ -965,6 +965,7 @@ ActiveRecord::Schema[6.1].define(version: 2023_07_02_151753) do
     t.bigint "account_id", null: false
     t.bigint "application_id"
     t.bigint "in_reply_to_account_id"
+    t.bigint "quote_id"
     t.bigint "poll_id"
     t.datetime "deleted_at"
     t.datetime "edited_at"
@@ -977,6 +978,7 @@ ActiveRecord::Schema[6.1].define(version: 2023_07_02_151753) do
     t.index ["id", "account_id"], name: "index_statuses_public_20200119", order: { id: :desc }, where: "((deleted_at IS NULL) AND (visibility = 0) AND (reblog_of_id IS NULL) AND ((NOT reply) OR (in_reply_to_account_id = account_id)))"
     t.index ["in_reply_to_account_id"], name: "index_statuses_on_in_reply_to_account_id", where: "(in_reply_to_account_id IS NOT NULL)"
     t.index ["in_reply_to_id"], name: "index_statuses_on_in_reply_to_id", where: "(in_reply_to_id IS NOT NULL)"
+    t.index ["quote_id"], name: "index_statuses_on_quote_id"
     t.index ["reblog_of_id", "account_id"], name: "index_statuses_on_reblog_of_id_and_account_id"
     t.index ["uri"], name: "index_statuses_on_uri", unique: true, opclass: :text_pattern_ops, where: "(uri IS NOT NULL)"
   end

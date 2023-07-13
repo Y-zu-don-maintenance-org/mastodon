@@ -726,10 +726,29 @@ body > [data-popper-placement] {
     justify-content: flex-end;
     min-width: 0;
     flex: 0 0 auto;
+    padding-top: 10px;
 
     .compose-form__publish-button-wrapper {
       overflow: hidden;
       padding-top: 15px;
+      button {
+        display: inline-block;
+        width: auto;
+
+        margin-right: 0.5em;
+      }
+
+      button:last-child {
+        margin-right: auto;
+      }
+    }
+  }
+
+  .compose-form__utilBtns {
+    padding-top: 10px;
+
+    * {
+      margin-bottom: 0.5em;
     }
   }
 }
@@ -800,6 +819,10 @@ body > [data-popper-placement] {
   min-height: 23px;
   overflow-y: auto;
   flex: 0 2 auto;
+
+  &.quote-indicator {
+    background: $success-green;
+  }
 }
 
 .reply-indicator__header {
@@ -981,6 +1004,10 @@ body > [data-popper-placement] {
 
 .status__content.status__content--collapsed {
   max-height: 22px * 15; // 15 lines is roughly above 500 characters
+
+  .quote-status & {
+    max-height: 22px * 5;
+  }
 }
 
 .status__content__read-more-button,
@@ -1054,6 +1081,69 @@ body > [data-popper-placement] {
   }
 }
 
+.quote-status {
+  border: solid 1px $ui-base-lighter-color;
+  border-radius: 4px !important;
+  padding: 5px !important;
+  margin-top: 8px;
+  position: relative;
+
+  .muted-quote,
+  .unlisted-quote button {
+    color: $dark-text-color;
+    font-size: 15px;
+    width: 100%;
+    border: 0;
+    padding: 0;
+  }
+
+  .muted-quote {
+    text-align: center;
+    cursor: default;
+  }
+
+  .unlisted-quote button {
+    background-color: transparent;
+    cursor: pointer;
+    appearance: none;
+  }
+
+  .status__avatar,
+  .detailed-status__display-avatar {
+    position: absolute;
+    top: 5px !important;
+    left: 5px !important;
+  }
+
+  .display-name {
+    padding-left: 56px;
+  }
+
+  .detailed-status__display-name {
+    margin-bottom: 0;
+    line-height: unset;
+
+    strong,
+    span {
+      display: inline;
+    }
+  }
+
+  .status__content__text {
+    p {
+      display: inline;
+
+      &::after {
+        content: ' ';
+      }
+    }
+  }
+}
+
+.quote-inline {
+  display: none;
+}
+
 .focusable {
   &:focus {
     outline: 0;
@@ -1069,8 +1159,11 @@ body > [data-popper-placement] {
 .status {
   padding: 16px;
   min-height: 54px;
-  border-bottom: 1px solid lighten($ui-base-color, 8%);
   cursor: auto;
+
+  &:not(.quote-status) {
+    border-bottom: 1px solid lighten($ui-base-color, 8%);
+  }
 
   @keyframes fade {
     0% {

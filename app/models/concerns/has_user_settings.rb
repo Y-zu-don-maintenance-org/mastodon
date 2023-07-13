@@ -99,6 +99,10 @@ module HasUserSettings
     settings['web.disable_swiping']
   end
 
+  def setting_place_tab_bar_at_bottom
+    settings['web.place_tab_bar_at_bottom']
+  end
+
   def setting_always_send_emails
     settings['always_send_emails']
   end
