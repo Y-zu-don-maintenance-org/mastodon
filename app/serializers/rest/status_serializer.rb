@@ -205,7 +205,6 @@ class REST::NestedQuoteSerializer < REST::StatusSerializer
       current_user.account.muting?(object.account) || object.account.blocking?(current_user.account) || current_user.account.blocking?(object.account) || current_user.account.domain_blocking?(object.account.domain)
     end
   end
-
 end
 
 class REST::StatusSerializer < ActiveModel::Serializer

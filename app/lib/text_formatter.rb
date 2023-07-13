@@ -5,7 +5,7 @@ class TextFormatter
   include ERB::Util
   include RoutingHelper
 
-  URL_PREFIX_REGEX = /\A(https?:\/\/(www\.)?|xmpp:)/.freeze
+  URL_PREFIX_REGEX = %r{\A(https?://(www\.)?|xmpp:)}
 
   DEFAULT_REL = %w(nofollow noopener noreferrer).freeze
 
@@ -65,7 +65,7 @@ class TextFormatter
       cutoff      = url[prefix.length..-1].length > 30
 
       <<~HTML.squish.html_safe # rubocop:disable Rails/OutputSafety
-        <a href="#{h(url)}" target="_blank" rel="#{rel.join(' ')}"><span class="invisible">#{h(prefix)}</span><span class="#{cutoff ? 'ellipsis' : ''}">#{h(display_url)}</span><span class="invisible">#{h(suffix)}</span></a>
+        <a href="#{h(url)}" target="_blank" rel="#{rel.join(' ')}" translate="no"><span class="invisible">#{h(prefix)}</span><span class="#{cutoff ? 'ellipsis' : ''}">#{h(display_url)}</span><span class="invisible">#{h(suffix)}</span></a>
       HTML
     rescue Addressable::URI::InvalidURIError, IDN::Idna::IdnaError
       h(url)
@@ -134,7 +134,14 @@ class TextFormatter
     display_username = same_username_hits&.positive? || with_domains? ? account.pretty_acct : account.username
 
     <<~HTML.squish
-      <span class="h-card"><a href="#{h(url)}" class="u-url mention">@<span>#{h(display_username)}</span></a></span>
+      <span class="h-card" translate="no"><a href="#{h(url)}" class="u-url mention">@<span>#{h(display_username)}</span></a></span>
+    HTML
+  end
+
+  def render_quote
+    link = link_to_url({ url: ap_tag_manager.url_for(quote) })
+    <<~HTML.squish
+      <span class="quote-inline"><br/>~~~~~~~~~~<br/>[#{link}]</span>
     HTML
   end
 

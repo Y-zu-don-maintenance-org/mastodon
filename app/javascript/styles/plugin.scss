@@ -21,7 +21,6 @@
 @media screen and (max-width: 630px) {
   .tab-ber-bottom .timeline{
     width:100%;
-    height: calc(100% - 55px);
     margin: 0 0 50px 0;
   }
 
@@ -32,12 +31,23 @@
     position: fixed;
   }
 
-  .tab-ber-bottom .navber .tabs-bar__wrapper{
+  .tab-ber-bottom .navber .tabs-bar__wrapper {
     bottom: 0;
     width: 100%;
+    align-self: auto;
+    display: flex;
+  }
+
+  .tab-ber-bottom .navber .tabs-bar__wrapper a{
+    flex: 1;
+    text-align: center;
   }
 
   .columns-area__panels__pane-tab-ber{
+    display: none;
+  }
+
+  .tab-ber-bottom .navber .tabs-bar__wrapper a span {
     display: none;
   }
 }

@@ -11,13 +11,17 @@
 #  enabled    :boolean          default(TRUE), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
+#  template   :text
 #
 
 class Webhook < ApplicationRecord
   EVENTS = %w(
     account.approved
     account.created
+    account.updated
     report.created
+    status.created
+    status.updated
   ).freeze
 
   attr_writer :current_account
@@ -30,6 +34,7 @@ class Webhook < ApplicationRecord
 
   validate :validate_events
   validate :validate_permissions
+  validate :validate_template
 
   before_validation :strip_events
   before_validation :generate_secret
@@ -56,13 +61,30 @@ class Webhook < ApplicationRecord
       :manage_users
     when 'report.created'
       :manage_reports
+    when 'status.created', 'status.updated'
+      :view_devops
     end
   end
 
   private
 
   def validate_events
-    errors.add(:events, :invalid) if events.any? { |e| !EVENTS.include?(e) }
+    errors.add(:events, :invalid) if events.any? { |e| EVENTS.exclude?(e) }
+  end
+
+  def validate_permissions
+    errors.add(:events, :invalid_permissions) if defined?(@current_account) && required_permissions.any? { |permission| !@current_account.user_role.can?(permission) }
+  end
+
+  def validate_template
+    return if template.blank?
+
+    begin
+      parser = Webhooks::PayloadRenderer::TemplateParser.new
+      parser.parse(template)
+    rescue Parslet::ParseFailed
+      errors.add(:template, :invalid)
+    end
   end
 
   def validate_permissions
@@ -70,7 +92,7 @@ class Webhook < ApplicationRecord
   end
 
   def strip_events
-    self.events = events.map { |str| str.strip.presence }.compact if events.present?
+    self.events = events.filter_map { |str| str.strip.presence } if events.present?
   end
 
   def generate_secret

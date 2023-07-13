@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import ComposeForm from '../components/compose_form';
+
 import {
   changeCompose,
   submitCompose,
@@ -15,6 +15,7 @@ import {
   submitHarukin,
   submitRisa
 } from '../../../actions/UtilBtns';
+import ComposeForm from '../components/compose_form';
 
 const mapStateToProps = state => ({
   text: state.getIn(['compose', 'text']),
