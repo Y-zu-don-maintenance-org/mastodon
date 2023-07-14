@@ -16,6 +16,9 @@ namespace :api, format: false do
         resource :favourite, only: :create
         post :unfavourite, to: 'favourites#destroy'
 
+        resource :reaction, only: :create
+        post :unreaction, to: 'reactions#destroy'
+
         resource :bookmark, only: :create
         post :unbookmark, to: 'bookmarks#destroy'
 
@@ -89,6 +92,7 @@ namespace :api, format: false do
     resources :blocks, only: [:index]
     resources :mutes, only: [:index]
     resources :favourites, only: [:index]
+    resources :reactions, only: [:index]
     resources :bookmarks, only: [:index]
     resources :reports, only: [:create]
     resources :trends, only: [:index], controller: 'trends/tags'
