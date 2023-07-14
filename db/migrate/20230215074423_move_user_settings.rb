@@ -28,6 +28,7 @@ class MoveUserSettings < ActiveRecord::Migration[6.1]
     use_pending_items: 'web.use_pending_items',
     crop_images: 'web.crop_images',
     place_tab_bar_at_bottom: 'web.place_tab_bar_at_bottom',
+    show_status_reaction: 'web.show_status_reaction',
     notification_emails: {
       follow: 'notification_emails.follow',
       reblog: 'notification_emails.reblog',

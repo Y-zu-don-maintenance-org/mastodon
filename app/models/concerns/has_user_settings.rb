@@ -103,6 +103,10 @@ module HasUserSettings
     settings['web.place_tab_bar_at_bottom']
   end
 
+  def setting_show_status_reaction
+    settings['web.show_status_reaction']
+  end
+
   def setting_always_send_emails
     settings['always_send_emails']
   end

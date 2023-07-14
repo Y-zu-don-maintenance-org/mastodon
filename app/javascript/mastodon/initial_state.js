@@ -82,6 +82,7 @@
  * @property {boolean=} use_pending_items
  * @property {string} version
  * @property {boolean} place_tab_bar_at_bottom
+ * @property {boolean} show_status_reaction
  */
 
 /**
