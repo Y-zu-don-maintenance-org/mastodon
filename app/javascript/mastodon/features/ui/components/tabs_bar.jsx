@@ -1,20 +1,9 @@
 import PropTypes from 'prop-types';
 import { Component } from 'react';
-
 import { defineMessages, injectIntl } from 'react-intl';
-
-import { Link } from 'react-router-dom';
-
-import { WordmarkLogo } from 'mastodon/components/logo';
-import NavigationPortal from 'mastodon/components/navigation_portal';
-import { timelinePreview, trendsEnabled } from 'mastodon/initial_state';
-
 import ColumnLink from './column_link';
-import DisabledAccountBanner from './disabled_account_banner';
-import FollowRequestsColumnLink from './follow_requests_column_link';
-import ListPanel from './list_panel';
 import NotificationsCounterIcon from './notifications_counter_icon';
-import SignInBanner from './sign_in_banner';
+
 
 const messages = defineMessages({
   home: { id: 'tabs_bar.home', defaultMessage: 'Home' },
@@ -29,6 +18,7 @@ const messages = defineMessages({
   followsAndFollowers: { id: 'navigation_bar.follows_and_followers', defaultMessage: 'Follows and followers' },
   about: { id: 'navigation_bar.about', defaultMessage: 'About' },
   search: { id: 'navigation_bar.search', defaultMessage: 'Search' },
+  gettingStarted: { id: 'getting_started.heading', defaultMessage: 'Getting Started' },
 });
 
 class TabsBar extends Component {
@@ -53,9 +43,9 @@ class TabsBar extends Component {
       <div className='tabs-bar__wrapper'>
         <ColumnLink transparent to='/home' icon='home' text={intl.formatMessage(messages.home)} />
         <ColumnLink transparent to='/notifications' icon={<NotificationsCounterIcon className='column-link__icon' />} text={intl.formatMessage(messages.notifications)} />
-        <ColumnLink transparent to='/search' icon='search' text={intl.formatMessage(messages.search)} />
         <ColumnLink transparent to='/public/local' isActive={this.isFirehoseActive} icon='globe' text={intl.formatMessage(messages.firehose)} />
-        <ColumnLink transparent to='/getting-started' icon='bars' text={intl.formatMessage(messages.about)} />
+        <ColumnLink transparent to='/search' icon='search' text={intl.formatMessage(messages.search)} />
+        <ColumnLink transparent to='/getting-started' icon='bars' text={intl.formatMessage(messages.gettingStarted)} />
       </div>
     );
   }
