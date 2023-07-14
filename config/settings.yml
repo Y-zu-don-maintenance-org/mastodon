@@ -35,6 +35,7 @@ defaults: &defaults
   peers_api_enabled: true
   show_domain_blocks: 'disabled'
   show_domain_blocks_rationale: 'disabled'
+  setting_show_status_reaction: false
   require_invite_text: false
   backups_retention_period: 7
   captcha_enabled: false

@@ -9,6 +9,7 @@ import ImmutablePropTypes from 'react-immutable-proptypes';
 import { connect } from 'react-redux';
 
 import { PERMISSION_MANAGE_USERS, PERMISSION_MANAGE_FEDERATION } from 'mastodon/permissions';
+import ReactionDropdownMenuContainer from '../../../containers/reaction_dropdown_menu_container';
 
 import { IconButton } from '../../../components/icon_button';
 import StatusActionBar from '../../../components/status_action_bar';
@@ -29,6 +30,7 @@ const messages = defineMessages({
   quote: { id: 'status.quote', defaultMessage: 'Quote' },
   cannot_quote: { id: 'status.cannot_quote', defaultMessage: 'This post cannot be quoted' },
   favourite: { id: 'status.favourite', defaultMessage: 'Favourite' },
+  reaction: { id: 'status.reaction', defaultMessage: 'Reaction' },
   bookmark: { id: 'status.bookmark', defaultMessage: 'Bookmark' },
   more: { id: 'status.more', defaultMessage: 'More' },
   mute: { id: 'status.mute', defaultMessage: 'Mute @{name}' },
@@ -69,6 +71,7 @@ class ActionBar extends PureComponent {
     onReblog: PropTypes.func.isRequired,
     onQuote: PropTypes.func,
     onFavourite: PropTypes.func.isRequired,
+    onReaction: PropTypes.func.isRequired,
     onBookmark: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
     onEdit: PropTypes.func.isRequired,

@@ -44,11 +44,13 @@ import {
   Following,
   Reblogs,
   Favourites,
+  Reactions,
   DirectTimeline,
   HashtagTimeline,
   Notifications,
   FollowRequests,
   FavouritedStatuses,
+  ReactedStatuses,
   BookmarkedStatuses,
   FollowedTags,
   ListTimeline,
@@ -93,6 +95,7 @@ const keyMap = {
   focusColumn: ['1', '2', '3', '4', '5', '6', '7', '8', '9'],
   reply: 'r',
   favourite: 'f',
+  reaction: 'r e',
   boost: 'b',
   mention: 'm',
   open: ['enter', 'o'],
@@ -107,6 +110,7 @@ const keyMap = {
   goToDirect: 'g d',
   goToStart: 'g s',
   goToFavourites: 'g f',
+  goToReactions: 'g r e',
   goToPinned: 'g p',
   goToProfile: 'g u',
   goToBlocked: 'g b',
@@ -197,6 +201,7 @@ class SwitchingColumnsArea extends PureComponent {
           <WrappedRoute path='/lists/:id' component={ListTimeline} content={children} />
           <WrappedRoute path='/notifications' component={Notifications} content={children} />
           <WrappedRoute path='/favourites' component={FavouritedStatuses} content={children} />
+          <WrappedRoute path='/reactions' component={ReactedStatuses} content={children} />
 
           <WrappedRoute path='/bookmarks' component={BookmarkedStatuses} content={children} />
           <WrappedRoute path='/pinned' component={PinnedStatuses} content={children} />
@@ -215,6 +220,7 @@ class SwitchingColumnsArea extends PureComponent {
           <WrappedRoute path='/@:acct/:statusId' exact component={Status} content={children} />
           <WrappedRoute path='/@:acct/:statusId/reblogs' component={Reblogs} content={children} />
           <WrappedRoute path='/@:acct/:statusId/favourites' component={Favourites} content={children} />
+          <WrappedRoute path='/@:acct/:statusId/reactions' component={Reactions} content={children} />
 
           {/* Legacy routes, cannot be easily factored with other routes because they share a param name */}
           <WrappedRoute path='/timelines/tag/:id' component={HashtagTimeline} content={children} />
@@ -222,6 +228,7 @@ class SwitchingColumnsArea extends PureComponent {
           <WrappedRoute path='/statuses/:statusId' exact component={Status} content={children} />
           <WrappedRoute path='/statuses/:statusId/reblogs' component={Reblogs} content={children} />
           <WrappedRoute path='/statuses/:statusId/favourites' component={Favourites} content={children} />
+          <WrappedRoute path='/statuses/:statusId/reactions' component={Reactions} content={children} />
 
           <WrappedRoute path='/follow_requests' component={FollowRequests} content={children} />
           <WrappedRoute path='/blocks' component={Blocks} content={children} />
@@ -522,6 +529,10 @@ class UI extends PureComponent {
     this.context.router.history.push('/favourites');
   };
 
+  handleHotkeyGoToReactions = () => {
+    this.context.router.history.push('/reactions');
+  };
+
   handleHotkeyGoToPinned = () => {
     this.context.router.history.push('/pinned');
   };
@@ -561,6 +572,7 @@ class UI extends PureComponent {
       goToDirect: this.handleHotkeyGoToDirect,
       goToStart: this.handleHotkeyGoToStart,
       goToFavourites: this.handleHotkeyGoToFavourites,
+      goToReactions: this.handleHotkeyGoToReactions,
       goToPinned: this.handleHotkeyGoToPinned,
       goToProfile: this.handleHotkeyGoToProfile,
       goToBlocked: this.handleHotkeyGoToBlocked,

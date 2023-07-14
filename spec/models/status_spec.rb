@@ -7,6 +7,7 @@ RSpec.describe Status do
 
   let(:alice) { Fabricate(:account, username: 'alice') }
   let(:bob)   { Fabricate(:account, username: 'bob') }
+  let(:carol)   { Fabricate(:account, username: 'carol') }
   let(:other) { Fabricate(:status, account: bob, text: 'Skulls for the skull god! The enemy\'s gates are sideways!') }
 
   describe '#local?' do
@@ -194,6 +195,23 @@ RSpec.describe Status do
     end
   end
 
+  describe '#reactions_count' do
+    it 'is the number of reactions' do
+      Fabricate(:reaction, account: bob, status: subject, name: '✋')
+      Fabricate(:reaction, account: alice, status: subject, name: '✊')
+      expect(subject.reactions_count).to eq 2
+      Fabricate(:reaction, account: carol, status: subject, name: '✋')
+      expect(subject.reactions_count).to eq 3
+    end
+
+    it 'is decremented when reaction is removed' do
+      reaction = Fabricate(:reaction, account: bob, status: subject, name: '✋')
+      expect(subject.reactions_count).to eq 1
+      reaction.destroy
+      expect(subject.reactions_count).to eq 0
+    end
+  end
+
   describe '#proper' do
     it 'is itself for original statuses' do
       expect(subject.proper).to eq subject
@@ -233,6 +251,22 @@ RSpec.describe Status do
 
     it 'contains true value' do
       Fabricate(:favourite, status: status, account: account)
+      expect(subject[status.id]).to be true
+    end
+  end
+  
+  describe '.reactions_map' do
+    let(:status)  { Fabricate(:status) }
+    let(:account) { Fabricate(:account) }
+
+    subject { Status.reactions_map([status], account) }
+
+    it 'returns a hash' do
+      expect(subject).to be_a Hash
+    end
+
+    it 'contains true value' do
+      Fabricate(:reaction, status: status, account: account, name: '✋')
       expect(subject[status.id]).to be true
     end
   end

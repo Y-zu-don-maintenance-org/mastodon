@@ -4,6 +4,7 @@ import { PureComponent } from 'react';
 import { Helmet } from 'react-helmet';
 
 import Base from 'mastodon/components/modal_root';
+
 import {
   MuteModal,
   BlockModal,
@@ -43,6 +44,7 @@ export const MODAL_COMPONENTS = {
   'BLOCK': BlockModal,
   'REPORT': ReportModal,
   'ACTIONS': () => Promise.resolve({ default: ActionsModal }),
+  'REACTION': () => Promise.resolve({ default: ReactionModal }),
   'EMBED': EmbedModal,
   'LIST_EDITOR': ListEditor,
   'FOCAL_POINT': () => Promise.resolve({ default: FocalPointModal }),
@@ -86,7 +88,7 @@ export default class ModalRoot extends PureComponent {
   };
 
   renderLoading = modalId => () => {
-    return ['MEDIA', 'VIDEO', 'BOOST', 'CONFIRM', 'ACTIONS'].indexOf(modalId) === -1 ? <ModalLoading /> : null;
+    return ['MEDIA', 'VIDEO', 'BOOST', 'CONFIRM', 'ACTIONS', 'REACTION'].indexOf(modalId) === -1 ? <ModalLoading /> : null;
   };
 
   renderError = (props) => {

@@ -12,6 +12,7 @@ import { HotKeys } from 'react-hotkeys';
 
 import { Icon }  from 'mastodon/components/icon';
 import PictureInPicturePlaceholder from 'mastodon/components/picture_in_picture_placeholder';
+import StatusReactionBar from '../containers/status_reaction_bar_container';
 
 import Card from '../features/status/components/card';
 // We use the component (and not the container) since we do not want
@@ -152,6 +153,7 @@ class Status extends ImmutablePureComponent {
 
   static contextTypes = {
     router: PropTypes.object,
+    identity: PropTypes.object,
   };
 
   static propTypes = {
@@ -163,6 +165,7 @@ class Status extends ImmutablePureComponent {
     onClick: PropTypes.func,
     onReply: PropTypes.func,
     onFavourite: PropTypes.func,
+    onReaction: PropTypes.func,
     onReblog: PropTypes.func,
     onDelete: PropTypes.func,
     onDirect: PropTypes.func,
@@ -687,6 +690,7 @@ class Status extends ImmutablePureComponent {
 
             {quote(status, this.props.muted, quoteMuted, this.handleQuoteClick, this.handleExpandedQuoteToggle, identity, media, this.context.router, contextType)}
 
+            <StatusReactionBar status={status} signedIn={signedIn}/>
             <StatusActionBar scrollKey={scrollKey} status={status} account={account} onFilter={matchedFilters ? this.handleFilterClick : null} {...other} />
           </div>
         </div>

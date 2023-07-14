@@ -23,6 +23,8 @@ import {
 import {
   FAVOURITE_SUCCESS,
   UNFAVOURITE_SUCCESS,
+  REACTION_SUCCESS,
+  UNREACTION_SUCCESS,
   BOOKMARK_SUCCESS,
   UNBOOKMARK_SUCCESS,
   PIN_SUCCESS,
@@ -41,9 +43,13 @@ import {
 } from '../actions/trends';
 
 
-
 const initialState = ImmutableMap({
   favourites: ImmutableMap({
+    next: null,
+    loaded: false,
+    items: ImmutableOrderedSet(),
+  }),
+  reactions: ImmutableMap({
     next: null,
     loaded: false,
     items: ImmutableOrderedSet(),
@@ -108,6 +114,16 @@ export default function statusLists(state = initialState, action) {
     return normalizeList(state, 'favourites', action.statuses, action.next);
   case FAVOURITED_STATUSES_EXPAND_SUCCESS:
     return appendToList(state, 'favourites', action.statuses, action.next);
+  case REACTED_STATUSES_FETCH_REQUEST:
+  case REACTED_STATUSES_EXPAND_REQUEST:
+    return state.setIn(['reactions', 'isLoading'], true);
+  case REACTED_STATUSES_FETCH_FAIL:
+  case REACTED_STATUSES_EXPAND_FAIL:
+    return state.setIn(['reactions', 'isLoading'], false);
+  case REACTED_STATUSES_FETCH_SUCCESS:
+    return normalizeList(state, 'reactions', action.statuses, action.next);
+  case REACTED_STATUSES_EXPAND_SUCCESS:
+    return appendToList(state, 'reactions', action.statuses, action.next);
   case BOOKMARKED_STATUSES_FETCH_REQUEST:
   case BOOKMARKED_STATUSES_EXPAND_REQUEST:
     return state.setIn(['bookmarks', 'isLoading'], true);
@@ -132,6 +148,10 @@ export default function statusLists(state = initialState, action) {
     return prependOneToList(state, 'favourites', action.status);
   case UNFAVOURITE_SUCCESS:
     return removeOneFromList(state, 'favourites', action.status);
+  case REACTION_SUCCESS:
+    return prependOneToList(state, 'reactions', action.status);
+  case UNREACTION_SUCCESS:
+    return removeOneFromList(state, 'reactions', action.status);
   case BOOKMARK_SUCCESS:
     return prependOneToList(state, 'bookmarks', action.status);
   case UNBOOKMARK_SUCCESS:

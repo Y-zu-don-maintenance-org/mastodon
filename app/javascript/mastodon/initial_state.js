@@ -138,5 +138,6 @@ export const languages = initialState?.languages;
 // @ts-expect-error
 export const statusPageUrl = getMeta('status_page_url');
 export const place_tab_bar_at_bottom = getMeta('place_tab_bar_at_bottom');
+export const show_status_reaction = getMeta('show_status_reaction');
 
 export default initialState;

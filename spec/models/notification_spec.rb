@@ -8,6 +8,7 @@ RSpec.describe Notification do
     let(:status)       { Fabricate(:status) }
     let(:reblog)       { Fabricate(:status, reblog: status) }
     let(:favourite)    { Fabricate(:favourite, status: status) }
+    let(:reaction)     { Fabricate(:reaction, status: status, name: '✋') }
     let(:mention)      { Fabricate(:mention, status: status) }
 
     context 'when Activity is reblog' do
@@ -21,6 +22,15 @@ RSpec.describe Notification do
     context 'when Activity is favourite' do
       let(:type)     { :favourite }
       let(:activity) { favourite }
+
+      it 'returns status' do
+        expect(notification.target_status).to eq status
+      end
+    end
+
+    context 'activity is reaction' do
+      let(:type)     { :reaction }
+      let(:activity) { reaction }
 
       it 'returns status' do
         expect(notification.target_status).to eq status
@@ -50,6 +60,11 @@ RSpec.describe Notification do
     it 'returns :favourite for a Favourite' do
       notification = described_class.new(activity: Favourite.new)
       expect(notification.type).to eq :favourite
+    end
+
+    it 'returns :reaction for a Reaction' do
+      notification = Notification.new(activity: Reaction.new)
+      expect(notification.type).to eq :reaction
     end
 
     it 'returns :follow for a Follow' do
@@ -85,6 +100,7 @@ RSpec.describe Notification do
       let(:follow) { Fabricate(:follow) }
       let(:follow_request) { Fabricate(:follow_request) }
       let(:favourite) { Fabricate(:favourite) }
+      let(:reaction) { Fabricate(:reaction) }
       let(:poll) { Fabricate(:poll) }
 
       let(:notifications) do
@@ -95,6 +111,7 @@ RSpec.describe Notification do
           Fabricate(:notification, type: :follow, activity: follow),
           Fabricate(:notification, type: :follow_request, activity: follow_request),
           Fabricate(:notification, type: :favourite, activity: favourite),
+          Fabricate(:notification, type: :reaction, activity: reaction),
           Fabricate(:notification, type: :poll, activity: poll),
         ]
       end
@@ -133,11 +150,23 @@ RSpec.describe Notification do
           expect(subject[5].favourite.association(:status)).to be_loaded
         end
 
+<<<<<<< HEAD
         it 'preloads poll' do
           expect(subject[6].type).to eq :poll
           expect(subject[6].association(:poll)).to be_loaded
           expect(subject[6].poll.association(:status)).to be_loaded
         end
+=======
+        # reaction
+        expect(subject[6].type).to eq :reaction
+        expect(subject[6].association(:reaction)).to be_loaded
+        expect(subject[6].reaction.association(:status)).to be_loaded
+
+        # poll
+        expect(subject[7].type).to eq :poll
+        expect(subject[7].association(:poll)).to be_loaded
+        expect(subject[7].poll.association(:status)).to be_loaded
+>>>>>>> 0da63217ab5198bc0100f2a751295fc6cf7fb4b5
       end
 
       context 'with a cached status' do
@@ -175,11 +204,23 @@ RSpec.describe Notification do
           expect(subject[5].target_status).to eq favourite.status
         end
 
+<<<<<<< HEAD
         it 'replaces poll' do
           expect(subject[6].type).to eq :poll
           expect(subject[6].target_status.association(:account)).to be_loaded
           expect(subject[6].target_status).to eq poll.status
         end
+=======
+        # reaction
+        expect(subject[6].type).to eq :reaction
+        expect(subject[6].target_status.association(:account)).to be_loaded
+        expect(subject[6].target_status).to eq reaction.status
+
+        # poll
+        expect(subject[7].type).to eq :poll
+        expect(subject[7].target_status.association(:account)).to be_loaded
+        expect(subject[7].target_status).to eq poll.status
+>>>>>>> 0da63217ab5198bc0100f2a751295fc6cf7fb4b5
       end
     end
   end

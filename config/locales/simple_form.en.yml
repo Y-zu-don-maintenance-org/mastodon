@@ -60,6 +60,7 @@ en:
         setting_hide_network: Who you follow and who follows you will be hidden on your profile
         setting_noindex: Affects your public profile and post pages
         setting_show_application: The application you use to post will be displayed in the detailed view of your posts
+        setting_show_status_reaction: Show emoji reactions
         setting_use_blurhash: Gradients are based on the colors of the hidden visuals but obfuscate any details
         setting_use_pending_items: Hide timeline updates behind a click instead of automatically scrolling the feed
         username: You can use letters, numbers, and underscores

@@ -9,6 +9,7 @@ import ImmutablePureComponent from 'react-immutable-pure-component';
 import { connect } from 'react-redux';
 
 import { PERMISSION_MANAGE_USERS, PERMISSION_MANAGE_FEDERATION } from 'mastodon/permissions';
+import ReactionDropdownMenuContainer from '../containers/reaction_dropdown_menu_container';
 
 import DropdownMenuContainer from '../containers/dropdown_menu_container';
 import { me } from '../initial_state';
@@ -34,6 +35,7 @@ const messages = defineMessages({
   quote: { id: 'status.quote', defaultMessage: 'Quote' },
   cannot_quote: { id: 'status.cannot_quote', defaultMessage: 'This post cannot be quoted' },
   favourite: { id: 'status.favourite', defaultMessage: 'Favourite' },
+  reaction: { id: 'status.reaction', defaultMessage: 'Reaction' },
   bookmark: { id: 'status.bookmark', defaultMessage: 'Bookmark' },
   removeBookmark: { id: 'status.remove_bookmark', defaultMessage: 'Remove bookmark' },
   open: { id: 'status.open', defaultMessage: 'Expand this status' },
@@ -72,6 +74,7 @@ class StatusActionBar extends ImmutablePureComponent {
     relationship: ImmutablePropTypes.map,
     onReply: PropTypes.func,
     onFavourite: PropTypes.func,
+    onReaction: PropTypes.func,
     onReblog: PropTypes.func,
     onQuote: PropTypes.func,
     onDelete: PropTypes.func,
