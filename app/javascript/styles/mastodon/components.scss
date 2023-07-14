@@ -1123,7 +1123,8 @@ body > [data-popper-placement] {
 
     strong,
     span {
-      display: inline;
+      display: block;
+      line-height: 22px;
     }
   }
 
