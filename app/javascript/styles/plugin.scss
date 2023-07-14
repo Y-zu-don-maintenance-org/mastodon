@@ -36,6 +36,7 @@
     width: 100%;
     align-self: auto;
     display: flex;
+    border-top: 1px solid lighten($ui-base-color, 8%);
   }
 
   .tab-ber-bottom .navber .tabs-bar__wrapper a{
