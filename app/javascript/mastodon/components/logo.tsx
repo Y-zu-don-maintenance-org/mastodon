@@ -1,10 +1,7 @@
-import logo from 'mastodon/../images/logo.svg';
+import logo from 'mastodon/../images/y-zu-logo.svg';
 
 export const WordmarkLogo: React.FC = () => (
-  <svg viewBox='0 0 261 66' className='logo logo--wordmark' role='img'>
-    <title>Mastodon</title>
-    <use xlinkHref='#logo-symbol-wordmark' />
-  </svg>
+  <img src={logo} alt="" className='logo logo--wordmark' height="32px" />
 );
 
 export const SymbolLogo: React.FC = () => (
