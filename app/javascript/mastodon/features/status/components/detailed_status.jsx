@@ -7,7 +7,6 @@ import { Link } from 'react-router-dom';
 
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
-import { connect } from 'react-redux';
 
 import { AnimatedNumber } from 'mastodon/components/animated_number';
 import EditedTimestamp from 'mastodon/components/edited_timestamp';
@@ -17,7 +16,7 @@ import PictureInPicturePlaceholder from 'mastodon/components/picture_in_picture_
 import { Avatar } from '../../../components/avatar';
 import { DisplayName } from '../../../components/display_name';
 import MediaGallery from '../../../components/media_gallery';
-import { mapStateToProps, quote } from '../../../components/status';
+import { quote } from '../../../components/status';
 import StatusContent from '../../../components/status_content';
 import Audio from '../../audio';
 import scheduleIdleTask from '../../ui/util/schedule_idle_task';
@@ -132,8 +131,30 @@ class DetailedStatus extends ImmutablePureComponent {
     onTranslate(status);
   };
 
+  _properStatus () {
+    const { status } = this.props;
+
+    if (status.get('reblog', null) !== null && typeof status.get('reblog') === 'object') {
+      return status.get('reblog');
+    } else {
+      return status;
+    }
+  }
+
+  getAttachmentAspectRatio () {
+    const attachments = this._properStatus().get('media_attachments');
+
+    if (attachments.getIn([0, 'type']) === 'video') {
+      return `${attachments.getIn([0, 'meta', 'original', 'width'])} / ${attachments.getIn([0, 'meta', 'original', 'height'])}`;
+    } else if (attachments.getIn([0, 'type']) === 'audio') {
+      return '16 / 9';
+    } else {
+      return (attachments.size === 1 && attachments.getIn([0, 'meta', 'small', 'aspect'])) ? attachments.getIn([0, 'meta', 'small', 'aspect']) : '3 / 2'
+    }
+  }
+
   render () {
-    const status = (this.props.status && this.props.status.get('reblog')) ? this.props.status.get('reblog') : this.props.status;
+    const status = this._properStatus();
     const outerStyle = { boxSizing: 'border-box' };
     const { intl, compact, pictureInPicture, quoteMuted } = this.props;
 
@@ -153,24 +174,16 @@ class DetailedStatus extends ImmutablePureComponent {
 
     const language = status.getIn(['translation', 'language']) || status.get('language');
 
-    const identity = (status) => (
-      <>
-        {status.get('visibility') === 'direct' && (
-          <div className='status__prepend'>
-            <div className='status__prepend-icon-wrapper'><Icon id='at' className='status__prepend-icon' fixedWidth /></div>
-            <FormattedMessage id='status.direct_indicator' defaultMessage='Private mention' />
-          </div>
-        )}
-        <a href={`/@${status.getIn(['account', 'acct'])}`} onClick={this.handleAccountClick} className='detailed-status__display-name'>
-          <div className='detailed-status__display-avatar'><Avatar account={status.get('account')} size={46} /></div>
-          <DisplayName account={status.get('account')} localDomain={this.props.domain} />
-        </a>
-      </>
+    const identity = (status, _0, _1, quote = false) => (
+      <a href={`/@${status.getIn(['account', 'acct'])}`} onClick={this.handleAccountClick} data-acct={status.getIn(['account', 'acct'])} className='detailed-status__display-name'>
+        <div className='detailed-status__display-avatar'><Avatar account={status.get('account')} size={quote ? 18 : 46} /></div>
+        <DisplayName account={status.get('account')} localDomain={this.props.domain} />
+      </a>
     );
 
     const media = (status, quote = false) => {
       if (pictureInPicture.get('inUse')) {
-        return <PictureInPicturePlaceholder />;
+        return <PictureInPicturePlaceholder aspectRatio={this.getAttachmentAspectRatio()} />;
       } else if (status.get('media_attachments').size > 0) {
         if (status.getIn(['media_attachments', 0, 'type']) === 'audio') {
           const attachment = status.getIn(['media_attachments', 0]);
@@ -202,13 +215,13 @@ class DetailedStatus extends ImmutablePureComponent {
             <Video
               preview={attachment.get('preview_url')}
               frameRate={attachment.getIn(['meta', 'original', 'frame_rate'])}
+              aspectRatio={`${attachment.getIn(['meta', 'original', 'width'])} / ${attachment.getIn(['meta', 'original', 'height'])}`}
               blurhash={attachment.get('blurhash')}
               src={attachment.get('url')}
               alt={description}
               lang={language}
               width={300}
               height={150}
-              inline
               onOpenVideo={this.handleOpenVideo}
               sensitive={status.get('sensitive')}
               visible={this.props.showMedia}
@@ -232,13 +245,11 @@ class DetailedStatus extends ImmutablePureComponent {
           );
         }
       } else if (status.get('spoiler_text').length === 0) {
-        return (<Card sensitive={status.get('sensitive')} onOpenMedia={this.props.onOpenMedia}
-                     card={status.get('card', null)} quote={quote} />);
+        return <Card sensitive={status.get('sensitive')} onOpenMedia={this.props.onOpenMedia} card={status.get('card', null)} quote={quote} />;
       }
 
-      return null;
-    };
-
+    }
+    
     if (status.get('application')) {
       applicationLink = <> · <a className='detailed-status__application' href={status.getIn(['application', 'website'])} target='_blank' rel='noopener noreferrer'>{status.getIn(['application', 'name'])}</a></>;
     }
@@ -313,7 +324,16 @@ class DetailedStatus extends ImmutablePureComponent {
     return (
       <div style={outerStyle}>
         <div ref={this.setRef} className={classNames('detailed-status', { compact })}>
-          {identity(status)}
+          {status.get('visibility') === 'direct' && (
+            <div className='status__prepend'>
+              <div className='status__prepend-icon-wrapper'><Icon id='at' className='status__prepend-icon' fixedWidth /></div>
+              <FormattedMessage id='status.direct_indicator' defaultMessage='Private mention' />
+            </div>
+          )}
+          <a href={`/@${status.getIn(['account', 'acct'])}`} onClick={this.handleAccountClick} className='detailed-status__display-name'>
+            <div className='detailed-status__display-avatar'><Avatar account={status.get('account')} size={46} /></div>
+            <DisplayName account={status.get('account')} localDomain={this.props.domain} />
+          </a>
 
           <StatusContent
             status={status}
@@ -322,7 +342,7 @@ class DetailedStatus extends ImmutablePureComponent {
             onTranslate={this.handleTranslate}
           />
 
-          {media(status, false)}
+          {media}
 
           {quote(status, false, quoteMuted, this.handleQuoteClick, this.handleExpandedQuoteToggle, identity, media, this.context.router)}
 
@@ -338,4 +358,4 @@ class DetailedStatus extends ImmutablePureComponent {
 
 }
 
-export default connect(mapStateToProps)(injectIntl(DetailedStatus));
+export default injectIntl(DetailedStatus);

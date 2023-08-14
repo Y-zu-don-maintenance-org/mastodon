@@ -6,7 +6,6 @@ import classNames from 'classnames';
 
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
-import { connect } from 'react-redux';
 
 import { HotKeys } from 'react-hotkeys';
 
@@ -20,7 +19,6 @@ import Bundle from '../features/ui/components/bundle';
 import { MediaGallery, Video, Audio } from '../features/ui/util/async-components';
 import { displayMedia } from '../initial_state';
 
-import AttachmentList from './attachment_list';
 import { Avatar } from './avatar';
 import { AvatarOverlay } from './avatar_overlay';
 import { DisplayName } from './display_name';
@@ -292,17 +290,35 @@ class Status extends ImmutablePureComponent {
     this.props.onQuoteToggleHidden(this._properStatus());
   }
 
-  renderLoadingMediaGallery () {
-    return <div className='media-gallery' style={{ height: '110px' }} />;
+  getAttachmentAspectRatio () {
+    const attachments = this._properStatus().get('media_attachments');
+
+    if (attachments.getIn([0, 'type']) === 'video') {
+      return `${attachments.getIn([0, 'meta', 'original', 'width'])} / ${attachments.getIn([0, 'meta', 'original', 'height'])}`;
+    } else if (attachments.getIn([0, 'type']) === 'audio') {
+      return '16 / 9';
+    } else {
+      return (attachments.size === 1 && attachments.getIn([0, 'meta', 'small', 'aspect'])) ? attachments.getIn([0, 'meta', 'small', 'aspect']) : '3 / 2'
+    }
   }
 
-  renderLoadingVideoPlayer () {
-    return <div className='video-player' style={{ height: '110px' }} />;
-  }
+  renderLoadingMediaGallery = () => {
+    return (
+      <div className='media-gallery' style={{ aspectRatio: this.getAttachmentAspectRatio() }} />
+    );
+  };
 
-  renderLoadingAudioPlayer () {
-    return <div className='audio-player' style={{ height: '110px' }} />;
-  }
+  renderLoadingVideoPlayer = () => {
+    return (
+      <div className='video-player' style={{ aspectRatio: this.getAttachmentAspectRatio() }} />
+    );
+  };
+
+  renderLoadingAudioPlayer = () => {
+    return (
+      <div className='audio-player' style={{ aspectRatio: this.getAttachmentAspectRatio() }} />
+    );
+  };
 
   handleOpenVideo = (options) => {
     const status = this._properStatus();
@@ -428,7 +444,7 @@ class Status extends ImmutablePureComponent {
   };
 
   render () {
-    const { intl, hidden, featured, unread, showThread, scrollKey, pictureInPicture, previousId, nextInReplyToId, rootId, quoteMuted, contextType } = this.props;
+    const { intl, hidden, featured, unread, showThread, scrollKey, pictureInPicture, previousId, quoteMuted, nextInReplyToId, rootId, contextType } = this.props;
 
     let { status, account, ...other } = this.props;
 
@@ -525,69 +541,61 @@ class Status extends ImmutablePureComponent {
         </div>
       );
     }
-
     const media = (status, quote = false) => {
       if (pictureInPicture.get('inUse')) {
-        return <PictureInPicturePlaceholder width={this.props.cachedMediaWidth} />;
+        return <PictureInPicturePlaceholder aspectRatio={this.getAttachmentAspectRatio()} />;
       } else if (status.get('media_attachments').size > 0) {
         const language = status.getIn(['translation', 'language']) || status.get('language');
 
-        if (this.props.muted) {
-          return (
-            <AttachmentList
-              compact
-              media={status.get('media_attachments')}
-            />
-          );
-        } else if (status.getIn(['media_attachments', 0, 'type']) === 'audio') {
+        if (status.getIn(['media_attachments', 0, 'type']) === 'audio') {
           const attachment = status.getIn(['media_attachments', 0]);
           const description = attachment.getIn(['translation', 'description']) || attachment.get('description');
 
-        return (
-          <Bundle fetchComponent={Audio} loading={this.renderLoadingAudioPlayer} >
-            {Component => (
-              <Component
-                src={attachment.get('url')}
-                alt={description}
-                lang={language}
-                poster={attachment.get('preview_url') || status.getIn(['account', 'avatar_static'])}
-                backgroundColor={attachment.getIn(['meta', 'colors', 'background'])}
-                foregroundColor={attachment.getIn(['meta', 'colors', 'foreground'])}
-                accentColor={attachment.getIn(['meta', 'colors', 'accent'])}
-                duration={attachment.getIn(['meta', 'original', 'duration'], 0)}
-                width={this.props.cachedMediaWidth}
-                height={110}
-                cacheWidth={this.props.cacheMediaWidth}
-                deployPictureInPicture={pictureInPicture.get('available') ? this.handleDeployPictureInPicture : undefined}
-                sensitive={status.get('sensitive')}
-                blurhash={attachment.get('blurhash')}
-                visible={this.state.showMedia}
-                onToggleVisibility={this.handleToggleMediaVisibility}
-                quote={quote}
-              />
-            )}
-          </Bundle>
-        );
-      } else if (status.getIn(['media_attachments', 0, 'type']) === 'video') {
-        const attachment = status.getIn(['media_attachments', 0]);
-        const description = attachment.getIn(['translation', 'description']) || attachment.get('description');
+          return (
+            <Bundle fetchComponent={Audio} loading={this.renderLoadingAudioPlayer} >
+              {Component => (
+                <Component
+                  src={attachment.get('url')}
+                  alt={description}
+                  lang={language}
+                  poster={attachment.get('preview_url') || status.getIn(['account', 'avatar_static'])}
+                  backgroundColor={attachment.getIn(['meta', 'colors', 'background'])}
+                  foregroundColor={attachment.getIn(['meta', 'colors', 'foreground'])}
+                  accentColor={attachment.getIn(['meta', 'colors', 'accent'])}
+                  duration={attachment.getIn(['meta', 'original', 'duration'], 0)}
+                  width={this.props.cachedMediaWidth}
+                  height={110}
+                  cacheWidth={this.props.cacheMediaWidth}
+                  deployPictureInPicture={pictureInPicture.get('available') ? this.handleDeployPictureInPicture : undefined}
+                  sensitive={status.get('sensitive')}
+                  blurhash={attachment.get('blurhash')}
+                  visible={this.state.showMedia}
+                  onToggleVisibility={this.handleToggleMediaVisibility}
+                  quote={quote}
+                />
+              )}
+            </Bundle>
+          );
+        } else if (status.getIn(['media_attachments', 0, 'type']) === 'video') {
+          const attachment = status.getIn(['media_attachments', 0]);
+          const description = attachment.getIn(['translation', 'description']) || attachment.get('description');
 
           return (
-            <Bundle fetchComponent={Video} loading={this.renderLoadingVideoPlayer}>
+            <Bundle fetchComponent={Video} loading={this.renderLoadingVideoPlayer} >
               {Component => (
                 <Component
                   preview={attachment.get('preview_url')}
                   frameRate={attachment.getIn(['meta', 'original', 'frame_rate'])}
+                  aspectRatio={`${attachment.getIn(['meta', 'original', 'width'])} / ${attachment.getIn(['meta', 'original', 'height'])}`}
                   blurhash={attachment.get('blurhash')}
                   src={attachment.get('url')}
                   alt={description}
                   lang={language}
-                  inline
                   sensitive={status.get('sensitive')}
                   onOpenVideo={this.handleOpenVideo}
                   deployPictureInPicture={pictureInPicture.get('available') ? this.handleDeployPictureInPicture : undefined}
-                  visible={quote ? this.state.showQuoteMedia : this.state.showMedia}
-                  onToggleVisibility={quote ? this.handleToggleQuoteMediaVisibility : this.handleToggleMediaVisibility}
+                  visible={this.state.showMedia}
+                  onToggleVisibility={this.handleToggleMediaVisibility}
                   quote={quote}
                 />
               )}
@@ -605,15 +613,15 @@ class Status extends ImmutablePureComponent {
                   onOpenMedia={this.handleOpenMedia}
                   cacheWidth={this.props.cacheMediaWidth}
                   defaultWidth={this.props.cachedMediaWidth}
-                  visible={quote ? this.state.showQuoteMedia : this.state.showMedia}
-                  onToggleVisibility={quote ? this.handleToggleQuoteMediaVisibility : this.handleToggleMediaVisibility}
+                  visible={this.state.showMedia}
+                  onToggleVisibility={this.handleToggleMediaVisibility}
                   quote={quote}
                 />
               )}
             </Bundle>
           );
         }
-      } else if (status.get('spoiler_text').length === 0 && status.get('card') && !this.props.muted) {
+      } else if (status.get('spoiler_text').length === 0 && status.get('card')) {
         return (
           <Card
             onOpenMedia={this.handleOpenMedia}
@@ -624,8 +632,7 @@ class Status extends ImmutablePureComponent {
           />
         );
       }
-
-      return null;
+    return null;
     };
 
     const statusAvatar = (status, account) => {
@@ -635,7 +642,7 @@ class Status extends ImmutablePureComponent {
         return <AvatarOverlay account={status.get('account')} friend={account} />;
       }
     };
-
+    
     const identity = (status, account) => (
       <a onClick={this.handleAccountClick} href={`/@${status.getIn(['account', 'acct'])}`} title={status.getIn(['account', 'acct'])} className='status__display-name' target='_blank' rel='noopener noreferrer'>
         <div className='status__avatar'>
@@ -670,6 +677,14 @@ class Status extends ImmutablePureComponent {
                 <RelativeTimestamp timestamp={status.get('created_at')} />{status.get('edited_at') && <abbr title={intl.formatMessage(messages.edited, { date: intl.formatDate(status.get('edited_at'), { hour12: false, year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' }) })}> *</abbr>}
               </a>
 
+              {/* <a onClick={this.handleAccountClick} href={`/@${status.getIn(['account', 'acct'])}`} title={status.getIn(['account', 'acct'])} className='status__display-name' target='_blank' rel='noopener noreferrer'>
+                <div className='status__avatar'>
+                  {statusAvatar}
+                </div>
+
+                <DisplayName account={status.get('account')} />
+              </a> */}
+
               {identity(status, account, false)}
             </div>
 
@@ -683,7 +698,7 @@ class Status extends ImmutablePureComponent {
               onCollapsedToggle={this.handleCollapsedToggle}
             />
 
-            {media(status)}
+            {media}
 
             {quote(status, this.props.muted, quoteMuted, this.handleQuoteClick, this.handleExpandedQuoteToggle, identity, media, this.context.router, contextType)}
 
@@ -696,4 +711,4 @@ class Status extends ImmutablePureComponent {
 
 }
 
-export default connect(mapStateToProps)(injectIntl(Status));
+export default injectIntl(Status);
