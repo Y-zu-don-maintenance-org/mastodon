@@ -645,7 +645,7 @@ class Status extends ImmutablePureComponent {
     };
     
     const identity = (status, account) => (
-      <a onClick={this.handleAccountClick} href={`/@${status.getIn(['account', 'acct'])}`} title={status.getIn(['account', 'acct'])} className='status__display-name' target='_blank' rel='noopener noreferrer'>
+      <a onClick={quote ? this.handleQuoteClick : this.handleAccountClick} href={`/@${status.getIn(['account', 'acct'])}`} title={status.getIn(['account', 'acct'])} className='status__display-name' target='_blank' rel='noopener noreferrer'>
         <div className='status__avatar'>
           {statusAvatar(status, account)}
         </div>
