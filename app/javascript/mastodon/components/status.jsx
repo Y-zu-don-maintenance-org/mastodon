@@ -275,6 +275,15 @@ class Status extends ImmutablePureComponent {
     this.context.router.history.push(`/statuses/${status.getIn(['reblog', 'quote', 'id'], status.getIn(['quote', 'id']))}`);
   }
 
+  handleQuoteUserClick = () =>{
+    if (!this.context.router) {
+      return;
+    }
+
+    const { status } = this.props;
+    this.location.href(`/@${status.getIn(['account', 'acct'])}`);
+  }
+
   handleExpandedToggle = () => {
     this.props.onToggleHidden(this._properStatus());
   };
@@ -644,8 +653,8 @@ class Status extends ImmutablePureComponent {
       }
     };
     
-    const identity = (status, account) => (
-      <a onClick={quote ? this.handleQuoteClick : this.handleAccountClick} href={`/@${status.getIn(['account', 'acct'])}`} title={status.getIn(['account', 'acct'])} className='status__display-name' target='_blank' rel='noopener noreferrer'>
+    const identity = (status, account, _0, quote = false) => (
+      <a onClick={quote ? this.handleQuoteUserClick : this.handleAccountClick} href={`/@${status.getIn(['account', 'acct'])}`} title={status.getIn(['account', 'acct'])} className='status__display-name' rel='noopener noreferrer'>
         <div className='status__avatar'>
           {statusAvatar(status, account)}
         </div>

@@ -93,6 +93,15 @@ class DetailedStatus extends ImmutablePureComponent {
     const { status } = this.props;
     this.context.router.history.push(`/statuses/${status.getIn(['quote', 'id'])}`);
   }
+  
+  handleQuoteUserClick = () =>{
+    if (!this.context.router) {
+      return;
+    }
+
+    const { status } = this.props;
+    this.location.href(`/@${status.getIn(['account', 'acct'])}`);
+  }
 
   _measureHeight (heightJustChanged) {
     if (this.props.measureHeight && this.node) {
@@ -176,7 +185,7 @@ class DetailedStatus extends ImmutablePureComponent {
     const language = status.getIn(['translation', 'language']) || status.get('language');
 
     const identity = (status, _0, _1, quote = false) => (
-      <a href={`/@${status.getIn(['account', 'acct'])}`} onClick={quote ? this.handleQuoteClick : this.handleAccountClick} data-acct={status.getIn(['account', 'acct'])} className='detailed-status__display-name'>
+      <a href={`/@${status.getIn(['account', 'acct'])}`} onClick={quote ? this.handleQuoteUserClick : this.handleAccountClick} data-acct={status.getIn(['account', 'acct'])} className='detailed-status__display-name'>
         <div className='detailed-status__display-avatar'><Avatar account={status.get('account')} size={46} /></div>
         <DisplayName account={status.get('account')} localDomain={this.props.domain} />
       </a>
