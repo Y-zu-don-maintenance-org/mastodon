@@ -343,7 +343,7 @@ class DetailedStatus extends ImmutablePureComponent {
             onTranslate={this.handleTranslate}
           />
 
-          {media}
+          {media(status, false)}
 
           {quote(status, false, quoteMuted, this.handleQuoteClick, this.handleExpandedQuoteToggle, identity, media, this.context.router)}
           
