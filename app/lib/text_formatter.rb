@@ -141,14 +141,7 @@ class TextFormatter
   def render_quote
     link = link_to_url({ url: ap_tag_manager.url_for(quote) })
     <<~HTML.squish
-      <span class="quote-inline"><br/>~~~~~~~~~~<br/>[#{link}]</span>
-    HTML
-  end
-
-  def render_quote
-    link = link_to_url({ url: ap_tag_manager.url_for(quote) })
-    <<~HTML.squish
-      <span class="quote-inline"><br/>~~~~~~~~~~<br/>[#{link}]</span>
+      <span class="quote-inline"><br>RE: #{link}</span>
     HTML
   end
 
