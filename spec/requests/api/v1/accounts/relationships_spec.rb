@@ -31,8 +31,8 @@ describe 'GET /api/v1/accounts/relationships' do
         .to have_http_status(200)
       expect(body_as_json)
         .to be_an(Enumerable)
-        .and have_attributes(
-          first: include(
+        .and contain_exactly(
+          include(
             following: true,
             followed_by: false
           )
@@ -53,9 +53,11 @@ describe 'GET /api/v1/accounts/relationships' do
           expect(body_as_json)
             .to be_an(Enumerable)
             .and have_attributes(
-              size: 2,
-              first: include(simon_item),
-              second: include(lewis_item)
+              size: 2
+            )
+            .and contain_exactly(
+              include(simon_item),
+              include(lewis_item)
             )
         end
       end
@@ -71,10 +73,30 @@ describe 'GET /api/v1/accounts/relationships' do
           expect(body_as_json)
             .to be_an(Enumerable)
             .and have_attributes(
-              size: 3,
-              first: include(simon_item),
-              second: include(lewis_item),
-              third: include(bob_item)
+              size: 3
+            )
+            .and contain_exactly(
+              include(simon_item),
+              include(lewis_item),
+              include(bob_item)
+            )
+        end
+      end
+
+      context 'when there are duplicate IDs in the params' do
+        let(:params) { { id: [simon.id, lewis.id, lewis.id, lewis.id, simon.id] } }
+
+        it 'removes duplicate account IDs from params' do
+          subject
+
+          expect(body_as_json)
+            .to be_an(Enumerable)
+            .and have_attributes(
+              size: 2
+            )
+            .and contain_exactly(
+              include(simon_item),
+              include(lewis_item)
             )
         end
       end
@@ -100,7 +122,6 @@ describe 'GET /api/v1/accounts/relationships' do
           muting: false,
           requested: false,
           domain_blocking: false,
-
         }
       end
 
@@ -113,7 +134,6 @@ describe 'GET /api/v1/accounts/relationships' do
           muting: false,
           requested: false,
           domain_blocking: false,
-
         }
       end
     end
@@ -133,8 +153,10 @@ describe 'GET /api/v1/accounts/relationships' do
       expect(body_as_json)
         .to be_an(Enumerable)
         .and have_attributes(
-          size: 1,
-          first: include(
+          size: 1
+        )
+        .and contain_exactly(
+          include(
             following: true,
             showing_reblogs: true
           )
@@ -152,8 +174,8 @@ describe 'GET /api/v1/accounts/relationships' do
 
       expect(body_as_json)
         .to be_an(Enumerable)
-        .and have_attributes(
-          first: include(
+        .and contain_exactly(
+          include(
             following: false,
             showing_reblogs: false
           )

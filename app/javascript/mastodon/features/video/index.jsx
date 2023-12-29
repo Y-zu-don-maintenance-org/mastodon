@@ -22,7 +22,6 @@ import { Icon }  from 'mastodon/components/icon';
 import { playerSettings } from 'mastodon/settings';
 
 import { displayMedia, useBlurhash } from '../../initial_state';
-import { currentMedia, setCurrentMedia } from '../../reducers/media_attachments';
 import { isFullscreen, requestFullscreen, exitFullscreen } from '../ui/util/fullscreen';
 
 const messages = defineMessages({
@@ -183,7 +182,6 @@ class Video extends PureComponent {
   };
 
   handlePause = () => {
-    this.video.pause();
     this.setState({ paused: true });
   };
 
@@ -347,32 +345,11 @@ class Video extends PureComponent {
   };
 
   togglePlay = () => {
-    const videos = document.querySelectorAll('video');
-
-    videos.forEach((video) => {
-      const button = video.nextElementSibling;
-      button.addEventListener('click', () => {
-        if (video.paused) {
-          videos.forEach((e) => {
-            if (e !== video) {
-              e.pause();
-            }
-          });
-          video.play();
-          this.setState({ paused: false });
-        } else {
-          video.pause();
-          this.setState({ paused: true });
-        }
-      });
-    });
-
-    if (currentMedia !== null) {
-      currentMedia.pause();
+    if (this.state.paused) {
+      this.setState({ paused: false }, () => this.video.play());
+    } else {
+      this.setState({ paused: true }, () => this.video.pause());
     }
-
-    this.video.play();
-    setCurrentMedia(this.video);
   };
 
   toggleFullscreen = () => {
@@ -613,7 +590,6 @@ class Video extends PureComponent {
             aria-label={alt}
             title={alt}
             lang={lang}
-            volume={volume}
             onClick={this.togglePlay}
             onKeyDown={this.handleVideoKeyDown}
             onPlay={this.handlePlay}

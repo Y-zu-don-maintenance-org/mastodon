@@ -60,7 +60,9 @@ RSpec.configure do |config|
   # By default, skip the elastic search integration specs
   config.filter_run_excluding search: true
 
-  config.fixture_path = Rails.root.join('spec', 'fixtures')
+  config.fixture_paths = [
+    Rails.root.join('spec', 'fixtures'),
+  ]
   config.use_transactional_fixtures = true
   config.order = 'random'
   config.infer_spec_type_from_file_location!
@@ -86,6 +88,7 @@ RSpec.configure do |config|
   config.include Chewy::Rspec::Helpers
   config.include Redisable
   config.include SignedRequestHelpers, type: :request
+  config.include CommandLineHelpers, type: :cli
 
   config.around(:each, use_transactional_tests: false) do |example|
     self.use_transactional_tests = false
@@ -93,8 +96,14 @@ RSpec.configure do |config|
     self.use_transactional_tests = true
   end
 
+  config.around(:each, :sidekiq_fake) do |example|
+    Sidekiq::Testing.fake! do
+      example.run
+      Sidekiq::Worker.clear_all
+    end
+  end
+
   config.before :each, type: :cli do
-    stub_stdout
     stub_reset_connection_pools
   end
 
@@ -144,6 +153,7 @@ RSpec::Sidekiq.configure do |config|
 end
 
 RSpec::Matchers.define_negated_matcher :not_change, :change
+RSpec::Matchers.define_negated_matcher :not_include, :include
 
 def request_fixture(name)
   Rails.root.join('spec', 'fixtures', 'requests', name).read
@@ -151,14 +161,6 @@ end
 
 def attachment_fixture(name)
   Rails.root.join('spec', 'fixtures', 'files', name).open
-end
-
-def stub_stdout
-  # TODO: Is there a bettery way to:
-  # - Avoid CLI command output being printed out
-  # - Allow rspec to assert things against STDOUT
-  # - Avoid disabling stdout for other desirable output (deprecation warnings, for example)
-  allow($stdout).to receive(:write)
 end
 
 def stub_reset_connection_pools

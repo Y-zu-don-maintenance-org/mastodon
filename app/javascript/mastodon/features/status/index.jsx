@@ -322,10 +322,10 @@ class Status extends ImmutablePureComponent {
       dispatch(openModal('CONFIRM', {
         message: intl.formatMessage(messages.quoteMessage),
         confirm: intl.formatMessage(messages.quoteConfirm),
-        onConfirm: () => dispatch(quoteCompose(status, this.context.router.history)),
+        onConfirm: () => dispatch(quoteCompose(status, this.props.history)),
       }));
     } else {
-      dispatch(quoteCompose(status, this.context.router.history));
+      dispatch(quoteCompose(status, this.props.history));
     }
   }
 

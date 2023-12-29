@@ -5,9 +5,12 @@ ruby '>= 3.0.0'
 
 gem 'puma', '~> 6.3'
 gem 'rails', '~> 7.1.1'
-gem 'sprockets', '~> 3.7.2'
+gem 'propshaft'
 gem 'thor', '~> 1.2'
 gem 'rack', '~> 2.2.7'
+
+# For why irb is in the Gemfile, see: https://ruby.social/@st0012/111444685161478182
+gem 'irb', '~> 1.8'
 
 gem 'haml-rails', '~>2.0'
 gem 'pg', '~> 1.5'
@@ -86,7 +89,6 @@ gem 'sidekiq-unique-jobs', '~> 7.1'
 gem 'sidekiq-bulk', '~> 0.2.0'
 gem 'simple-navigation', '~> 4.4'
 gem 'simple_form', '~> 5.2'
-gem 'sprockets-rails', '~> 3.4', require: 'sprockets/railtie'
 gem 'stoplight', '~> 3.0.1'
 gem 'strong_migrations', '1.6.4'
 gem 'tty-prompt', '~> 0.23', require: false
@@ -179,6 +181,9 @@ group :development do
 end
 
 group :development, :test do
+  # Interactive Debugging tools
+  gem 'debug', '~> 1.8'
+
   # Profiling tools
   gem 'memory_profiler', require: false
   gem 'ruby-prof', require: false
