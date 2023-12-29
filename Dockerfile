@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.4
-# This needs to be bullseye-slim because the Ruby image is built on bullseye-slim
-ARG NODE_VERSION="16.20-bullseye-slim"
+# This needs to be bookworm-slim because the Ruby image is built on bookworm-slim
+ARG NODE_VERSION="20.9-bookworm-slim"
 
 FROM ghcr.io/moritzheiber/ruby-jemalloc:3.2.2-slim as ruby
 FROM node:${NODE_VERSION} as build
@@ -13,21 +13,21 @@ ENV DEBIAN_FRONTEND="noninteractive" \
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 WORKDIR /opt/mastodon
-COPY Gemfile* package.json yarn.lock /opt/mastodon/
 
 # hadolint ignore=DL3008
 RUN apt-get update && \
+    apt-get -yq dist-upgrade && \
     apt-get install -y --no-install-recommends build-essential \
         git \
         libicu-dev \
-        libidn11-dev \
+        libidn-dev \
         libpq-dev \
         libjemalloc-dev \
         zlib1g-dev \
         libgdbm-dev \
         libgmp-dev \
         libssl-dev \
-        libyaml-0-2 \
+        libyaml-dev \
         ca-certificates \
         libreadline8 \
         python3 \
@@ -35,15 +35,22 @@ RUN apt-get update && \
     bundle config set --local deployment 'true' && \
     bundle config set --local without 'development test' && \
     bundle config set silence_root_warning true && \
-    bundle install -j"$(nproc)" && \
-    yarn install --pure-lockfile --production --network-timeout 600000 && \
+    corepack enable
+
+COPY Gemfile* package.json yarn.lock .yarnrc.yml /opt/mastodon/
+COPY streaming/package.json /opt/mastodon/streaming/
+COPY .yarn /opt/mastodon/.yarn
+
+RUN bundle install -j"$(nproc)"
+
+RUN yarn workspaces focus --all --production && \
     yarn cache clean
 
 FROM node:${NODE_VERSION}
 
 # Use those args to specify your own version flags & suffixes
-ARG MASTODON_VERSION_FLAGS=""
-ARG MASTODON_VERSION_SUFFIX=""
+ARG MASTODON_VERSION_PRERELEASE=""
+ARG MASTODON_VERSION_METADATA=""
 
 ARG UID="991"
 ARG GID="991"
@@ -64,20 +71,21 @@ RUN apt-get update && \
     apt-get -y --no-install-recommends install whois \
         wget \
         procps \
-        libssl1.1 \
+        libssl3 \
         libpq5 \
         imagemagick \
         ffmpeg \
         libjemalloc2 \
-        libicu67 \
-        libidn11 \
+        libicu72 \
+        libidn12 \
         libyaml-0-2 \
         file \
         ca-certificates \
         tzdata \
         libreadline8 \
         tini && \
-    ln -s /opt/mastodon /mastodon
+    ln -s /opt/mastodon /mastodon && \
+    corepack enable
 
 # Note: no, cleaning here since Debian does this automatically
 # See the file /etc/apt/apt.conf.d/docker-clean within the Docker image's filesystem
@@ -89,8 +97,8 @@ ENV RAILS_ENV="production" \
     NODE_ENV="production" \
     RAILS_SERVE_STATIC_FILES="true" \
     BIND="0.0.0.0" \
-    MASTODON_VERSION_FLAGS="${MASTODON_VERSION_FLAGS}" \
-    MASTODON_VERSION_SUFFIX="${MASTODON_VERSION_SUFFIX}"
+    MASTODON_VERSION_PRERELEASE="${MASTODON_VERSION_PRERELEASE}" \
+    MASTODON_VERSION_METADATA="${MASTODON_VERSION_METADATA}"
 
 # Set the run user
 USER mastodon

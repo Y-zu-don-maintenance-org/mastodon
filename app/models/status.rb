@@ -38,6 +38,7 @@ class Status < ApplicationRecord
   include StatusSnapshotConcern
   include RateLimitable
   include StatusSafeReblogInsert
+  include StatusSearchConcern
 
   rate_limit by: :account, family: :statuses
 
@@ -48,6 +49,7 @@ class Status < ApplicationRecord
   attr_accessor :override_timestamps
 
   update_index('statuses', :proper)
+  update_index('public_statuses', :proper)
 
   enum visibility: { public: 0, unlisted: 1, private: 2, direct: 3, limited: 4 }, _suffix: :visibility
 
@@ -73,9 +75,15 @@ class Status < ApplicationRecord
   has_many :media_attachments, dependent: :nullify
   has_many :quoted, foreign_key: 'quote_id', class_name: 'Status', inverse_of: :quote, dependent: :nullify
 
-  has_and_belongs_to_many :tags
-  has_and_belongs_to_many :preview_cards
+  # Those associations are used for the private search index
+  has_many :local_mentioned, -> { merge(Account.local) }, through: :active_mentions, source: :account
+  has_many :local_favorited, -> { merge(Account.local) }, through: :favourites, source: :account
+  has_many :local_reblogged, -> { merge(Account.local) }, through: :reblogs, source: :account
+  has_many :local_bookmarked, -> { merge(Account.local) }, through: :bookmarks, source: :account
 
+  has_and_belongs_to_many :tags
+
+  has_one :preview_cards_status, inverse_of: :status # Because of a composite primary key, the dependent option cannot be used
   has_one :notification, as: :activity, dependent: :destroy
   has_one :status_stat, inverse_of: :status
   has_one :poll, inverse_of: :status, dependent: :destroy
@@ -138,24 +146,25 @@ class Status < ApplicationRecord
   # The `prepend: true` option below ensures this runs before
   # the `dependent: destroy` callbacks remove relevant records
   before_destroy :unlink_from_conversations!, prepend: true
+  before_destroy :reset_preview_card!
 
   cache_associated :application,
                    :media_attachments,
                    :conversation,
                    :status_stat,
                    :tags,
-                   :preview_cards,
                    :preloadable_poll,
+                   preview_cards_status: [:preview_card],
                    account: [:account_stat, user: :role],
                    active_mentions: { account: :account_stat },
                    reblog: [
                      :application,
                      :tags,
-                     :preview_cards,
                      :media_attachments,
                      :conversation,
                      :status_stat,
                      :preloadable_poll,
+                     preview_cards_status: [:preview_card],
                      account: [:account_stat, user: :role],
                      active_mentions: { account: :account_stat },
                    ],
@@ -167,37 +176,6 @@ class Status < ApplicationRecord
 
   def cache_key
     "v3:#{super}"
-  end
-
-  def searchable_by(preloaded = nil)
-    ids = []
-
-    ids << account_id if local?
-
-    if preloaded.nil?
-      ids += mentions.joins(:account).merge(Account.local).active.pluck(:account_id)
-      ids += favourites.joins(:account).merge(Account.local).pluck(:account_id)
-      ids += reblogs.joins(:account).merge(Account.local).pluck(:account_id)
-      ids += bookmarks.joins(:account).merge(Account.local).pluck(:account_id)
-      ids += poll.votes.joins(:account).merge(Account.local).pluck(:account_id) if poll.present?
-    else
-      ids += preloaded.mentions[id] || []
-      ids += preloaded.favourites[id] || []
-      ids += preloaded.reblogs[id] || []
-      ids += preloaded.bookmarks[id] || []
-      ids += preloaded.votes[id] || []
-    end
-
-    ids.uniq
-  end
-
-  def searchable_text
-    [
-      spoiler_text,
-      FormattingHelper.extract_status_plain_text(self),
-      preloadable_poll ? preloadable_poll.options.join("\n\n") : nil,
-      ordered_media_attachments.map(&:description).join("\n\n"),
-    ].compact.join("\n\n")
   end
 
   def to_log_human_identifier
@@ -261,7 +239,11 @@ class Status < ApplicationRecord
   end
 
   def preview_card
-    preview_cards.first
+    preview_cards_status&.preview_card&.tap { |x| x.original_url = preview_cards_status.url }
+  end
+
+  def reset_preview_card!
+    PreviewCardsStatus.where(status_id: id).delete_all
   end
 
   def hidden?
@@ -279,7 +261,11 @@ class Status < ApplicationRecord
   end
 
   def with_preview_card?
-    preview_cards.any?
+    preview_cards_status.present?
+  end
+
+  def with_poll?
+    preloadable_poll.present?
   end
 
   def non_sensitive_with_media?

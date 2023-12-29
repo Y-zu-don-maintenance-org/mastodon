@@ -45,6 +45,21 @@ describe('computeHashtagBarForStatus', () => {
     );
   });
 
+  it('does not truncate the contents when the last child is a text node', () => {
+    const status = createStatus(
+      'this is a #<a class="zrl" href="https://example.com/search?tag=test">test</a>. Some more text',
+      ['test'],
+    );
+
+    const { hashtagsInBar, statusContentProps } =
+      computeHashtagBarForStatus(status);
+
+    expect(hashtagsInBar).toEqual([]);
+    expect(statusContentProps.statusContent).toMatchInlineSnapshot(
+      `"this is a #<a class="zrl" href="https://example.com/search?tag=test">test</a>. Some more text"`,
+    );
+  });
+
   it('extract tags from the last line', () => {
     const status = createStatus(
       '<p>Simple text</p><p><a href="test">#hashtag</a></p>',
@@ -94,6 +109,21 @@ describe('computeHashtagBarForStatus', () => {
     const status = createStatus(
       '<p>Text</p><p><a href="test">#éaa</a> <a href="test">#Éaa</a></p>',
       ['éaa'],
+    );
+
+    const { hashtagsInBar, statusContentProps } =
+      computeHashtagBarForStatus(status);
+
+    expect(hashtagsInBar).toEqual(['Éaa']);
+    expect(statusContentProps.statusContent).toMatchInlineSnapshot(
+      `"<p>Text</p>"`,
+    );
+  });
+
+  it('handles server-side normalized tags with accentuated characters', () => {
+    const status = createStatus(
+      '<p>Text</p><p><a href="test">#éaa</a> <a href="test">#Éaa</a></p>',
+      ['eaa'], // The server may normalize the hashtags in the `tags` attribute
     );
 
     const { hashtagsInBar, statusContentProps } =
