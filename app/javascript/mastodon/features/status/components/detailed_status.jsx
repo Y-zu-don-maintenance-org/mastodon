@@ -82,16 +82,16 @@ class DetailedStatus extends ImmutablePureComponent {
   }
 
   handleQuoteClick = () => {
-    if (!this.context.router) {
+    if (!this.props) {
       return;
     }
 
     const { status } = this.props;
-    this.context.router.history.push(`/statuses/${status.getIn(['quote', 'id'])}`);
+    this.props.history.push(`/statuses/${status.getIn(['quote', 'id'])}`);
   }
   
   handleQuoteUserClick = () =>{
-    if (!this.context.router) {
+    if (!this.props) {
       return;
     }
 
@@ -347,7 +347,7 @@ class DetailedStatus extends ImmutablePureComponent {
 
           {media(status, false)}
 
-          {quote(status, false, quoteMuted, this.handleQuoteClick, this.handleExpandedQuoteToggle, identity, media, this.context.router)}
+          {quote(status, false, quoteMuted, this.handleQuoteClick, this.handleExpandedQuoteToggle, identity, media, this.props)}
 
           {expanded && hashtagBar}
 
