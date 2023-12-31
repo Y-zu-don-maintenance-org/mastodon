@@ -11,11 +11,7 @@ class REST::InstanceSerializer < ActiveModel::Serializer
 
   attributes :domain, :title, :version, :source_url, :description,
              :usage, :thumbnail, :languages, :configuration,
-<<<<<<< HEAD
              :registrations, :feature_quote, :fedibird_capabilities
-=======
-             :registrations, :fedibird_capabilities
->>>>>>> 5c5b42d42c (Fix third party app emoji reaction feature)
 
   has_one :contact, serializer: ContactSerializer
   has_many :rules, serializer: REST::RuleSerializer
