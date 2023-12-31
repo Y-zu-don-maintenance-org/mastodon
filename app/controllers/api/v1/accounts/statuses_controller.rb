@@ -9,7 +9,7 @@ class Api::V1::Accounts::StatusesController < Api::BaseController
   def index
     cache_if_unauthenticated!
     @statuses   = load_statuses
-    account?ids = @statuses.filter(&:quote?).map { |status| status.quote.account_id }.uniq
+    account_ids = @statuses.filter(&:quote?).map { |status| status.quote.account_id }.uniq
     accounts = Account.where(id: account_ids)
     render json: @statuses, each_serializer: REST::StatusSerializer,
            relationships: StatusRelationshipsPresenter.new(@statuses, current_user&.account_id),
