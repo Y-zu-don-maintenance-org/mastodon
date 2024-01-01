@@ -6,12 +6,10 @@ class ActivityPub::Activity::Like < ActivityPub::Activity
 
     return if @original_status.nil? || !@original_status.account.local? || delete_arrived_first?(@json['id'])
 
-    lock_or_fail("like:#{object_uri}") do
-      if shortcode.nil?
-        process_favourite
-      else
-        process_emoji_reaction
-      end
+    if shortcode.nil?
+      process_favourite
+    else
+      process_emoji_reaction
     end
   end
 
@@ -42,7 +40,6 @@ class ActivityPub::Activity::Like < ActivityPub::Activity
 
     return if EmojiReaction.where(account: @account, status: @original_status).count >= EmojiReaction::EMOJI_REACTION_PER_ACCOUNT_LIMIT
 
-    EmojiReaction.find_by(account: @account, status: @original_status)&.destroy
     reaction = @original_status.emoji_reactions.create!(account: @account, name: shortcode, custom_emoji: emoji, uri: @json['id'])
     write_stream(reaction)
 
