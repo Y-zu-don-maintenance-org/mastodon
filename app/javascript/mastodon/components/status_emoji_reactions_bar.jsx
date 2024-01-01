@@ -34,16 +34,16 @@ class EmojiReactionButton extends React.PureComponent {
     const { name, url, staticUrl, count, me } = this.props;
 
     const classList = {
-      'emoji-reactions-bar__button': true,
-      'toggled': me,
+      'reactions-bar__item': true,
+      'active': me,
     };
 
     return (
       <button className={classNames(classList)} type='button' onClick={this.onClick}>
-        <span className='emoji'>
+        <span className='reactions-bar__item__emoji'>
           <EmojiView name={name} url={url} staticUrl={staticUrl} />
         </span>
-        <span className='count'>{count}</span>
+        <span className='reactions-bar__item__count'>{count}</span>
       </button>
     );
   }

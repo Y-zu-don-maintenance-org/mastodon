@@ -1421,11 +1421,13 @@ body > [data-popper-placement] {
   display: flex;
   flex-wrap: wrap;
   gap: 4px 8px;
-  margin: 8px 0 2px 4px;
+  margin: 8px 0 2px 0;
 
   .emoji-reactions-bar__button {
-    background: lighten($ui-base-color, 16%);
-    border: 0;
+    background: $white;
+    border: 1px solid lighten($ui-base-color, 8%);
+    border-radius: 3px;
+    padding: 0 6px;
     cursor: pointer;
     display: flex;
     justify-items: center;
@@ -1433,7 +1435,8 @@ body > [data-popper-placement] {
     height: 20px;
 
     &.toggled {
-      background: darken($ui-primary-color, 16%);
+      background-color: mix($white, $ui-highlight-color, 80%);
+      border-color: mix(lighten($ui-base-color, 8%), $ui-highlight-color, 80%);
     }
 
     .emoji {
@@ -1457,7 +1460,7 @@ body > [data-popper-placement] {
   justify-content: space-between;
   align-items: center;
   gap: 18px;
-  margin-top: 16px;
+  //margin-top: 16px;
 }
 
 .detailed-status__action-bar-dropdown {
