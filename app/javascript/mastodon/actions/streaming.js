@@ -105,8 +105,9 @@ export const connectTimelineStream = (timelineId, channelName, params = {}, opti
           dispatch(updateNotifications(JSON.parse(data.payload), messages, locale));
           break;
         case 'emoji_reaction':
-          dispatch(updateEmojiReactions(JSON.parse(data.payload), getState().getIn(['meta', 'me'])));
-          break;
+            // @ts-expect-error
+            dispatch(updateEmojiReactions(JSON.parse(data.payload), getState().getIn(['meta', 'me'])));
+            break;
         case 'conversation':
           // @ts-expect-error
           dispatch(updateConversations(JSON.parse(data.payload)));

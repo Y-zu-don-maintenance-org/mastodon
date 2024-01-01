@@ -5,6 +5,7 @@ import { defineMessages, injectIntl, FormattedMessage } from 'react-intl';
 
 import { ReactComponent as HomeIcon } from '@material-symbols/svg-600/outlined/home-fill.svg';
 import { ReactComponent as InsertChartIcon } from '@material-symbols/svg-600/outlined/insert_chart.svg';
+import { ReactComponent as EmojiReactionIcon } from '@material-symbols/svg-600/outlined/mood.svg';
 import { ReactComponent as PersonAddIcon } from '@material-symbols/svg-600/outlined/person_add.svg';
 import { ReactComponent as RepeatIcon } from '@material-symbols/svg-600/outlined/repeat.svg';
 import { ReactComponent as ReplyAllIcon } from '@material-symbols/svg-600/outlined/reply_all.svg';
@@ -15,6 +16,7 @@ import { Icon }  from 'mastodon/components/icon';
 const tooltips = defineMessages({
   mentions: { id: 'notifications.filter.mentions', defaultMessage: 'Mentions' },
   favourites: { id: 'notifications.filter.favourites', defaultMessage: 'Favorites' },
+  emojiReactions: { id: 'notifications.filter.emoji_reactions', defaultMessage: 'Stamps' },
   boosts: { id: 'notifications.filter.boosts', defaultMessage: 'Boosts' },
   polls: { id: 'notifications.filter.polls', defaultMessage: 'Poll results' },
   follows: { id: 'notifications.filter.follows', defaultMessage: 'Follows' },
@@ -87,7 +89,7 @@ class FilterBar extends PureComponent {
           onClick={this.onClick('emoji_reaction')}
           title={intl.formatMessage(tooltips.emojiReactions)}
         >
-          <Icon id='star' fixedWidth />
+          <Icon id='smile-o' icon={EmojiReactionIcon} fixedWidth />
         </button>
         <button
           className={selectedFilter === 'reblog' ? 'active' : ''}
