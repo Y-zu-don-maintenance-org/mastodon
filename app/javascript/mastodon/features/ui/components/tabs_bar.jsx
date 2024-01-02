@@ -4,6 +4,10 @@ import { defineMessages, injectIntl } from 'react-intl';
 import ColumnLink from './column_link';
 import NotificationsCounterIcon from './notifications_counter_icon';
 
+import { ReactComponent as HomeIcon } from '@material-symbols/svg-600/outlined/home-fill.svg';
+import { ReactComponent as MoreHorizIcon } from '@material-symbols/svg-600/outlined/more_horiz.svg';
+import { ReactComponent as PublicIcon } from '@material-symbols/svg-600/outlined/public.svg';
+import { ReactComponent as SearchIcon } from '@material-symbols/svg-600/outlined/search.svg';
 
 const messages = defineMessages({
   home: { id: 'tabs_bar.home', defaultMessage: 'Home' },
@@ -41,11 +45,11 @@ class TabsBar extends Component {
 
     return (
       <div className='tabs-bar__wrapper'>
-        <ColumnLink transparent to='/home' icon='home' text={intl.formatMessage(messages.home)} />
+        <ColumnLink transparent to='/home' icon='home' iconComponent={HomeIcon} text={intl.formatMessage(messages.home)} />
         <ColumnLink transparent to='/notifications' icon={<NotificationsCounterIcon className='column-link__icon' />} text={intl.formatMessage(messages.notifications)} />
-        <ColumnLink transparent to='/public/local' isActive={this.isFirehoseActive} icon='globe' text={intl.formatMessage(messages.firehose)} />
-        <ColumnLink transparent to='/search' icon='search' text={intl.formatMessage(messages.search)} />
-        <ColumnLink transparent to='/getting-started' icon='bars' text={intl.formatMessage(messages.gettingStarted)} />
+        <ColumnLink transparent to='/public/local'  iconComponent={PublicIcon} isActive={this.isFirehoseActive} icon='globe' text={intl.formatMessage(messages.firehose)} />
+        <ColumnLink transparent to='/search' icon='search' iconComponent={SearchIcon} text={intl.formatMessage(messages.search)} />
+        <ColumnLink transparent to='/getting-started' icon='bars' iconComponent={MoreHorizIcon} text={intl.formatMessage(messages.gettingStarted)} />
       </div>
     );
   }

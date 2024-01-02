@@ -18,6 +18,10 @@
   display: none;
 }
 
+.column-link--transparent{
+  justify-content: center;
+}
+
 @media screen and (max-width: 630px) {
   .tab-ber-bottom .timeline{
     width:100%;
