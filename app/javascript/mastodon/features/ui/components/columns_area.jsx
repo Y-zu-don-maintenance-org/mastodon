@@ -34,6 +34,8 @@ import { Link } from 'react-router-dom';
 import { Icon }  from 'mastodon/components/icon';
 import TabsBar from './tabs_bar';
 
+import { ReactComponent as EditIcon } from '@material-symbols/svg-600/outlined/edit.svg';
+
 const componentMap = {
   'COMPOSE': Compose,
   'HOME': HomeTimeline,
@@ -164,12 +166,12 @@ export default class ColumnsArea extends ImmutablePureComponent {
             </div>
 
             <div className='columns-area__panels__main timeline'>
-              <div className='tabs-bar__wrapper'><div id='tabs-bar__portal' /></div>
+              <div className='tabs-bar__wrapper'><TabsBarPortal /></div>
               <div className='columns-area columns-area--mobile'>{children}</div>
             </div>
 
             <div className='columns-area__panels__main navber'>
-              {location.pathname !== '/publish' && <Link to='/publish' className='button bottom_right'><Icon id='pencil' fixedWidth /></Link>}
+              {location.pathname !== '/publish' && <Link to='/publish' icon='Edit' className='button bottom_right'><EditIcon fill="white"/></Link>}
               <TabsBar key='tabs' />
             </div>
 
@@ -178,7 +180,6 @@ export default class ColumnsArea extends ImmutablePureComponent {
                 <NavigationPanel />
               </div>
             </div>
-
           </div>
         ); 
       } else {
