@@ -1,20 +1,20 @@
 # frozen_string_literal: true
 
-class Api::V1::Timelines::ListController < Api::BaseController
+class Api::V1::Timelines::ListController < Api::V1::Timelines::BaseController
   before_action -> { doorkeeper_authorize! :read, :'read:lists' }
   before_action :require_user!
   before_action :set_list
   before_action :set_statuses
 
-  after_action :insert_pagination_headers, unless: -> { @statuses.empty? }
+  PERMITTED_PARAMS = %i(limit).freeze
 
   def show
-    account_ids = @statuses.filter(&:quote?).map { |status| status.quote.account_id }.uniq
+    accounts = @statuses.filter_map { |status| status.quote&.account }.uniq
 
     render json: @statuses,
            each_serializer: REST::StatusSerializer,
            relationships: StatusRelationshipsPresenter.new(@statuses, current_user.account_id),
-           account_relationships: AccountRelationshipsPresenter.new(account_ids, current_user&.account_id)
+           account_relationships: AccountRelationshipsPresenter.new(accounts, current_user&.account_id)
   end
 
   private
@@ -44,27 +44,11 @@ class Api::V1::Timelines::ListController < Api::BaseController
     ListFeed.new(@list)
   end
 
-  def insert_pagination_headers
-    set_pagination_headers(next_path, prev_path)
-  end
-
-  def pagination_params(core_params)
-    params.slice(:limit).permit(:limit).merge(core_params)
-  end
-
   def next_path
-    api_v1_timelines_list_url params[:id], pagination_params(max_id: pagination_max_id)
+    api_v1_timelines_list_url params[:id], next_path_params
   end
 
   def prev_path
-    api_v1_timelines_list_url params[:id], pagination_params(min_id: pagination_since_id)
-  end
-
-  def pagination_max_id
-    @statuses.last.id
-  end
-
-  def pagination_since_id
-    @statuses.first.id
+    api_v1_timelines_list_url params[:id], prev_path_params
   end
 end

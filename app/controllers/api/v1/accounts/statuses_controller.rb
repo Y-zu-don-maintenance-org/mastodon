@@ -8,11 +8,11 @@ class Api::V1::Accounts::StatusesController < Api::BaseController
 
   def index
     cache_if_unauthenticated!
-    @statuses   = load_statuses
-    account_ids = @statuses.filter(&:quote?).map { |status| status.quote.account_id }.uniq
+    @statuses = load_statuses
+    accounts = @statuses.filter_map { |status| status.quote&.account }.uniq
     render json: @statuses, each_serializer: REST::StatusSerializer,
            relationships: StatusRelationshipsPresenter.new(@statuses, current_user&.account_id),
-           account_relationships: AccountRelationshipsPresenter.new(account_ids, current_user&.account_id)
+           account_relationships: AccountRelationshipsPresenter.new(accounts, current_user&.account_id)
   end
 
   private
@@ -22,7 +22,7 @@ class Api::V1::Accounts::StatusesController < Api::BaseController
   end
 
   def load_statuses
-    @account.suspended? ? [] : cached_account_statuses
+    @account.unavailable? ? [] : cached_account_statuses
   end
 
   def cached_account_statuses

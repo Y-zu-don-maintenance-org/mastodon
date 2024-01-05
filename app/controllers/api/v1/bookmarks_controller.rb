@@ -6,11 +6,11 @@ class Api::V1::BookmarksController < Api::BaseController
   after_action :insert_pagination_headers
 
   def index
-    @statuses   = load_statuses
-    account_ids = @statuses.filter(&:quote?).map { |status| status.quote.account_id }.uniq
+    @statuses = load_statuses
+    accounts = @statuses.filter_map { |status| status.quote&.account }.uniq
     render json: @statuses, each_serializer: REST::StatusSerializer,
            relationships: StatusRelationshipsPresenter.new(@statuses, current_user&.account_id),
-           account_relationships: AccountRelationshipsPresenter.new(account_ids, current_user&.account_id)
+           account_relationships: AccountRelationshipsPresenter.new(accounts, current_user&.account_id)
   end
 
   private
@@ -24,7 +24,7 @@ class Api::V1::BookmarksController < Api::BaseController
   end
 
   def results
-    @_results ||= account_bookmarks.joins(:status).eager_load(:status).to_a_paginated_by_id(
+    @results ||= account_bookmarks.joins(:status).eager_load(:status).to_a_paginated_by_id(
       limit_param(DEFAULT_STATUSES_LIMIT),
       params_slice(:max_id, :since_id, :min_id)
     )
