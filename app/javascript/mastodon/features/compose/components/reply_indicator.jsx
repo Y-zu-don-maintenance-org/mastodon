@@ -1,78 +1,48 @@
-import PropTypes from 'prop-types';
+import { FormattedMessage } from 'react-intl';
 
-import { defineMessages, injectIntl } from 'react-intl';
+import { Link } from 'react-router-dom';
 
-import classNames from 'classnames';
+import { useSelector } from 'react-redux';
 
-import ImmutablePropTypes from 'react-immutable-proptypes';
-import ImmutablePureComponent from 'react-immutable-pure-component';
+import BarChart4BarsIcon from '@/material-icons/400-24px/bar_chart_4_bars.svg?react';
+import PhotoLibraryIcon from '@/material-icons/400-24px/photo_library.svg?react';
+import { Avatar } from 'mastodon/components/avatar';
+import { DisplayName } from 'mastodon/components/display_name';
+import { Icon } from 'mastodon/components/icon';
 
-import { ReactComponent as CloseIcon } from '@material-symbols/svg-600/outlined/close.svg';
+export const ReplyIndicator = () => {
+  const inReplyToId = useSelector(state => state.getIn(['compose', 'in_reply_to']));
+  const status = useSelector(state => state.getIn(['statuses', inReplyToId]));
+  const account = useSelector(state => state.getIn(['accounts', status?.get('account')]));
 
-import AttachmentList from 'mastodon/components/attachment_list';
-import { WithOptionalRouterPropTypes, withOptionalRouter } from 'mastodon/utils/react_router';
+  if (!status) {
+    return null;
+  }
 
-import { Avatar } from '../../../components/avatar';
-import { DisplayName } from '../../../components/display_name';
-import { IconButton } from '../../../components/icon_button';
+  const content = { __html: status.get('contentHtml') };
 
-const messages = defineMessages({
-  cancel: { id: 'reply_indicator.cancel', defaultMessage: 'Cancel' },
-});
+  return (
+    <div className='reply-indicator'>
+      <div className='reply-indicator__line' />
 
-class ReplyIndicator extends ImmutablePureComponent {
+      <Link to={`/@${account.get('acct')}`} className='detailed-status__display-avatar'>
+        <Avatar account={account} size={46} />
+      </Link>
 
-  static propTypes = {
-    status: ImmutablePropTypes.map,
-    onCancel: PropTypes.func.isRequired,
-    intl: PropTypes.object.isRequired,
-    quote: PropTypes.bool,
-    ...WithOptionalRouterPropTypes,
-  };
-
-  handleClick = () => {
-    this.props.onCancel();
-  };
-
-  handleAccountClick = (e) => {
-    if (e.button === 0 && !(e.ctrlKey || e.metaKey)) {
-      e.preventDefault();
-      this.props.history?.push(`/@${this.props.status.getIn(['account', 'acct'])}`);
-    }
-  };
-
-  render () {
-    const { status, intl, quote } = this.props;
-
-    if (!status) {
-      return null;
-    }
-
-    const content = { __html: status.get('contentHtml') };
-
-    return (
-      <div className={classNames('reply-indicator', { 'quote-indicator': quote })}>
-        <div className='reply-indicator__header'>
-          <div className='reply-indicator__cancel'><IconButton title={intl.formatMessage(messages.cancel)} icon='times' iconComponent={CloseIcon} onClick={this.handleClick} inverted /></div>
-
-          <a href={`/@${status.getIn(['account', 'acct'])}`} onClick={this.handleAccountClick} className='reply-indicator__display-name'>
-            <div className='reply-indicator__display-avatar'><Avatar account={status.get('account')} size={24} /></div>
-            <DisplayName account={status.get('account')} />
-          </a>
-        </div>
+      <div className='reply-indicator__main'>
+        <Link to={`/@${account.get('acct')}`} className='detailed-status__display-name'>
+          <DisplayName account={account} />
+        </Link>
 
         <div className='reply-indicator__content translate' dangerouslySetInnerHTML={content} />
 
-        {status.get('media_attachments').size > 0 && (
-          <AttachmentList
-            compact
-            media={status.get('media_attachments')}
-          />
+        {(status.get('poll') || status.get('media_attachments').size > 0) && (
+          <div className='reply-indicator__attachments'>
+            {status.get('poll') && <><Icon icon={BarChart4BarsIcon} /><FormattedMessage id='reply_indicator.poll' defaultMessage='Poll' /></>}
+            {status.get('media_attachments').size > 0 && <><Icon icon={PhotoLibraryIcon} /><FormattedMessage id='reply_indicator.attachments' defaultMessage='{count, plural, one {# attachment} other {# attachments}}' values={{ count: status.get('media_attachments').size }} /></>}
+          </div>
         )}
       </div>
-    );
-  }
-
-}
-
-export default withOptionalRouter(injectIntl(ReplyIndicator));
+    </div>
+  );
+};
