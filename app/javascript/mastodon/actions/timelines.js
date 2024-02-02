@@ -4,6 +4,9 @@ import api, { getLinks } from 'mastodon/api';
 import { compareId } from 'mastodon/compare_id';
 import { usePendingItems as preferPendingItems } from 'mastodon/initial_state';
 
+import { uniq } from '../utils/uniq';
+
+import { fetchRelationships } from './accounts';
 import { importFetchedStatus, importFetchedStatuses } from './importer';
 import { submitMarkers } from './markers';
 
@@ -45,6 +48,7 @@ export function updateTimeline(timeline, status, accept) {
     }
 
     dispatch(importFetchedStatus(status));
+    dispatch(fetchRelationships([status.reblog ? status.reblog.account.id : status.account.id, status.quote ? status.quote.account.id : null].filter(x => x)));
 
     dispatch({
       type: TIMELINE_UPDATE,
@@ -118,6 +122,7 @@ export function expandTimeline(timelineId, path, params = {}, done = noOp) {
       const next = getLinks(response).refs.find(link => link.rel === 'next');
 
       dispatch(importFetchedStatuses(response.data));
+      dispatch(fetchRelationships(uniq(response.data.map(item => [item.reblog ? item.reblog.account.id : item.account.id, item.quote ? item.quote.account.id : null]).flat().filter(x => x))));
       dispatch(expandTimelineSuccess(timelineId, response.data, next ? next.uri : null, response.status === 206, isLoadingRecent, isLoadingMore, isLoadingRecent && preferPendingItems));
 
       if (timelineId === 'home' && !isLoadingMore && !isLoadingRecent) {

@@ -6,6 +6,8 @@ import {
   COMPOSE_CHANGE,
   COMPOSE_REPLY,
   COMPOSE_REPLY_CANCEL,
+  COMPOSE_QUOTE,
+  COMPOSE_QUOTE_CANCEL,
   COMPOSE_DIRECT,
   COMPOSE_MENTION,
   COMPOSE_SUBMIT_REQUEST,
@@ -67,6 +69,8 @@ const initialState = ImmutableMap({
   caretPosition: null,
   preselectDate: null,
   in_reply_to: null,
+  quote_from: null,
+  quote_from_url: null,
   is_composing: false,
   is_submitting: false,
   is_changing_upload: false,
@@ -119,6 +123,8 @@ function clearAll(state) {
     map.set('is_submitting', false);
     map.set('is_changing_upload', false);
     map.set('in_reply_to', null);
+    map.set('quote_from', null);
+    map.set('quote_from_url', null);
     map.set('privacy', state.get('default_privacy'));
     map.set('sensitive', state.get('default_sensitive'));
     map.set('language', state.get('default_language'));
@@ -250,6 +256,17 @@ const expiresInFromExpiresAt = expires_at => {
   return [300, 1800, 3600, 21600, 86400, 259200, 604800].find(expires_in => expires_in >= delta) || 24 * 3600;
 };
 
+const rejectQuoteAltText = html => {
+  const fragment = domParser.parseFromString(html, 'text/html').documentElement;
+
+  const quote_inline = fragment.querySelector('span.quote-inline');
+  if (quote_inline) {
+    quote_inline.remove();
+  }
+
+  return fragment.innerHTML;
+};
+
 const mergeLocalHashtagResults = (suggestions, prefix, tagHistory) => {
   prefix = prefix.toLowerCase();
   if (suggestions.length < 4) {
@@ -335,10 +352,20 @@ export default function compose(state = initialState, action) {
   case COMPOSE_COMPOSING_CHANGE:
     return state.set('is_composing', action.value);
   case COMPOSE_REPLY:
+  case COMPOSE_QUOTE:
     return state.withMutations(map => {
       map.set('id', null);
-      map.set('in_reply_to', action.status.get('id'));
-      map.set('text', statusToTextMentions(state, action.status));
+      if (action.type === COMPOSE_REPLY) {
+        map.set('in_reply_to', action.status.get('id'));
+        map.set('quote_from', null);
+        map.set('quote_from_url', null);
+        map.set('text', statusToTextMentions(state, action.status));
+      } else {
+        map.set('in_reply_to', null);
+        map.set('quote_from', action.status.get('id'));
+        map.set('quote_from_url', action.status.get('url'));
+        map.set('text', '');
+      }
       map.set('privacy', privacyPreference(action.status.get('visibility'), state.get('default_privacy')));
       map.set('focusDate', new Date());
       map.set('caretPosition', null);
@@ -370,6 +397,7 @@ export default function compose(state = initialState, action) {
   case COMPOSE_UPLOAD_CHANGE_REQUEST:
     return state.set('is_changing_upload', true);
   case COMPOSE_REPLY_CANCEL:
+  case COMPOSE_QUOTE_CANCEL:
   case COMPOSE_RESET:
   case COMPOSE_SUBMIT_SUCCESS:
     return clearAll(state);
@@ -468,8 +496,10 @@ export default function compose(state = initialState, action) {
       }));
   case REDRAFT:
     return state.withMutations(map => {
-      map.set('text', action.raw_text || unescapeHTML(expandMentions(action.status)));
+      map.set('text', action.raw_text || unescapeHTML(rejectQuoteAltText(expandMentions(action.status))));
       map.set('in_reply_to', action.status.get('in_reply_to_id'));
+      map.set('quote_from', action.status.getIn(['quote', 'id']));
+      map.set('quote_from_url', action.status.getIn(['quote', 'url']));
       map.set('privacy', action.status.get('visibility'));
       map.set('media_attachments', action.status.get('media_attachments').map((media) => media.set('unattached', true)));
       map.set('focusDate', new Date());

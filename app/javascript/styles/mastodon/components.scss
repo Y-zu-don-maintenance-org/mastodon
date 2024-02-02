@@ -875,6 +875,29 @@ body > [data-popper-placement] {
     background: $ui-highlight-color;
     border-color: $ui-highlight-color;
     color: $primary-text-color;
+    padding-top: 10px;
+
+    .compose-form__publish-button-wrapper {
+      padding-top: 15px;
+      button {
+        display: inline-block;
+        width: auto;
+
+        margin-right: 0.5em;
+      }
+
+      button:last-child {
+        margin-right: auto;
+      }
+    }
+  }
+
+  .compose-form__utilBtns {
+    padding-top: 10px;
+
+    * {
+      margin-bottom: 0.5em;
+    }
   }
 }
 
@@ -933,6 +956,45 @@ body > [data-popper-placement] {
   img {
     width: auto;
   }
+}
+
+.reply-indicator {
+  border-radius: 4px;
+  margin-bottom: 10px;
+  background: $ui-primary-color;
+  padding: 10px;
+  min-height: 23px;
+  overflow-y: auto;
+  flex: 0 2 auto;
+
+  &.quote-indicator {
+    background: $success-green;
+  }
+}
+
+.reply-indicator__header {
+  margin-bottom: 5px;
+  overflow: hidden;
+}
+
+.reply-indicator__cancel {
+  float: right;
+  line-height: 24px;
+}
+
+.reply-indicator__display-name {
+  color: $inverted-text-color;
+  display: block;
+  max-width: 100%;
+  line-height: 24px;
+  overflow: hidden;
+  padding-inline-end: 25px;
+  text-decoration: none;
+}
+
+.reply-indicator__display-avatar {
+  float: left;
+  margin-inline-end: 5px;
 }
 
 .status__content--with-action {
@@ -1250,6 +1312,10 @@ body > [data-popper-placement] {
 
 .status__content.status__content--collapsed {
   max-height: 22px * 15; // 15 lines is roughly above 500 characters
+
+  .quote-status & {
+    max-height: 22px * 5;
+  }
 }
 
 .status__content__read-more-button,
@@ -1329,6 +1395,70 @@ body > [data-popper-placement] {
   }
 }
 
+.quote-status {
+  border: solid 1px $ui-base-lighter-color;
+  border-radius: 4px !important;
+  padding: 5px !important;
+  margin-top: 8px;
+  position: relative;
+
+  .muted-quote,
+  .unlisted-quote button {
+    color: $dark-text-color;
+    font-size: 15px;
+    width: 100%;
+    border: 0;
+    padding: 0;
+  }
+
+  .muted-quote {
+    text-align: center;
+    cursor: default;
+  }
+
+  .unlisted-quote button {
+    background-color: transparent;
+    cursor: pointer;
+    appearance: none;
+  }
+
+  .status__avatar,
+  .detailed-status__display-avatar {
+    position: absolute;
+    top: 5px !important;
+    left: 5px !important;
+  }
+
+  .display-name {
+    padding-left: 56px;
+  }
+
+  .detailed-status__display-name {
+    margin-bottom: 0;
+    line-height: unset;
+
+    strong,
+    span {
+      display: block;
+      line-height: 22px;
+    }
+  }
+
+  .status__content__text {
+    p {
+      display: inline;
+
+      &::after {
+        content: ' ';
+      }
+    }
+  }
+}
+
+.quote-inline {
+  display: none;
+}
+
 .focusable {
   &:focus {
     outline: 0;
@@ -1344,8 +1474,11 @@ body > [data-popper-placement] {
 .status {
   padding: 16px;
   min-height: 54px;
-  border-bottom: 1px solid lighten($ui-base-color, 8%);
   cursor: auto;
+
+  &:not(.quote-status) {
+    border-bottom: 1px solid lighten($ui-base-color, 8%);
+  }
 
   @keyframes fade {
     0% {

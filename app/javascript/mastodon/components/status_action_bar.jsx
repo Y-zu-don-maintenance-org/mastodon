@@ -16,6 +16,7 @@ import RepeatIcon from '@/material-icons/400-24px/repeat.svg?react';
 import ReplyIcon from '@/material-icons/400-24px/reply.svg?react';
 import ReplyAllIcon from '@/material-icons/400-24px/reply_all.svg?react';
 import StarIcon from '@/material-icons/400-24px/star-fill.svg?react';
+import QuoteIcon from '@material-symbols/400-24px/format_quote.svg?react';
 import StarBorderIcon from '@/material-icons/400-24px/star.svg?react';
 import VisibilityIcon from '@/material-icons/400-24px/visibility.svg?react';
 import RepeatActiveIcon from '@/svg-icons/repeat_active.svg?react';
@@ -46,6 +47,8 @@ const messages = defineMessages({
   reblog_private: { id: 'status.reblog_private', defaultMessage: 'Boost with original visibility' },
   cancel_reblog_private: { id: 'status.cancel_reblog_private', defaultMessage: 'Unboost' },
   cannot_reblog: { id: 'status.cannot_reblog', defaultMessage: 'This post cannot be boosted' },
+  quote: { id: 'status.quote', defaultMessage: 'Quote' },
+  cannot_quote: { id: 'status.cannot_quote', defaultMessage: 'This post cannot be quoted' },
   favourite: { id: 'status.favourite', defaultMessage: 'Favorite' },
   bookmark: { id: 'status.bookmark', defaultMessage: 'Bookmark' },
   removeBookmark: { id: 'status.remove_bookmark', defaultMessage: 'Remove bookmark' },
@@ -85,6 +88,7 @@ class StatusActionBar extends ImmutablePureComponent {
     onReply: PropTypes.func,
     onFavourite: PropTypes.func,
     onReblog: PropTypes.func,
+    onQuote: PropTypes.func,
     onDelete: PropTypes.func,
     onDirect: PropTypes.func,
     onMention: PropTypes.func,
@@ -154,6 +158,10 @@ class StatusActionBar extends ImmutablePureComponent {
       this.props.onInteractionModal('reblog', this.props.status);
     }
   };
+
+  handleQuoteClick = () => {
+    this.props.onQuote(this.props.status, this.props.history);
+  }
 
   handleBookmarkClick = () => {
     this.props.onBookmark(this.props.status);
@@ -247,6 +255,14 @@ class StatusActionBar extends ImmutablePureComponent {
   handleHideClick = () => {
     this.props.onFilter();
   };
+
+  static quoteTitle = (intl, messages, publicStatus) => {
+    if (publicStatus) {
+      return intl.formatMessage(messages.quote);
+    } else {
+      return intl.formatMessage(messages.cannot_quote);
+    }
+  }
 
   render () {
     const { status, relationship, intl, withDismiss, withCounters, scrollKey } = this.props;
@@ -391,6 +407,7 @@ class StatusActionBar extends ImmutablePureComponent {
         <IconButton className='status__action-bar__button' title={replyTitle} icon={isReply ? 'reply' : replyIcon} iconComponent={isReply ? ReplyIcon : replyIconComponent} onClick={this.handleReplyClick} counter={status.get('replies_count')} />
         <IconButton className={classNames('status__action-bar__button', { reblogPrivate })} disabled={!publicStatus && !reblogPrivate} active={status.get('reblogged')} title={reblogTitle} icon='retweet' iconComponent={reblogIconComponent} onClick={this.handleReblogClick} counter={withCounters ? status.get('reblogs_count') : undefined} />
         <IconButton className='status__action-bar__button star-icon' animate active={status.get('favourited')} title={intl.formatMessage(messages.favourite)} icon='star' iconComponent={status.get('favourited') ? StarIcon : StarBorderIcon} onClick={this.handleFavouriteClick} counter={withCounters ? status.get('favourites_count') : undefined} />
+        <IconButton className='status__action-bar__button' disabled={!publicStatus} title={StatusActionBar.quoteTitle(intl, messages, publicStatus)} icon='quote' iconComponent={QuoteIcon} onClick={this.handleQuoteClick} />
         <IconButton className='status__action-bar__button bookmark-icon' disabled={!signedIn} active={status.get('bookmarked')} title={intl.formatMessage(messages.bookmark)} icon='bookmark' iconComponent={status.get('bookmarked') ? BookmarkIcon : BookmarkBorderIcon} onClick={this.handleBookmarkClick} />
 
         {filterButton}

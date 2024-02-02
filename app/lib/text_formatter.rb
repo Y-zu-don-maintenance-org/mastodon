@@ -13,7 +13,8 @@ class TextFormatter
     multiline: true,
   }.freeze
 
-  attr_reader :text, :options
+  attr_accessor :text
+  attr_reader :options
 
   # @param [String] text
   # @param [Hash] options
@@ -21,6 +22,7 @@ class TextFormatter
   # @option options [Boolean] :with_domains
   # @option options [Boolean] :with_rel_me
   # @option options [Array<Account>] :preloaded_accounts
+  # @option options [Status] :quote
   def initialize(text, options = {})
     @text    = text
     @options = DEFAULT_OPTIONS.merge(options)
@@ -31,7 +33,7 @@ class TextFormatter
   end
 
   def to_s
-    return ''.html_safe if text.blank?
+    return ''.html_safe if text.blank? & !quote?
 
     html = rewrite do |entity|
       if entity[:url]
@@ -42,6 +44,8 @@ class TextFormatter
         link_to_mention(entity)
       end
     end
+
+    html += render_quote if quote?
 
     html = simple_format(html, {}, sanitize: false).delete("\n") if multiline?
 
@@ -126,11 +130,18 @@ class TextFormatter
 
     return "@#{h(entity[:screen_name])}" if account.nil?
 
-    url = ActivityPub::TagManager.instance.url_for(account)
+    url = ap_tag_manager.url_for(account)
     display_username = same_username_hits&.positive? || with_domains? ? account.pretty_acct : account.username
 
     <<~HTML.squish
       <span class="h-card" translate="no"><a href="#{h(url)}" class="u-url mention">@<span>#{h(display_username)}</span></a></span>
+    HTML
+  end
+
+  def render_quote
+    link = link_to_url({ url: ap_tag_manager.url_for(quote) })
+    <<~HTML.squish
+      <span class="quote-inline"><br>RE: #{link}</span>
     HTML
   end
 
@@ -140,6 +151,10 @@ class TextFormatter
 
   def tag_manager
     @tag_manager ||= TagManager.instance
+  end
+
+  def ap_tag_manager
+    @ap_tag_manager ||= ActivityPub::TagManager.instance
   end
 
   delegate :local_domain?, to: :tag_manager
@@ -162,5 +177,13 @@ class TextFormatter
 
   def preloaded_accounts?
     preloaded_accounts.present?
+  end
+
+  def quote
+    options[:quote]
+  end
+
+  def quote?
+    quote.present?
   end
 end

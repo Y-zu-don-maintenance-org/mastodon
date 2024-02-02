@@ -11,6 +11,7 @@ import { initBlockModal } from '../actions/blocks';
 import { initBoostModal } from '../actions/boosts';
 import {
   replyCompose,
+  quoteCompose,
   mentionCompose,
   directCompose,
 } from '../actions/compose';
@@ -45,6 +46,8 @@ import {
   editStatus,
   translateStatus,
   undoStatusTranslation,
+  hideQuote,
+  revealQuote,
 } from '../actions/statuses';
 import Status from '../components/status';
 import { boostModal, deleteModal } from '../initial_state';
@@ -57,6 +60,8 @@ const messages = defineMessages({
   redraftMessage: { id: 'confirmations.redraft.message', defaultMessage: 'Are you sure you want to delete this status and re-draft it? Favorites and boosts will be lost, and replies to the original post will be orphaned.' },
   replyConfirm: { id: 'confirmations.reply.confirm', defaultMessage: 'Reply' },
   replyMessage: { id: 'confirmations.reply.message', defaultMessage: 'Replying now will overwrite the message you are currently composing. Are you sure you want to proceed?' },
+  quoteConfirm: { id: 'confirmations.quote.confirm', defaultMessage: 'Quote' },
+  quoteMessage: { id: 'confirmations.quote.message', defaultMessage: 'Quoting now will overwrite the message you are currently composing. Are you sure you want to proceed?' },
   editConfirm: { id: 'confirmations.edit.confirm', defaultMessage: 'Edit' },
   editMessage: { id: 'confirmations.edit.message', defaultMessage: 'Editing now will overwrite the message you are currently composing. Are you sure you want to proceed?' },
   blockDomainConfirm: { id: 'confirmations.domain_block.confirm', defaultMessage: 'Block entire domain' },
@@ -109,6 +114,22 @@ const mapDispatchToProps = (dispatch, { intl, contextType }) => ({
     } else {
       dispatch(initBoostModal({ status, onReblog: this.onModalReblog }));
     }
+  },
+
+  onQuote (status, router) {
+    dispatch((_, getState) => {
+      let state = getState();
+
+      if (state.getIn(['compose', 'text']).trim().length !== 0) {
+        dispatch(openModal('CONFIRM', {
+          message: intl.formatMessage(messages.quoteMessage),
+          confirm: intl.formatMessage(messages.quoteConfirm),
+          onConfirm: () => dispatch(quoteCompose(status, router)),
+        }));
+      } else {
+        dispatch(quoteCompose(status, router));
+      }
+    });
   },
 
   onFavourite (status) {
@@ -251,6 +272,14 @@ const mapDispatchToProps = (dispatch, { intl, contextType }) => ({
 
   onToggleCollapsed (status, isCollapsed) {
     dispatch(toggleStatusCollapse(status.get('id'), isCollapsed));
+  },
+
+  onQuoteToggleHidden (status) {
+    if (status.get('quote_hidden')) {
+      dispatch(revealQuote(status.get('id')));
+    } else {
+      dispatch(hideQuote(status.get('id')));
+    }
   },
 
   onBlockDomain (domain) {

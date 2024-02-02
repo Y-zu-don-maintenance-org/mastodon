@@ -190,6 +190,29 @@ function loaded() {
     const message = (statusEl.dataset.spoiler === 'expanded') ? (localeData['status.show_less'] || 'Show less') : (localeData['status.show_more'] || 'Show more');
     spoilerLink.textContent = (new IntlMessageFormat(message, locale)).format();
   });
+
+  delegate(document, '.quote-status', 'click', ({ target }) => {
+    if (target.closest('.status__content__spoiler-link') ||
+      target.closest('.media-gallery') ||
+      target.closest('.video-player') ||
+      target.closest('.audio-player')) {
+      return false;
+    }
+
+    let url = target.closest('.quote-status').getAttribute('dataurl');
+    if (target.closest('.status__display-name')) {
+      url = target.closest('.status__display-name').getAttribute('href');
+    } else if (target.closest('.status-card')) {
+      url = target.closest('.status-card').getAttribute('href');
+    }
+
+    if (window.location.hostname === url.split('/')[2].split(':')[0]) {
+      window.location.href = url;
+    } else {
+      window.open(url, 'blank');
+    }
+    return false;
+  });
 }
 
 Rails.delegate(document, '#edit_profile input[type=file]', 'change', ({ target }) => {

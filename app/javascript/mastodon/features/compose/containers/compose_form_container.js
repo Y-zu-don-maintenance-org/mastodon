@@ -10,6 +10,11 @@ import {
   insertEmojiCompose,
   uploadCompose,
 } from '../../../actions/compose';
+import {
+  submitGoji,
+  submitHarukin,
+  submitRisa
+} from '../../../actions/UtilBtns';
 import ComposeForm from '../components/compose_form';
 
 const mapStateToProps = state => ({
@@ -63,6 +68,18 @@ const mapDispatchToProps = (dispatch) => ({
 
   onPickEmoji (position, data, needsSpace) {
     dispatch(insertEmojiCompose(position, data, needsSpace));
+  },
+
+  onRisaSubmit (textarea) {
+    dispatch(submitRisa(textarea));
+  },
+
+  onGojiSubmit (textarea) {
+    dispatch(submitGoji(textarea));
+  },
+
+  onHarukinSubmit (textarea) {
+    dispatch(submitHarukin(textarea));
   },
 
 });

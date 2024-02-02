@@ -15,6 +15,7 @@ import PollContainer from 'mastodon/containers/poll_container';
 import { autoPlayGif, languages as preloadedLanguages } from 'mastodon/initial_state';
 
 const MAX_HEIGHT = 706; // 22px * 32 (+ 2px padding at the top)
+const QUOTE_MAX_HEIGHT = 112; // 22px * 5 (+ 2px padding at the top)
 
 /**
  *
@@ -83,6 +84,7 @@ class StatusContent extends PureComponent {
     onCollapsedToggle: PropTypes.func,
     languages: ImmutablePropTypes.map,
     intl: PropTypes.object,
+    quote: PropTypes.bool,
     // from react-router
     match: PropTypes.object.isRequired,
     location: PropTypes.object.isRequired,
@@ -130,12 +132,12 @@ class StatusContent extends PureComponent {
     }
 
     if (status.get('collapsed', null) === null && onCollapsedToggle) {
-      const { collapsible, onClick } = this.props;
+      const { collapsible, onClick, quote } = this.props;
 
       const collapsed =
           collapsible
           && onClick
-          && node.clientHeight > MAX_HEIGHT
+          && node.clientHeight > (quote ? QUOTE_MAX_HEIGHT : MAX_HEIGHT)
           && status.get('spoiler_text').length === 0;
 
       onCollapsedToggle(collapsed);
@@ -239,7 +241,7 @@ class StatusContent extends PureComponent {
   };
 
   render () {
-    const { status, intl, statusContent } = this.props;
+    const { status, intl, statusContent, quote } = this.props;
 
     const hidden = this.props.onExpandedToggle ? !this.props.expanded : this.state.hidden;
     const renderReadMore = this.props.onClick && status.get('collapsed');
@@ -269,6 +271,12 @@ class StatusContent extends PureComponent {
     const poll = !!status.get('poll') && (
       <PollContainer pollId={status.get('poll')} lang={language} />
     );
+
+    if (quote) {
+      const doc = new DOMParser().parseFromString(content.__html, 'text/html').documentElement;
+      Array.from(doc.querySelectorAll('br')).forEach(nl => nl.replaceWith(' '));
+      content.__html = doc.outerHTML;
+    }
 
     if (status.get('spoiler_text').length > 0) {
       let mentionsPlaceholder = '';

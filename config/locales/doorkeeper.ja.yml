@@ -138,7 +138,7 @@ ja:
         push: プッシュ通知
         reports: 通報
         search: 検索
-        statuses: 投稿
+        statuses: トゥート
     layouts:
       admin:
         nav:
@@ -178,13 +178,13 @@ ja:
       read:notifications: 通知の読み取り
       read:reports: 通報の読み取り
       read:search: あなたの代わりに検索
-      read:statuses: すべての投稿の読み取り
+      read:statuses: すべてのトゥートの読み取り
       write: アカウントのすべてのデータの変更
       write:accounts: プロフィールの変更
       write:blocks: ユーザーのブロックやドメインの非表示
-      write:bookmarks: 投稿のブックマーク登録
+      write:bookmarks: トゥートのブックマーク登録
       write:conversations: 会話のミュートと削除
-      write:favourites: お気に入りの投稿
+      write:favourites: お気に入りのトゥート
       write:filters: フィルターの変更
       write:follows: あなたの代わりにフォロー、アンフォロー
       write:lists: リストの変更
@@ -192,4 +192,4 @@ ja:
       write:mutes: アカウントや会話のミュート
       write:notifications: 通知の消去
       write:reports: 通報の作成
-      write:statuses: 投稿の送信
+      write:statuses: トゥートの送信

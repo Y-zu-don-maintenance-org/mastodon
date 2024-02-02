@@ -28,6 +28,9 @@ export const STATUS_REVEAL   = 'STATUS_REVEAL';
 export const STATUS_HIDE     = 'STATUS_HIDE';
 export const STATUS_COLLAPSE = 'STATUS_COLLAPSE';
 
+export const QUOTE_REVEAL = 'QUOTE_REVEAL';
+export const QUOTE_HIDE   = 'QUOTE_HIDE';
+
 export const REDRAFT = 'REDRAFT';
 
 export const STATUS_FETCH_SOURCE_REQUEST = 'STATUS_FETCH_SOURCE_REQUEST';
@@ -348,3 +351,25 @@ export const undoStatusTranslation = (id, pollId) => ({
   id,
   pollId,
 });
+
+export function hideQuote(ids) {
+  if (!Array.isArray(ids)) {
+    ids = [ids];
+  }
+
+  return {
+    type: QUOTE_HIDE,
+    ids,
+  };
+};
+
+export function revealQuote(ids) {
+  if (!Array.isArray(ids)) {
+    ids = [ids];
+  }
+
+  return {
+    type: QUOTE_REVEAL,
+    ids,
+  };
+};

@@ -4,6 +4,7 @@ import { List as ImmutableList, Map as ImmutableMap } from 'immutable';
 import { toServerSideType } from 'mastodon/utils/filters';
 
 import { me } from '../initial_state';
+import {reblogRequest} from '../actions/interactions';
 
 export { makeGetAccount } from "./accounts";
 
@@ -21,20 +22,52 @@ export const makeGetStatus = () => {
     [
       (state, { id }) => state.getIn(['statuses', id]),
       (state, { id }) => state.getIn(['statuses', state.getIn(['statuses', id, 'reblog'])]),
+      (state, { id }) => state.getIn(['statuses', state.getIn(['statuses', id, 'quote_id'])]),
       (state, { id }) => state.getIn(['accounts', state.getIn(['statuses', id, 'account'])]),
       (state, { id }) => state.getIn(['accounts', state.getIn(['statuses', state.getIn(['statuses', id, 'reblog']), 'account'])]),
+      (state, { id }) => state.getIn(['accounts', state.getIn(['statuses', state.getIn(['statuses', id, 'quote_id']), 'account'])]),
+      (state, { id }) => state.getIn(['accounts', state.getIn(['statuses', state.getIn(['statuses', id, 'reblog']), 'quote', 'account'])]),
+      (state, { id }) => state.getIn(['relationships', state.getIn(['statuses', id, 'account'])]),
+      (state, { id }) => state.getIn(['relationships', state.getIn(['statuses', state.getIn(['statuses', id, 'reblog']), 'account'])]),
+      (state, { id }) => state.getIn(['relationships', state.getIn(['statuses', state.getIn(['statuses', id, 'quote_id']), 'account'])]),
+      (state, { id }) => state.getIn(['accounts', state.getIn(['accounts', state.getIn(['statuses', id, 'account']), 'moved'])]),
+      (state, { id }) => state.getIn(['accounts', state.getIn(['accounts', state.getIn(['statuses', state.getIn(['statuses', id, 'reblog']), 'account']), 'moved'])]),
+      (state, { id }) => state.getIn(['accounts', state.getIn(['accounts', state.getIn(['statuses', state.getIn(['statuses', id, 'quote_id']), 'account']), 'moved'])]),
       getFilters,
     ],
 
-    (statusBase, statusReblog, accountBase, accountReblog, filters) => {
+    (statusBase, statusReblog, statusQuote, accountBase, accountReblog, accountQuote, accountReblogQuote, relationshipBase, relationshipReblog, relationshipQuote, movedBase, movedReblog, movedQuote, filters) => {
       if (!statusBase || statusBase.get('isLoading')) {
         return null;
       }
 
+      accountBase = accountBase.withMutations(map => {
+        map.set('relationship', relationshipBase);
+        map.set('moved', movedBase);
+      });
+
       if (statusReblog) {
+        accountReblog = accountReblog.withMutations(map => {
+          map.set('relationship', relationshipReblog);
+          map.set('moved', movedReblog);
+        });
         statusReblog = statusReblog.set('account', accountReblog);
       } else {
         statusReblog = null;
+      }
+
+      if (statusQuote) {
+        accountQuote = accountQuote.withMutations(map => {
+          map.set('relationship', relationshipQuote);
+          map.set('moved', movedQuote);
+        });
+        statusQuote = statusQuote.set('account', accountQuote);
+      } else {
+        statusQuote = null;
+      }
+
+      if (statusReblog && accountReblogQuote) {
+        statusReblog = statusReblog.setIn(['quote', 'account'], accountReblogQuote);
       }
 
       let filtered = false;
@@ -51,6 +84,7 @@ export const makeGetStatus = () => {
 
       return statusBase.withMutations(map => {
         map.set('reblog', statusReblog);
+        map.set('quote', statusQuote);
         map.set('account', accountBase);
         map.set('matched_filters', filtered);
       });

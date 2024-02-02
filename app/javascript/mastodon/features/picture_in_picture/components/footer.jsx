@@ -15,7 +15,7 @@ import ReplyIcon from '@/material-icons/400-24px/reply.svg?react';
 import ReplyAllIcon from '@/material-icons/400-24px/reply_all.svg?react';
 import StarIcon from '@/material-icons/400-24px/star.svg?react';
 import { initBoostModal } from 'mastodon/actions/boosts';
-import { replyCompose } from 'mastodon/actions/compose';
+import { replyCompose, quoteCompose } from 'mastodon/actions/compose';
 import { reblog, favourite, unreblog, unfavourite } from 'mastodon/actions/interactions';
 import { openModal } from 'mastodon/actions/modal';
 import { IconButton } from 'mastodon/components/icon_button';
@@ -30,9 +30,13 @@ const messages = defineMessages({
   reblog_private: { id: 'status.reblog_private', defaultMessage: 'Boost with original visibility' },
   cancel_reblog_private: { id: 'status.cancel_reblog_private', defaultMessage: 'Unboost' },
   cannot_reblog: { id: 'status.cannot_reblog', defaultMessage: 'This post cannot be boosted' },
+  quote: { id: 'status.quote', defaultMessage: 'Quote' },
+  cannot_quote: { id: 'status.cannot_quote', defaultMessage: 'This post cannot be quoted' },
   favourite: { id: 'status.favourite', defaultMessage: 'Favorite' },
   replyConfirm: { id: 'confirmations.reply.confirm', defaultMessage: 'Reply' },
   replyMessage: { id: 'confirmations.reply.message', defaultMessage: 'Replying now will overwrite the message you are currently composing. Are you sure you want to proceed?' },
+  quoteConfirm: { id: 'confirmations.quote.confirm', defaultMessage: 'Quote' },
+  quoteMessage: { id: 'confirmations.quote.message', defaultMessage: 'Quoting now will overwrite the message you are currently composing. Are you sure you want to proceed?' },
   open: { id: 'status.open', defaultMessage: 'Expand this status' },
 });
 
@@ -153,6 +157,31 @@ class Footer extends ImmutablePureComponent {
       }));
     }
   };
+
+  _performQuote = () => {
+    const { dispatch, status, onClose } = this.props;
+    const { router } = this.context;
+
+    if (onClose) {
+      onClose();
+    }
+
+    dispatch(quoteCompose(status, router.history));
+  }
+
+  handleQuoteClick = () => {
+    const { dispatch, askReplyConfirmation, intl } = this.props;
+
+    if (askReplyConfirmation) {
+      dispatch(openModal('CONFIRM', {
+        message: intl.formatMessage(messages.quoteMessage),
+        confirm: intl.formatMessage(messages.quoteConfirm),
+        onConfirm: this._performQuote,
+      }));
+    } else {
+      this._performQuote();
+    }
+  }
 
   handleOpenClick = e => {
     if (e.button !== 0 || !history) {

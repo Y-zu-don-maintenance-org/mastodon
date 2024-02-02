@@ -9,9 +9,13 @@ class Api::V1::Timelines::ListController < Api::V1::Timelines::BaseController
   PERMITTED_PARAMS = %i(limit).freeze
 
   def show
+    account_ids = @statuses.filter(&:quote?).map { |status| status.quote.account_id }.uniq
+    accounts = Account.where(id: account_ids)
+
     render json: @statuses,
            each_serializer: REST::StatusSerializer,
-           relationships: StatusRelationshipsPresenter.new(@statuses, current_user.account_id)
+           relationships: StatusRelationshipsPresenter.new(@statuses, current_user.account_id),
+           account_relationships: AccountRelationshipsPresenter.new(accounts, current_user&.account_id)
   end
 
   private

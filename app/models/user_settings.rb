@@ -32,6 +32,7 @@ class UserSettings
     setting :expand_content_warnings, default: false
     setting :display_media, default: 'default', in: %w(default show_all hide_all)
     setting :auto_play, default: false
+    setting :place_tab_bar_at_bottom, default: false
   end
 
   namespace :notification_emails do

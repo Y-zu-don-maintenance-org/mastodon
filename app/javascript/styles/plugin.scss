@@ -1,0 +1,60 @@
+// ここから下タブバーの実装
+
+//投稿ボタン
+.columns-area__panels__main .button.bottom_right {
+  position: fixed;
+  right: 18px;
+  bottom: 65px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  font-size: 24px;
+  border-radius: 50%;
+}
+
+.tab-ber-bottom .navber {
+  display: none;
+}
+
+.column-link--transparent{
+  justify-content: center;
+}
+
+@media screen and (max-width: 630px) {
+  .tab-ber-bottom .timeline{
+    width:100%;
+    margin: 0 0 50px 0;
+  }
+
+  .tab-ber-bottom .navber{
+    display: flex;
+    width:100%;
+    bottom: 0;
+    position: fixed;
+  }
+
+  .tab-ber-bottom .navber .tabs-bar__wrapper {
+    bottom: 0;
+    width: 100%;
+    align-self: auto;
+    display: flex;
+    border-top: 1px solid lighten($ui-base-color, 8%);
+  }
+
+  .tab-ber-bottom .navber .tabs-bar__wrapper a{
+    flex: 1;
+    text-align: center;
+  }
+
+  .columns-area__panels__pane-tab-ber{
+    display: none;
+  }
+
+  .tab-ber-bottom .navber .tabs-bar__wrapper a span {
+    display: none;
+  }
+}
+
+//ここまで下タブバーの実装

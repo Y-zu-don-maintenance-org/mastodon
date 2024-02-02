@@ -16,6 +16,7 @@ import RepeatIcon from '@/material-icons/400-24px/repeat.svg?react';
 import ReplyIcon from '@/material-icons/400-24px/reply.svg?react';
 import ReplyAllIcon from '@/material-icons/400-24px/reply_all.svg?react';
 import StarIcon from '@/material-icons/400-24px/star-fill.svg?react';
+import QuoteIcon from '@/material-icons/400-24px/format_quote.svg?react';
 import StarBorderIcon from '@/material-icons/400-24px/star.svg?react';
 import RepeatActiveIcon from '@/svg-icons/repeat_active.svg?react';
 import RepeatDisabledIcon from '@/svg-icons/repeat_disabled.svg?react';
@@ -25,6 +26,7 @@ import { PERMISSION_MANAGE_USERS, PERMISSION_MANAGE_FEDERATION } from 'mastodon/
 import { WithRouterPropTypes } from 'mastodon/utils/react_router';
 
 import { IconButton } from '../../../components/icon_button';
+import StatusActionBar from '../../../components/status_action_bar';
 import DropdownMenuContainer from '../../../containers/dropdown_menu_container';
 import { me } from '../../../initial_state';
 
@@ -39,6 +41,8 @@ const messages = defineMessages({
   reblog_private: { id: 'status.reblog_private', defaultMessage: 'Boost with original visibility' },
   cancel_reblog_private: { id: 'status.cancel_reblog_private', defaultMessage: 'Unboost' },
   cannot_reblog: { id: 'status.cannot_reblog', defaultMessage: 'This post cannot be boosted' },
+  quote: { id: 'status.quote', defaultMessage: 'Quote' },
+  cannot_quote: { id: 'status.cannot_quote', defaultMessage: 'This post cannot be quoted' },
   favourite: { id: 'status.favourite', defaultMessage: 'Favorite' },
   bookmark: { id: 'status.bookmark', defaultMessage: 'Bookmark' },
   more: { id: 'status.more', defaultMessage: 'More' },
@@ -77,6 +81,7 @@ class ActionBar extends PureComponent {
     relationship: ImmutablePropTypes.map,
     onReply: PropTypes.func.isRequired,
     onReblog: PropTypes.func.isRequired,
+    onQuote: PropTypes.func,
     onFavourite: PropTypes.func.isRequired,
     onBookmark: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
@@ -104,6 +109,10 @@ class ActionBar extends PureComponent {
   handleReblogClick = (e) => {
     this.props.onReblog(this.props.status, e);
   };
+
+  handleQuoteClick = () => {
+    this.props.onQuote(this.props.status, this.props.history);
+  }
 
   handleFavouriteClick = () => {
     this.props.onFavourite(this.props.status);
@@ -315,8 +324,8 @@ class ActionBar extends PureComponent {
         <div className='detailed-status__button'><IconButton title={intl.formatMessage(messages.reply)} icon={status.get('in_reply_to_account_id') === status.getIn(['account', 'id']) ? 'reply' : replyIcon} iconComponent={status.get('in_reply_to_account_id') === status.getIn(['account', 'id']) ? ReplyIcon : replyIconComponent}  onClick={this.handleReplyClick} /></div>
         <div className='detailed-status__button'><IconButton className={classNames({ reblogPrivate })} disabled={!publicStatus && !reblogPrivate} active={status.get('reblogged')} title={reblogTitle} icon='retweet' iconComponent={reblogIconComponent} onClick={this.handleReblogClick} /></div>
         <div className='detailed-status__button'><IconButton className='star-icon' animate active={status.get('favourited')} title={intl.formatMessage(messages.favourite)} icon='star' iconComponent={status.get('favourited') ? StarIcon : StarBorderIcon} onClick={this.handleFavouriteClick} /></div>
+        <div className='detailed-status__button'><IconButton disabled={!publicStatus} title={StatusActionBar.quoteTitle(intl, messages, publicStatus)} icon='quote' iconComponent={QuoteIcon} onClick={this.handleQuoteClick} /></div>
         <div className='detailed-status__button'><IconButton className='bookmark-icon' disabled={!signedIn} active={status.get('bookmarked')} title={intl.formatMessage(messages.bookmark)} icon='bookmark' iconComponent={status.get('bookmarked') ? BookmarkIcon : BookmarkBorderIcon} onClick={this.handleBookmarkClick} /></div>
-
         <div className='detailed-status__action-bar-dropdown'>
           <DropdownMenuContainer icon='ellipsis-h' iconComponent={MoreHorizIcon} status={status} items={menu} direction='left' title={intl.formatMessage(messages.more)} />
         </div>

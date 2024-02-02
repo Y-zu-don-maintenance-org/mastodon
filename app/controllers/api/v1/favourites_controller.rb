@@ -6,8 +6,12 @@ class Api::V1::FavouritesController < Api::BaseController
   after_action :insert_pagination_headers
 
   def index
-    @statuses = load_statuses
-    render json: @statuses, each_serializer: REST::StatusSerializer, relationships: StatusRelationshipsPresenter.new(@statuses, current_user&.account_id)
+    @statuses   = load_statuses
+    account_ids = @statuses.filter(&:quote?).map { |status| status.quote.account_id }.uniq
+    accounts = Account.where(id: account_ids)
+    render json: @statuses, each_serializer: REST::StatusSerializer,
+           relationships: StatusRelationshipsPresenter.new(@statuses, current_user&.account_id),
+           account_relationships: AccountRelationshipsPresenter.new(accounts, current_user&.account_id)
   end
 
   private

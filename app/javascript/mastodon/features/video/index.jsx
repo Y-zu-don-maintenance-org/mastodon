@@ -133,6 +133,7 @@ class Video extends PureComponent {
     autoPlay: PropTypes.bool,
     volume: PropTypes.number,
     muted: PropTypes.bool,
+    quote: PropTypes.bool,
     componentIndex: PropTypes.number,
     autoFocus: PropTypes.bool,
   };
