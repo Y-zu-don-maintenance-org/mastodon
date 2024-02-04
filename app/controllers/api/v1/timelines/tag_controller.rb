@@ -10,6 +10,7 @@ class Api::V1::Timelines::TagController < Api::V1::Timelines::BaseController
     cache_if_unauthenticated!
     @statuses = load_statuses
     accounts = @statuses.filter_map { |status| status.quote&.account }.uniq
+    account_ids = @statuses.filter(&:quote?).map { |status| status.quote.account_id }.uniq
 
     render json: @statuses, each_serializer: REST::StatusSerializer,
            relationships: StatusRelationshipsPresenter.new(@statuses, current_user&.account_id),

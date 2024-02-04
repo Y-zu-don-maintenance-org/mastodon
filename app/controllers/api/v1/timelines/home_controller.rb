@@ -11,6 +11,8 @@ class Api::V1::Timelines::HomeController < Api::V1::Timelines::BaseController
       @statuses = load_statuses
       @relationships = StatusRelationshipsPresenter.new(@statuses, current_user&.account_id)
       accounts = @statuses.filter_map { |status| status.quote&.account }.uniq
+      account_ids = @statuses.filter(&:quote?).map { |status| status.quote.account_id }.uniq
+
       @account_relationships = AccountRelationshipsPresenter.new(accounts, current_user&.account_id)
     end
 

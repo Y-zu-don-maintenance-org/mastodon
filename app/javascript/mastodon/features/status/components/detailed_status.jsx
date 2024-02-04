@@ -7,7 +7,6 @@ import { Link, withRouter } from 'react-router-dom';
 
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
-import { connect } from 'react-redux';
 
 import AlternateEmailIcon from '@/material-icons/400-24px/alternate_email.svg?react';
 import RepeatIcon from '@/material-icons/400-24px/repeat.svg?react';
@@ -23,7 +22,7 @@ import { WithRouterPropTypes } from 'mastodon/utils/react_router';
 import { Avatar } from '../../../components/avatar';
 import { DisplayName } from '../../../components/display_name';
 import MediaGallery from '../../../components/media_gallery';
-import { mapStateToProps, quote } from '../../../components/status';
+import { quote } from '../../../components/status';
 import StatusContent from '../../../components/status_content';
 import Audio from '../../audio';
 import scheduleIdleTask from '../../ui/util/schedule_idle_task';
@@ -88,6 +87,15 @@ class DetailedStatus extends ImmutablePureComponent {
       this.props.history.push(`/@${status.getIn(['quote', 'account', 'acct'])}/${status.getIn(['quote', 'id'])}`);
     }
   };
+
+  handleQuoteUserClick = () =>{
+    if (!this.props) {
+      return;
+    }
+
+    const { status } = this.props;
+    this.location.href(`/@${status.getIn(['account', 'acct'])}`);
+  }
 
   _measureHeight (heightJustChanged) {
     if (this.props.measureHeight && this.node) {
@@ -254,9 +262,8 @@ class DetailedStatus extends ImmutablePureComponent {
           card={status.get('card', null)} quote={quote} />);
       }
 
-      return null;
-    };
-
+    }
+    
     if (status.get('application')) {
       applicationLink = <> · <a className='detailed-status__application' href={status.getIn(['application', 'website'])} target='_blank' rel='noopener noreferrer'>{status.getIn(['application', 'name'])}</a></>;
     }
@@ -344,7 +351,7 @@ class DetailedStatus extends ImmutablePureComponent {
 
           {media(status, false)}
 
-          {quote(status, false, quoteMuted, this.handleQuoteClick, this.handleExpandedQuoteToggle, identity, media, this.context.router)}
+          {quote(status, false, quoteMuted, this.handleQuoteClick, this.handleExpandedQuoteToggle, identity, media, this.props)}
 
           {expanded && hashtagBar}
 

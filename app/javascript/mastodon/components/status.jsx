@@ -6,7 +6,6 @@ import classNames from 'classnames';
 
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
-import { connect } from 'react-redux';
 
 import { HotKeys } from 'react-hotkeys';
 
@@ -286,6 +285,15 @@ class Status extends ImmutablePureComponent {
     }
   };
 
+  handleQuoteUserClick = () =>{
+    if (!this.props) {
+      return;
+    }
+
+    const { status } = this.props;
+    this.location.href(`/@${status.getIn(['account', 'acct'])}`);
+  }
+
   handleExpandedToggle = () => {
     this.props.onToggleHidden(this._properStatus());
   };
@@ -456,7 +464,7 @@ class Status extends ImmutablePureComponent {
   };
 
   render () {
-    const { intl, hidden, featured, unread, showThread, scrollKey, pictureInPicture, previousId, nextInReplyToId, rootId, quoteMuted, contextType } = this.props;
+    const { intl, hidden, featured, unread, showThread, scrollKey, pictureInPicture, previousId, quoteMuted, nextInReplyToId, rootId, contextType } = this.props;
 
     let { status, account, ...other } = this.props;
 
@@ -594,7 +602,7 @@ class Status extends ImmutablePureComponent {
           const description = attachment.getIn(['translation', 'description']) || attachment.get('description');
 
           return (
-            <Bundle fetchComponent={Video} loading={this.renderLoadingVideoPlayer}>
+            <Bundle fetchComponent={Video} loading={this.renderLoadingVideoPlayer} >
               {Component => (
                 <Component
                   preview={attachment.get('preview_url')}
@@ -607,8 +615,8 @@ class Status extends ImmutablePureComponent {
                   sensitive={status.get('sensitive')}
                   onOpenVideo={this.handleOpenVideo}
                   deployPictureInPicture={pictureInPicture.get('available') ? this.handleDeployPictureInPicture : undefined}
-                  visible={quote ? this.state.showQuoteMedia : this.state.showMedia}
-                  onToggleVisibility={quote ? this.handleToggleQuoteMediaVisibility : this.handleToggleMediaVisibility}
+                  visible={this.state.showMedia}
+                  onToggleVisibility={this.handleToggleMediaVisibility}
                   quote={quote}
                 />
               )}
@@ -626,8 +634,8 @@ class Status extends ImmutablePureComponent {
                   onOpenMedia={this.handleOpenMedia}
                   cacheWidth={this.props.cacheMediaWidth}
                   defaultWidth={this.props.cachedMediaWidth}
-                  visible={quote ? this.state.showQuoteMedia : this.state.showMedia}
-                  onToggleVisibility={quote ? this.handleToggleQuoteMediaVisibility : this.handleToggleMediaVisibility}
+                  visible={this.state.showMedia}
+                  onToggleVisibility={this.handleToggleMediaVisibility}
                   quote={quote}
                 />
               )}
@@ -645,8 +653,7 @@ class Status extends ImmutablePureComponent {
           />
         );
       }
-
-      return null;
+    return null;
     };
 
     const statusAvatar = (status, account) => {
@@ -685,6 +692,14 @@ class Status extends ImmutablePureComponent {
                 <RelativeTimestamp timestamp={status.get('created_at')} />{status.get('edited_at') && <abbr title={intl.formatMessage(messages.edited, { date: intl.formatDate(status.get('edited_at'), { hour12: false, year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit' }) })}> *</abbr>}
               </a>
 
+              {/* <a onClick={this.handleAccountClick} href={`/@${status.getIn(['account', 'acct'])}`} title={status.getIn(['account', 'acct'])} className='status__display-name' target='_blank' rel='noopener noreferrer'>
+                <div className='status__avatar'>
+                  {statusAvatar}
+                </div>
+
+                <DisplayName account={status.get('account')} />
+              </a> */}
+
               {identity(status, account, false)}
             </div>
 
@@ -701,8 +716,8 @@ class Status extends ImmutablePureComponent {
 
             {media(status)}
 
-            {quote(status, this.props.muted, quoteMuted, this.handleQuoteClick, this.handleExpandedQuoteToggle, identity, media, this.context.router, contextType)}
-
+            {quote(status, this.props.muted, quoteMuted, this.handleQuoteClick, this.handleExpandedQuoteToggle, identity, media, this.props, contextType)}
+            
             {expanded && hashtagBar}
 
             <StatusActionBar scrollKey={scrollKey} status={status} account={account} onFilter={matchedFilters ? this.handleFilterClick : null} {...other} />

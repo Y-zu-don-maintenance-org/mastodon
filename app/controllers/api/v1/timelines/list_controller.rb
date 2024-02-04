@@ -10,6 +10,7 @@ class Api::V1::Timelines::ListController < Api::V1::Timelines::BaseController
 
   def show
     accounts = @statuses.filter_map { |status| status.quote&.account }.uniq
+    account_ids = @statuses.filter(&:quote?).map { |status| status.quote.account_id }.uniq
 
     render json: @statuses,
            each_serializer: REST::StatusSerializer,

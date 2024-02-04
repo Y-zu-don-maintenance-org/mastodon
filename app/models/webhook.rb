@@ -92,6 +92,14 @@ class Webhook < ApplicationRecord
     end
   end
 
+  def validate_permissions
+    errors.add(:events, :invalid_permissions) if defined?(@current_account) && required_permissions.any? { |permission| !@current_account.user_role.can?(permission) }
+  end
+
+  def strip_events
+    self.events = events.filter_map { |str| str.strip.presence } if events.present?
+  end
+
   def generate_secret
     self.secret = SecureRandom.hex(20) if secret.blank?
   end

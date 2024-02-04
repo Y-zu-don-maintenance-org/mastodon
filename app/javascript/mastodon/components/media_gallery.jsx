@@ -310,6 +310,10 @@ class MediaGallery extends PureComponent {
       style.height /= 2;
     }
 
+    if (quote && style.height) {
+      style.height /= 2;
+    }
+
     const size     = media.take(4).size;
     const uncached = media.every(attachment => attachment.get('type') === 'unknown');
 

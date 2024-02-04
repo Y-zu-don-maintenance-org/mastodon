@@ -40,6 +40,9 @@ const messages = defineMessages({
   publish: { id: 'compose_form.publish', defaultMessage: 'Post' },
   saveChanges: { id: 'compose_form.save_changes', defaultMessage: 'Update' },
   reply: { id: 'compose_form.reply', defaultMessage: 'Reply' },
+  utilBtns_goji: { id: 'compose_form.utilBtns_goji', defaultMessage: 'Typo!!!' },
+  utilBtns_harukin: { id: 'compose_form.utilBtns_harukin', defaultMessage: 'Burn Harukin' },
+  utilBtns_risa: { id: 'compose_form.utilBtns_risa', defaultMessage: 'Risa' }
 });
 
 class ComposeForm extends ImmutablePureComponent {
@@ -72,6 +75,9 @@ class ComposeForm extends ImmutablePureComponent {
     singleColumn: PropTypes.bool,
     lang: PropTypes.string,
     maxChars: PropTypes.number,
+    onGojiSubmit: PropTypes.func.isRequired,
+    onHarukinSubmit: PropTypes.func.isRequired,
+    onRisaSubmit: PropTypes.func.isRequired,
     ...WithOptionalRouterPropTypes
   };
 
@@ -225,6 +231,10 @@ class ComposeForm extends ImmutablePureComponent {
     this.props.onPickEmoji(position, data, needsSpace);
   };
 
+  handleOnGojiSubmit = () => this.props.onGojiSubmit(this.textareaRef.current);
+  handleOnHarukinSubmit = () => this.props.onHarukinSubmit(this.textareaRef.current);
+  handleOnRisaSubmit = () => this.props.onRisaSubmit(this.textareaRef.current);
+
   render () {
     const { intl, onPaste, autoFocus, withoutNavigation, maxChars } = this.props;
     const { highlighted } = this.state;
@@ -313,6 +323,10 @@ class ComposeForm extends ImmutablePureComponent {
               </div>
             </div>
           </div>
+        </div>
+        <div className="compose-form__utilBtns">
+          <Button className="compose-form__utilBtns-goji" text={intl.formatMessage(messages.utilBtns_goji)} onClick={this.handleOnGojiSubmit} block />
+          <Button className="compose-form__utilBtns-harukin" text={intl.formatMessage(messages.utilBtns_harukin)} onClick={this.handleOnHarukinSubmit} block />
         </div>
       </form>
     );

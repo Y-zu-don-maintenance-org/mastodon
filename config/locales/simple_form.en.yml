@@ -215,7 +215,11 @@ en:
         setting_display_media_show_all: Show all
         setting_expand_spoilers: Always expand posts marked with content warnings
         setting_hide_network: Hide your social graph
+        setting_noindex: Opt-out of search engine indexing
+        setting_place_tab_bar_at_bottom: Place the tab bar at the bottom
         setting_reduce_motion: Reduce motion in animations
+        setting_show_application: Disclose application used to send posts
+        setting_show_status_reaction: Show emoji reactions
         setting_system_font_ui: Use system's default font
         setting_theme: Site theme
         setting_trends: Show today's trends

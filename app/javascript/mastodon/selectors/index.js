@@ -4,6 +4,7 @@ import { List as ImmutableList, Map as ImmutableMap } from 'immutable';
 import { toServerSideType } from 'mastodon/utils/filters';
 
 import { me } from '../initial_state';
+import {reblogRequest} from '../actions/interactions';
 
 export { makeGetAccount } from "./accounts";
 

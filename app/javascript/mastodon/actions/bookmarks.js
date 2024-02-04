@@ -1,8 +1,8 @@
 import api, { getLinks } from '../api';
-import { uniq } from '../utils/uniq';
 
 import { fetchRelationships } from './accounts';
 import { importFetchedStatuses } from './importer';
+import { uniq } from '../utils/uniq';
 
 export const BOOKMARKED_STATUSES_FETCH_REQUEST = 'BOOKMARKED_STATUSES_FETCH_REQUEST';
 export const BOOKMARKED_STATUSES_FETCH_SUCCESS = 'BOOKMARKED_STATUSES_FETCH_SUCCESS';
