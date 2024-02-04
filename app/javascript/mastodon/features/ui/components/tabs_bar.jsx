@@ -4,10 +4,10 @@ import { defineMessages, injectIntl } from 'react-intl';
 import ColumnLink from './column_link';
 import NotificationsCounterIcon from './notifications_counter_icon';
 
-import { ReactComponent as HomeIcon } from '@material-symbols/svg-600/outlined/home-fill.svg';
-import { ReactComponent as MoreHorizIcon } from '@material-symbols/svg-600/outlined/more_horiz.svg';
-import { ReactComponent as PublicIcon } from '@material-symbols/svg-600/outlined/public.svg';
-import { ReactComponent as SearchIcon } from '@material-symbols/svg-600/outlined/search.svg';
+import HomeIcon from '@/material-icons/400-24px/home-fill.svg?react';
+import MoreHorizIcon from '@/material-icons/400-24px/more_horiz.svg?react';
+import PublicIcon from '@/material-icons/400-24px/public.svg?react';
+import SearchIcon from '@/material-icons/400-24px/search.svg?react';
 
 const messages = defineMessages({
   home: { id: 'tabs_bar.home', defaultMessage: 'Home' },
