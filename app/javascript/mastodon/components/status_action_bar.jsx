@@ -17,7 +17,6 @@ import RepeatIcon from '@/material-icons/400-24px/repeat.svg?react';
 import ReplyIcon from '@/material-icons/400-24px/reply.svg?react';
 import ReplyAllIcon from '@/material-icons/400-24px/reply_all.svg?react';
 import StarIcon from '@/material-icons/400-24px/star-fill.svg?react';
-import QuoteIcon from '@material-symbols/400-24px/format_quote.svg?react';
 import StarBorderIcon from '@/material-icons/400-24px/star.svg?react';
 import VisibilityIcon from '@/material-icons/400-24px/visibility.svg?react';
 import RepeatActiveIcon from '@/svg-icons/repeat_active.svg?react';
