@@ -683,6 +683,7 @@
   "status.translate": "翻訳",
   "status.translated_from_with": "{provider}を使って{lang}から翻訳",
   "status.uncached_media_warning": "プレビューは使用できません",
+  "status.unlisted_quote": "未収載の引用",
   "status.unmute_conversation": "会話のミュートを解除",
   "status.unpin": "プロフィールへの固定を解除",
   "subscribed_languages.lead": "選択した言語のトゥートだけがホームとリストのタイムラインに表示されます。全ての言語のトゥートを受け取る場合は全てのチェックを外して下さい。",

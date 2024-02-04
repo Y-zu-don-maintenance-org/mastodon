@@ -167,7 +167,7 @@ class Footer extends ImmutablePureComponent {
     }
 
     dispatch(quoteCompose(status, router.history));
-  }
+  };
 
   handleQuoteClick = () => {
     const { dispatch, askReplyConfirmation, intl } = this.props;
@@ -181,7 +181,7 @@ class Footer extends ImmutablePureComponent {
     } else {
       this._performQuote();
     }
-  }
+  };
 
   handleOpenClick = e => {
     if (e.button !== 0 || !history) {

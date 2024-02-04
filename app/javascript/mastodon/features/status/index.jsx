@@ -255,7 +255,7 @@ class Status extends ImmutablePureComponent {
 
   handleToggleQuoteMediaVisibility = () => {
     this.setState({ showQuoteMedia: !this.state.showQuoteMedia });
-  }
+  };
 
   handleFavouriteClick = (status) => {
     const { dispatch } = this.props;
@@ -327,7 +327,7 @@ class Status extends ImmutablePureComponent {
     } else {
       dispatch(quoteCompose(status, this.props.history));
     }
-  }
+  };
 
   handleModalReblog = (status, privacy) => {
     this.props.dispatch(reblog(status, privacy));
@@ -450,7 +450,7 @@ class Status extends ImmutablePureComponent {
     } else {
       this.props.dispatch(hideQuote(status.get('id')));
     }
-  }
+  };
 
   handleToggleAll = () => {
     const { status, ancestorsIds, descendantsIds } = this.props;

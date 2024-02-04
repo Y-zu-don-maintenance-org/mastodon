@@ -12,21 +12,8 @@
           *
     %data.dt-published{ value: status.created_at.to_time.iso8601 }
 
-    .p-author.h-card
-      = link_to ActivityPub::TagManager.instance.url_for(status.account), class: 'status__display-name u-url', target: stream_link_target, rel: 'noopener noreferrer' do
-        .status__avatar
-          %div
-            - if prefers_autoplay?
-              = image_tag status.account.avatar_original_url, alt: '', class: 'u-photo account__avatar'
-            - else
-              = image_tag status.account.avatar_static_url, alt: '', class: 'u-photo account__avatar'
-        %span.display-name
-          %bdi
-            %strong.display-name__html.p-name.emojify= display_name(status.account, custom_emojify: true, autoplay: prefers_autoplay?)
-          &nbsp;
-          %span.display-name__account
-            = acct(status.account)
-            = fa_icon('lock') if status.account.locked?
+    = render 'statuses/author', author: status.account
+
   .status__content.emojify{ data: ({ spoiler: current_account&.user&.setting_expand_spoilers ? 'expanded' : 'folded' } if status.spoiler_text?) }<
     - if status.spoiler_text?
       %p<

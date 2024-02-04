@@ -361,7 +361,7 @@ export function hideQuote(ids) {
     type: QUOTE_HIDE,
     ids,
   };
-};
+}
 
 export function revealQuote(ids) {
   if (!Array.isArray(ids)) {
@@ -372,4 +372,4 @@ export function revealQuote(ids) {
     type: QUOTE_REVEAL,
     ids,
   };
-};
+}

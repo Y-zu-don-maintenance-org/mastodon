@@ -1105,6 +1105,10 @@ body > [data-popper-placement] {
   grid-template-rows: 46px max-content;
   gap: 0 10px;
 
+  &.quote-indicator {
+    background: $success-green;
+  }
+
   .detailed-status__display-name {
     margin-bottom: 4px;
   }
@@ -1422,17 +1426,6 @@ body > [data-popper-placement] {
     appearance: none;
   }
 
-  .status__avatar,
-  .detailed-status__display-avatar {
-    position: absolute;
-    top: 5px !important;
-    left: 5px !important;
-  }
-
-  .display-name {
-    padding-left: 56px;
-  }
-
   .detailed-status__display-name {
     margin-bottom: 0;
     line-height: unset;
@@ -1630,7 +1623,8 @@ body > [data-popper-placement] {
   color: $dark-text-color;
 }
 
-.status__info .status__display-name {
+.status__info .status__display-name,
+.edit-indicator .status__display-name {
   max-width: 100%;
   display: flex;
   font-size: 15px;

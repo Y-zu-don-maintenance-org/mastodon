@@ -241,7 +241,7 @@ class StatusContent extends PureComponent {
   };
 
   render () {
-    const { status, intl, statusContent, quote } = this.props;
+    const { status, intl, quote, statusContent } = this.props;
 
     const hidden = this.props.onExpandedToggle ? !this.props.expanded : this.state.hidden;
     const renderReadMore = this.props.onClick && status.get('collapsed');

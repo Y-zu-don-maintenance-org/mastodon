@@ -134,7 +134,7 @@ export const quote = (status, muted, quoteMuted, handleQuoteClick, handleExpande
     return (
       <div>
         <div className='status__info'>
-          {identity(quoteStatus, null, null, true)}
+          {identity(quoteStatus, null, true)}
         </div>
         <StatusContent status={quoteStatus} onClick={handleQuoteClick} expanded={!status.get('quote_hidden')} onExpandedToggle={handleExpandedQuoteToggle} quote />
         {media(quoteStatus, true)}
@@ -146,7 +146,6 @@ export const quote = (status, muted, quoteMuted, handleQuoteClick, handleExpande
     <div
       className={classNames('quote-status', `status-${quoteStatus.get('visibility')}`, { muted: muted })}
       data-id={quoteStatus.get('id')}
-      dataurl={quoteStatus.get('url')}
     >
       {quoteInner}
     </div>
@@ -238,7 +237,7 @@ class Status extends ImmutablePureComponent {
 
   handleToggleQuoteMediaVisibility = () => {
     this.setState({ showQuoteMedia: !this.state.showQuoteMedia });
-  }
+  };
 
   handleClick = e => {
     if (e && (e.button !== 0 || e.ctrlKey || e.metaKey)) {
@@ -253,10 +252,6 @@ class Status extends ImmutablePureComponent {
   };
 
   handlePrependAccountClick = e => {
-    this.handleAccountClick(e, false);
-  };
-
-  handleAccountClick = (e, proper = true) => {
     if (e && (e.button !== 0 || e.ctrlKey || e.metaKey))  {
       return;
     }
@@ -266,17 +261,29 @@ class Status extends ImmutablePureComponent {
       e.stopPropagation();
     }
 
-    this._openProfile(proper);
+    this._openProfile(false);
   };
 
-  handleQuoteClick = () => {
-    if (!this.props) {
+  handleAccountClick = (e) => {
+    if (e && (e.button !== 0 || e.ctrlKey || e.metaKey))  {
       return;
     }
 
-    const { status } = this.props;
-    this.props.history.push(`/statuses/${status.getIn(['reblog', 'quote', 'id'], status.getIn(['quote', 'id']))}`);
-  }
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    const acct = e.currentTarget.getAttribute('data-acct');
+    this.props.history.push(`/@${acct}`);
+  };
+
+  handleQuoteClick = () => {
+    if (this.props.history) {
+      const status = this._properStatus();
+      this.props.history.push(`/@${status.getIn(['quote', 'account', 'acct'])}/${status.getIn(['quote', 'id'])}`);
+    }
+  };
 
   handleQuoteUserClick = () =>{
     if (!this.props) {
@@ -301,7 +308,7 @@ class Status extends ImmutablePureComponent {
 
   handleExpandedQuoteToggle = () => {
     this.props.onQuoteToggleHidden(this._properStatus());
-  }
+  };
 
   getAttachmentAspectRatio () {
     const attachments = this._properStatus().get('media_attachments');
@@ -554,9 +561,10 @@ class Status extends ImmutablePureComponent {
         </div>
       );
     }
+
     const media = (status, quote = false) => {
       if (pictureInPicture.get('inUse')) {
-        return <PictureInPicturePlaceholder aspectRatio={this.getAttachmentAspectRatio()} />;
+        return <PictureInPicturePlaceholder aspectRatio={this.getAttachmentAspectRatio()} width={this.props.cachedMediaWidth} />;
       } else if (status.get('media_attachments').size > 0) {
         const language = status.getIn(['translation', 'language']) || status.get('language');
 
@@ -655,9 +663,9 @@ class Status extends ImmutablePureComponent {
         return <AvatarOverlay account={status.get('account')} friend={account} />;
       }
     };
-    
-    const identity = (status, account, _0, quote = false) => (
-      <a onClick={quote ? this.handleQuoteUserClick : this.handleAccountClick} href={`/@${status.getIn(['account', 'acct'])}`} title={status.getIn(['account', 'acct'])} className='status__display-name' rel='noopener noreferrer'>
+
+    const identity = (status, account) => (
+      <a onClick={this.handleAccountClick} data-acct={status.getIn(['account', 'acct'])} href={`/@${status.getIn(['account', 'acct'])}`} title={status.getIn(['account', 'acct'])} className='status__display-name' target='_blank' rel='noopener noreferrer'>
         <div className='status__avatar'>
           {statusAvatar(status, account)}
         </div>
@@ -721,4 +729,4 @@ class Status extends ImmutablePureComponent {
 
 }
 
-export default withOptionalRouter(injectIntl(Status));
+export default connect(mapStateToProps)(withOptionalRouter(injectIntl(Status)));
