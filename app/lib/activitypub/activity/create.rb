@@ -456,9 +456,9 @@ class ActivityPub::Activity::Create < ActivityPub::Activity
   def like_a_spam?
     (
       !@status.account.local? &&
-      @status.account.followers_count.zero? &&
-      @status.account.created_at > 1.day.ago &&
-      @mentions.count >= 2
+      @status.account.followers_count <= SPAM_FILTER_MINIMUM_FOLLOWERS &&
+      @status.account.created_at > SPAM_FILTER_MINIMUM_CREATE_DAYS.day.ago &&
+      @mentions.count > SPAM_FILTER_MINIMUM_MENTIONS
     )
   end
 end
