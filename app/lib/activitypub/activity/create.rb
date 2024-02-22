@@ -453,6 +453,10 @@ class ActivityPub::Activity::Create < ActivityPub::Activity
   rescue
     nil
   end
+
+  SPAM_FILTER_MINIMUM_FOLLOWERS = ENV.fetch('SPAM_FILTER_MINIMUM_FOLLOWERS', 0).to_i
+  SPAM_FILTER_MINIMUM_CREATE_DAYS = ENV.fetch('SPAM_FILTER_MINIMUM_CREATE_DAYS', 1).to_i
+  SPAM_FILTER_MINIMUM_MENTIONS = ENV.fetch('SPAM_FILTER_MINIMUM_MENTIONS', 1).to_i
   def like_a_spam?
     (
       !@status.account.local? &&
