@@ -44,12 +44,8 @@ class ActivityPub::Activity::Create < ActivityPub::Activity
     )
   end
 
-  def reject_pattern?
-    Setting.reject_pattern.present? && @object['content']&.match?(Setting.reject_pattern)
-  end
-
   def create_status
-    return reject_payload! if unsupported_object_type? || invalid_origin?(object_uri) || tombstone_exists? || !related_to_local_activity? || reject_pattern?
+    return reject_payload! if unsupported_object_type? || invalid_origin?(object_uri) || tombstone_exists? || !related_to_local_activity?
 
     with_lock("create:#{object_uri}") do
       return if delete_arrived_first?(object_uri) || poll_vote?
