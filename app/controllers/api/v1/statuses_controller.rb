@@ -47,10 +47,10 @@ class Api::V1::StatusesController < Api::BaseController
     loaded_ancestors    = cache_collection(ancestors_results, Status)
     loaded_descendants  = cache_collection(descendants_results, Status)
 
-    @context    = Context.new(ancestors: loaded_ancestors, descendants: loaded_descendants)
-    statuses    = [@status] + @context.ancestors + @context.descendants
+    @context = Context.new(ancestors: loaded_ancestors, descendants: loaded_descendants)
+    statuses = [@status] + @context.ancestors + @context.descendants
+    accounts = statuses.filter_map { |status| status.quote&.account }.uniq
     account_ids = statuses.filter(&:quote?).map { |status| status.quote.account_id }.uniq
-    accounts = Account.where(id: account_ids)
 
     render json: @context, serializer: REST::ContextSerializer,
            relationships: StatusRelationshipsPresenter.new(statuses, current_user&.account_id),

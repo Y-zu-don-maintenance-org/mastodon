@@ -6,16 +6,16 @@ import classNames from 'classnames';
 import { Helmet } from 'react-helmet';
 import { withRouter } from 'react-router-dom';
 
+import { createSelector } from '@reduxjs/toolkit';
 import Immutable from 'immutable';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
 
-import { ReactComponent as VisibilityIcon } from '@material-symbols/svg-600/outlined/visibility.svg';
-import { ReactComponent as VisibilityOffIcon } from '@material-symbols/svg-600/outlined/visibility_off.svg';
 import { HotKeys } from 'react-hotkeys';
 
+import VisibilityIcon from '@/material-icons/400-24px/visibility.svg?react';
+import VisibilityOffIcon from '@/material-icons/400-24px/visibility_off.svg?react';
 import { Icon }  from 'mastodon/components/icon';
 import { LoadingIndicator } from 'mastodon/components/loading_indicator';
 import ScrollContainer from 'mastodon/containers/scroll_container';
@@ -257,7 +257,7 @@ class Status extends ImmutablePureComponent {
 
   handleToggleQuoteMediaVisibility = () => {
     this.setState({ showQuoteMedia: !this.state.showQuoteMedia });
-  }
+  };
 
   handleFavouriteClick = (status) => {
     const { dispatch } = this.props;
@@ -339,7 +339,7 @@ class Status extends ImmutablePureComponent {
     } else {
       dispatch(quoteCompose(status, this.props.history));
     }
-  }
+  };
 
   handleModalReblog = (status, privacy) => {
     this.props.dispatch(reblog(status, privacy));
@@ -462,7 +462,7 @@ class Status extends ImmutablePureComponent {
     } else {
       this.props.dispatch(hideQuote(status.get('id')));
     }
-  }
+  };
 
   handleToggleAll = () => {
     const { status, ancestorsIds, descendantsIds } = this.props;
@@ -629,16 +629,20 @@ class Status extends ImmutablePureComponent {
     ));
   }
 
-  setRef = c => {
+  setContainerRef = c => {
     this.node = c;
+  };
+
+  setStatusRef = c => {
+    this.statusNode = c;
   };
 
   _scrollStatusIntoView () {
     const { status, multiColumn } = this.props;
 
     if (status) {
-      window.requestAnimationFrame(() => {
-        this.node?.querySelector('.detailed-status__wrapper')?.scrollIntoView(true);
+      requestIdleCallback(() => {
+        this.statusNode?.scrollIntoView(true);
 
         // In the single-column interface, `scrollIntoView` will put the post behind the header,
         // so compensate for that.
@@ -676,9 +680,8 @@ class Status extends ImmutablePureComponent {
     }
 
     // Scroll to focused post if it is loaded
-    const child = this.node?.querySelector('.detailed-status__wrapper');
-    if (child) {
-      return [0, child.offsetTop];
+    if (this.statusNode) {
+      return [0, this.statusNode.offsetTop];
     }
 
     // Do not scroll otherwise, `componentDidUpdate` will take care of that
@@ -739,11 +742,11 @@ class Status extends ImmutablePureComponent {
         />
 
         <ScrollContainer scrollKey='thread' shouldUpdateScroll={this.shouldUpdateScroll}>
-          <div className={classNames('scrollable', { fullscreen })} ref={this.setRef}>
+          <div className={classNames('scrollable', { fullscreen })} ref={this.setContainerRef}>
             {ancestors}
 
             <HotKeys handlers={handlers}>
-              <div className={classNames('focusable', 'detailed-status__wrapper', `detailed-status__wrapper-${status.get('visibility')}`)} tabIndex={0} aria-label={textForScreenReader(intl, status, false)}>
+              <div className={classNames('focusable', 'detailed-status__wrapper', `detailed-status__wrapper-${status.get('visibility')}`)} tabIndex={0} aria-label={textForScreenReader(intl, status, false)} ref={this.setStatusRef}>
                 <DetailedStatus
                   key={`details-${status.get('id')}`}
                   status={status}

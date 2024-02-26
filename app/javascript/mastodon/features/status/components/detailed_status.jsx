@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 
-import { FormattedDate, FormattedMessage } from 'react-intl';
+import { FormattedDate, FormattedMessage, injectIntl } from 'react-intl';
 
 import classNames from 'classnames';
 import { Link, withRouter } from 'react-router-dom';
@@ -9,10 +9,9 @@ import ImmutablePropTypes from 'react-immutable-proptypes';
 import StatusEmojiReactionsBar from '../../../components/status_emoji_reactions_bar';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 
-import { ReactComponent as AlternateEmailIcon } from '@material-symbols/svg-600/outlined/alternate_email.svg';
-import { ReactComponent as RepeatIcon } from '@material-symbols/svg-600/outlined/repeat.svg';
-import { ReactComponent as StarIcon } from '@material-symbols/svg-600/outlined/star-fill.svg';
-
+import AlternateEmailIcon from '@/material-icons/400-24px/alternate_email.svg?react';
+import RepeatIcon from '@/material-icons/400-24px/repeat.svg?react';
+import StarIcon from '@/material-icons/400-24px/star-fill.svg?react';
 import { AnimatedNumber } from 'mastodon/components/animated_number';
 import EditedTimestamp from 'mastodon/components/edited_timestamp';
 import { getHashtagBarForStatus } from 'mastodon/components/hashtag_bar';
@@ -66,7 +65,8 @@ class DetailedStatus extends ImmutablePureComponent {
   handleAccountClick = (e) => {
     if (e.button === 0 && !(e.ctrlKey || e.metaKey) && this.props.history) {
       e.preventDefault();
-      this.props.history.push(`/@${this.props.status.getIn(['account', 'acct'])}`);
+      const acct = e.currentTarget.getAttribute('data-acct');
+      this.props.history.push(`/@${acct}`);
     }
 
     e.stopPropagation();
@@ -82,17 +82,15 @@ class DetailedStatus extends ImmutablePureComponent {
 
   handleExpandedQuoteToggle = () => {
     this.props.onQuoteToggleHidden(this.props.status);
-  }
+  };
 
   handleQuoteClick = () => {
-    if (!this.props) {
-      return;
+    if (this.props.history) {
+      const status = this._properStatus();
+      this.props.history.push(`/@${status.getIn(['quote', 'account', 'acct'])}/${status.getIn(['quote', 'id'])}`);
     }
+  };
 
-    const { status } = this.props;
-    this.props.history.push(`/statuses/${status.getIn(['quote', 'id'])}`);
-  }
-  
   handleQuoteUserClick = () =>{
     if (!this.props) {
       return;
@@ -165,7 +163,7 @@ class DetailedStatus extends ImmutablePureComponent {
   render () {
     const status = this._properStatus();
     const outerStyle = { boxSizing: 'border-box' };
-    const { compact, pictureInPicture, quoteMuted  } = this.props;
+    const { compact, pictureInPicture, quoteMuted } = this.props;
 
     if (!status) {
       return null;
@@ -185,11 +183,19 @@ class DetailedStatus extends ImmutablePureComponent {
 
     const language = status.getIn(['translation', 'language']) || status.get('language');
 
-    const identity = (status, _0, _1, quote = false) => (
-      <a href={`/@${status.getIn(['account', 'acct'])}`} onClick={quote ? this.handleQuoteUserClick : this.handleAccountClick} data-acct={status.getIn(['account', 'acct'])} className='detailed-status__display-name'>
-        <div className='detailed-status__display-avatar'><Avatar account={status.get('account')} size={46} /></div>
-        <DisplayName account={status.get('account')} localDomain={this.props.domain} />
-      </a>
+    const identity = (status, _, quote) => (
+      <>
+        {status.get('visibility') === 'direct' && (
+          <div className='status__prepend'>
+            <div className='status__prepend-icon-wrapper'><Icon id='at' className='status__prepend-icon' fixedWidth /></div>
+            <FormattedMessage id='status.direct_indicator' defaultMessage='Private mention' />
+          </div>
+        )}
+        <a href={`/@${status.getIn(['account', 'acct'])}`} data-acct={status.getIn(['account', 'acct'])} onClick={this.handleAccountClick} className='detailed-status__display-name'>
+          <div className='detailed-status__display-avatar'><Avatar account={status.get('account')} size={quote ? 20 : 48} /></div>
+          <DisplayName account={status.get('account')} localDomain={this.props.domain} />
+        </a>
+      </>
     );
 
     const media = (status, quote = false) => {
@@ -256,7 +262,8 @@ class DetailedStatus extends ImmutablePureComponent {
           );
         }
       } else if (status.get('spoiler_text').length === 0) {
-        return <Card sensitive={status.get('sensitive')} onOpenMedia={this.props.onOpenMedia} card={status.get('card', null)} quote={quote} />;
+        return (<Card sensitive={status.get('sensitive')} onOpenMedia={this.props.onOpenMedia}
+          card={status.get('card', null)} quote={quote} />);
       }
     }
     
@@ -357,10 +364,7 @@ class DetailedStatus extends ImmutablePureComponent {
               <FormattedMessage id='status.direct_indicator' defaultMessage='Private mention' />
             </div>
           )}
-          <a href={`/@${status.getIn(['account', 'acct'])}`} onClick={this.handleAccountClick} className='detailed-status__display-name'>
-            <div className='detailed-status__display-avatar'><Avatar account={status.get('account')} size={46} /></div>
-            <DisplayName account={status.get('account')} localDomain={this.props.domain} />
-          </a>
+          {identity(status, null, false)}
 
           <StatusContent
             status={status}
@@ -390,4 +394,4 @@ class DetailedStatus extends ImmutablePureComponent {
 
 }
 
-export default withRouter(DetailedStatus);
+export default connect(mapStateToProps)(withRouter(injectIntl(DetailedStatus)));
