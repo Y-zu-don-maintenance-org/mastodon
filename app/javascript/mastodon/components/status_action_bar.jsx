@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 
+import EmojiPickerDropdown from '../features/compose/containers/emoji_picker_dropdown_container';
 import { defineMessages, injectIntl } from 'react-intl';
 
 import classNames from 'classnames';
@@ -51,6 +52,7 @@ const messages = defineMessages({
   quote: { id: 'status.quote', defaultMessage: 'Quote' },
   cannot_quote: { id: 'status.cannot_quote', defaultMessage: 'This post cannot be quoted' },
   favourite: { id: 'status.favourite', defaultMessage: 'Favorite' },
+  emojiReaction: { id: 'status.emoji_reaction', defaultMessage: 'Emoji Reaction' },
   bookmark: { id: 'status.bookmark', defaultMessage: 'Bookmark' },
   removeBookmark: { id: 'status.remove_bookmark', defaultMessage: 'Remove bookmark' },
   open: { id: 'status.open', defaultMessage: 'Expand this status' },
@@ -88,6 +90,7 @@ class StatusActionBar extends ImmutablePureComponent {
     relationship: ImmutablePropTypes.map,
     onReply: PropTypes.func,
     onFavourite: PropTypes.func,
+    onEmojiReact: PropTypes.func,
     onReblog: PropTypes.func,
     onQuote: PropTypes.func,
     onDelete: PropTypes.func,
@@ -145,6 +148,16 @@ class StatusActionBar extends ImmutablePureComponent {
 
     if (signedIn) {
       this.props.onFavourite(this.props.status);
+    } else {
+      this.props.onInteractionModal('favourite', this.props.status);
+    }
+  };
+
+  handleEmojiPick = (data) => {
+    const { signedIn } = this.context.identity;
+
+    if (signedIn) {
+      this.props.onEmojiReact(this.props.status, data);
     } else {
       this.props.onInteractionModal('favourite', this.props.status);
     }
@@ -403,6 +416,10 @@ class StatusActionBar extends ImmutablePureComponent {
 
     const isReply = status.get('in_reply_to_account_id') === status.getIn(['account', 'id']);
 
+    const emojiPickerButton = (
+      <IconButton className='status__action-bar__button' title={intl.formatMessage(messages.emojiReaction)} icon='smile-o' />
+    );
+
     return (
       <div className='status__action-bar'>
         <IconButton className='status__action-bar__button' title={replyTitle} icon={isReply ? 'reply' : replyIcon} iconComponent={isReply ? ReplyIcon : replyIconComponent} onClick={this.handleReplyClick} counter={status.get('replies_count')} />
@@ -410,6 +427,7 @@ class StatusActionBar extends ImmutablePureComponent {
         <IconButton className='status__action-bar__button star-icon' animate active={status.get('favourited')} pressed={status.get('favourited')} title={intl.formatMessage(messages.favourite)} icon='star' iconComponent={status.get('favourited') ? StarIcon : StarBorderIcon} onClick={this.handleFavouriteClick} counter={withCounters ? status.get('favourites_count') : undefined} />
         <IconButton className='status__action-bar__button' disabled={!publicStatus} title={StatusActionBar.quoteTitle(intl, messages, publicStatus)} icon='format-quote' iconComponent={FormatQuoteIcon} onClick={this.handleQuoteClick} />
         <IconButton className='status__action-bar__button bookmark-icon' disabled={!signedIn} active={status.get('bookmarked')} title={intl.formatMessage(messages.bookmark)} icon='bookmark' iconComponent={status.get('bookmarked') ? BookmarkIcon : BookmarkBorderIcon} onClick={this.handleBookmarkClick} />
+        <EmojiPickerDropdown onPickEmoji={this.handleEmojiPick} />
 
         {filterButton}
 

@@ -28,14 +28,15 @@ class CustomEmoji < ApplicationRecord
 
   SHORTCODE_RE_FRAGMENT = '[a-zA-Z0-9_]{2,}'
 
-  SCAN_RE = /(?<=[^[:alnum:]:]|\n|^)
-    :(#{SHORTCODE_RE_FRAGMENT}):
-    (?=[^[:alnum:]:]|$)/x
+  SCAN_RE = /:(#{SHORTCODE_RE_FRAGMENT}):/x
   SHORTCODE_ONLY_RE = /\A#{SHORTCODE_RE_FRAGMENT}\z/
 
   IMAGE_MIME_TYPES = %w(image/png image/gif image/webp).freeze
 
   belongs_to :category, class_name: 'CustomEmojiCategory', optional: true
+
+  has_one :local_counterpart, -> { where(domain: nil) }, class_name: 'CustomEmoji', primary_key: :shortcode, foreign_key: :shortcode
+  has_many :emoji_reactions, inverse_of: :custom_emoji, dependent: :destroy
 
   has_one :local_counterpart, -> { where(domain: nil) }, class_name: 'CustomEmoji', primary_key: :shortcode, foreign_key: :shortcode, inverse_of: false, dependent: nil
 

@@ -14,6 +14,8 @@ class InlineRenderer
       preload_associations_for_status
     when :notification
       serializer = REST::NotificationSerializer
+    when :emoji_reaction
+      serializer = REST::EmojiReactionSerializer
     when :conversation
       serializer = REST::ConversationSerializer
     when :announcement

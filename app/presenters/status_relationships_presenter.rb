@@ -4,16 +4,17 @@ class StatusRelationshipsPresenter
   PINNABLE_VISIBILITIES = %w(public unlisted private).freeze
 
   attr_reader :reblogs_map, :favourites_map, :mutes_map, :pins_map,
-              :bookmarks_map, :filters_map, :attributes_map
+              :bookmarks_map, :filters_map, :attributes_map, :emoji_reactions_map
 
   def initialize(statuses, current_account_id = nil, **options)
     if current_account_id.nil?
-      @reblogs_map    = {}
-      @favourites_map = {}
-      @bookmarks_map  = {}
-      @mutes_map      = {}
-      @pins_map       = {}
-      @filters_map    = {}
+      @reblogs_map         = {}
+      @favourites_map      = {}
+      @bookmarks_map       = {}
+      @mutes_map           = {}
+      @pins_map            = {}
+      @filters_map         = {}
+      @emoji_reactions_map = {}
     else
       statuses            = statuses.compact
       status_ids          = statuses.flat_map { |s| [s.id, s.reblog_of_id] }.uniq.compact
@@ -27,6 +28,7 @@ class StatusRelationshipsPresenter
       @mutes_map       = Status.mutes_map(conversation_ids, current_account_id).merge(options[:mutes_map] || {})
       @pins_map        = Status.pins_map(pinnable_status_ids, current_account_id).merge(options[:pins_map] || {})
       @attributes_map  = options[:attributes_map] || {}
+      @emoji_reactions_map = Status.emoji_reactions_map(status_ids, current_account_id).merge(options[:emoji_reactions_map] || {})
     end
   end
 

@@ -1725,13 +1725,50 @@ body > [data-popper-placement] {
     color: $highlight-text-color;
   }
 }
+.status__emoji-reactions-bar {
+  display: flex;
+  flex-wrap: wrap;
+  // gap: 4px 8px;
+  margin: 8px 0 2px 0;
+
+  .emoji-reactions-bar__button {
+    background: $white;
+    border: 1px solid lighten($ui-base-color, 8%);
+    border-radius: 3px;
+    padding: 0 6px;
+    cursor: pointer;
+    display: flex;
+    justify-items: center;
+    align-items: center;
+    height: 20px;
+
+    &.toggled {
+      background-color: mix($white, $ui-highlight-color, 80%);
+      border-color: mix(lighten($ui-base-color, 8%), $ui-highlight-color, 80%);
+    }
+
+    .emoji {
+      display: block;
+      height: 16px;
+      img {
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+    }
+    .count {
+      display: block;
+      margin: 0 2px;
+      color: $ui-secondary-color;
+    }
+  }
+}
 
 .status__action-bar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 18px;
-  margin-top: 16px;
+  //margin-top: 16px;
 }
 
 .detailed-status__action-bar-dropdown {

@@ -11,6 +11,7 @@
 #  favourites_count :bigint(8)        default(0), not null
 #  created_at       :datetime         not null
 #  updated_at       :datetime         not null
+#  emoji_reactions  :string
 #
 
 class StatusStat < ApplicationRecord
@@ -26,5 +27,15 @@ class StatusStat < ApplicationRecord
 
   def favourites_count
     [attributes['favourites_count'], 0].max
+  end
+
+  def emoji_reactions
+    attributes['emoji_reactions'] || ''
+  end
+
+  private
+
+  def reset_parent_cache
+    Rails.cache.delete("statuses/#{status_id}")
   end
 end

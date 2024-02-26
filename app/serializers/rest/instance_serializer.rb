@@ -11,7 +11,7 @@ class REST::InstanceSerializer < ActiveModel::Serializer
 
   attributes :domain, :title, :version, :source_url, :description,
              :usage, :thumbnail, :languages, :configuration,
-             :registrations, :feature_quote
+             :registrations, :feature_quote, :fedibird_capabilities
 
   has_one :contact, serializer: ContactSerializer
   has_many :rules, serializer: REST::RuleSerializer
@@ -81,6 +81,11 @@ class REST::InstanceSerializer < ActiveModel::Serializer
       translation: {
         enabled: TranslationService.configured?,
       },
+
+      emoji_reactions: {
+        max_reactions: EmojiReaction::EMOJI_REACTION_LIMIT,
+        max_reactions_per_account: EmojiReaction::EMOJI_REACTION_PER_ACCOUNT_LIMIT,
+      },
     }
   end
 
@@ -95,6 +100,17 @@ class REST::InstanceSerializer < ActiveModel::Serializer
 
   def feature_quote
     true
+  end
+
+  # for third party apps
+  def fedibird_capabilities
+    capabilities = [
+      :emoji_reaction,
+    ]
+
+    capabilities << :profile_search unless Chewy.enabled?
+
+    capabilities
   end
 
   private

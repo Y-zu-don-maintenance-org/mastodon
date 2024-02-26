@@ -6,6 +6,7 @@ import classNames from 'classnames';
 import { Link, withRouter } from 'react-router-dom';
 
 import ImmutablePropTypes from 'react-immutable-proptypes';
+import StatusEmojiReactionsBar from '../../../components/status_emoji_reactions_bar';
 import ImmutablePureComponent from 'react-immutable-pure-component';
 
 import AlternateEmailIcon from '@/material-icons/400-24px/alternate_email.svg?react';
@@ -53,6 +54,8 @@ class DetailedStatus extends ImmutablePureComponent {
     onToggleMediaVisibility: PropTypes.func,
     onQuoteToggleMediaVisibility: PropTypes.func,
     ...WithRouterPropTypes,
+    onEmojiReact: PropTypes.func,
+    onUnEmojiReact: PropTypes.func,
   };
 
   state = {
@@ -171,6 +174,7 @@ class DetailedStatus extends ImmutablePureComponent {
     const reblogIcon = 'retweet';
     const reblogIconComponent = RepeatIcon;
     let favouriteLink = '';
+    let emojiReactionsLink = '';
     let edited = '';
 
     if (this.props.measureHeight) {
@@ -261,9 +265,14 @@ class DetailedStatus extends ImmutablePureComponent {
         return (<Card sensitive={status.get('sensitive')} onOpenMedia={this.props.onOpenMedia}
           card={status.get('card', null)} quote={quote} />);
       }
-
     }
     
+    let emojiReactionsBar = null;
+    if (status.get('emoji_reactions')) {
+      const emojiReactions = status.get('emoji_reactions');
+      emojiReactionsBar = <StatusEmojiReactionsBar emojiReactions={emojiReactions} status={status} onEmojiReact={this.props.onEmojiReact} onUnEmojiReact={this.props.onUnEmojiReact} />;
+    }
+
     if (status.get('application')) {
       applicationLink = <> · <a className='detailed-status__application' href={status.getIn(['application', 'website'])} target='_blank' rel='noopener noreferrer'>{status.getIn(['application', 'name'])}</a></>;
     }
@@ -318,6 +327,22 @@ class DetailedStatus extends ImmutablePureComponent {
       );
     }
 
+    if (this.context.router) {
+      emojiReactionsLink = (
+        <Link to={`/@${status.getIn(['account', 'acct'])}/${status.get('id')}/emoji_reactions`} className='detailed-status__link'>
+          <Icon id='smile-o' />
+          <FormattedMessage id='status.emoji' defaultMessage='Emoji' />
+        </Link>
+      );
+    } else {
+      emojiReactionsLink = (
+        <a href={`/interact/${status.get('id')}?type=emoji_reactions`} className='detailed-status__link' onClick={this.handleModalLink}>
+          <Icon id='smile-o' />
+          <FormattedMessage id='status.emoji' defaultMessage='Emoji' />
+        </a>
+      );
+    }
+
     if (status.get('edited_at')) {
       edited = (
         <>
@@ -355,10 +380,12 @@ class DetailedStatus extends ImmutablePureComponent {
 
           {expanded && hashtagBar}
 
+          {emojiReactionsBar}
+
           <div className='detailed-status__meta'>
             <a className='detailed-status__datetime' href={`/@${status.getIn(['account', 'acct'])}/${status.get('id')}`} target='_blank' rel='noopener noreferrer'>
               <FormattedDate value={new Date(status.get('created_at'))} hour12={false} year='numeric' month='short' day='2-digit' hour='2-digit' minute='2-digit' />
-            </a>{edited}{visibilityLink}{applicationLink}{reblogLink} · {favouriteLink}
+            </a>{edited}{visibilityLink}{applicationLink}{reblogLink} · {favouriteLink} · {emojiReactionsLink}
           </div>
         </div>
       </div>

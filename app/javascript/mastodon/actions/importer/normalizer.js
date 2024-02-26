@@ -40,6 +40,10 @@ export function normalizeStatus(status, normalOldStatus) {
     normalStatus.filtered = status.filtered.map(normalizeFilterResult);
   }
 
+  if (status.emoji_reactions) {
+    normalStatus.emojiReactions = status.emoji_reactions;
+  }
+
   // Only calculate these values when status first encountered and
   // when the underlying values change. Otherwise keep the ones
   // already in the reducer

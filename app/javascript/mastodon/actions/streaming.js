@@ -10,7 +10,7 @@ import {
   deleteAnnouncement,
 } from './announcements';
 import { updateConversations } from './conversations';
-import { updateNotifications, expandNotifications } from './notifications';
+import { updateNotifications, expandNotifications, updateEmojiReactions } from './notifications';
 import { updateStatus } from './statuses';
 import {
   updateTimeline,
@@ -23,6 +23,8 @@ import {
   fillCommunityTimelineGaps,
   fillListTimelineGaps,
 } from './timelines';
+
+const { messages } = getLocale();
 
 /**
  * @param {number} max
@@ -102,6 +104,10 @@ export const connectTimelineStream = (timelineId, channelName, params = {}, opti
           // @ts-expect-error
           dispatch(updateNotifications(JSON.parse(data.payload), messages, locale));
           break;
+        case 'emoji_reaction':
+            // @ts-expect-error
+            dispatch(updateEmojiReactions(JSON.parse(data.payload), getState().getIn(['meta', 'me'])));
+            break;
         case 'conversation':
           // @ts-expect-error
           dispatch(updateConversations(JSON.parse(data.payload)));

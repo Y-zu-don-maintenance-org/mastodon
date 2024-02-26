@@ -30,6 +30,8 @@
 #  ordered_media_attachment_ids :bigint(8)        is an Array
 #
 
+require 'ostruct'
+
 class Status < ApplicationRecord
   include Cacheable
   include Discard::Model
@@ -67,6 +69,7 @@ class Status < ApplicationRecord
   end
 
   has_many :favourites, inverse_of: :status, dependent: :destroy
+  has_many :emoji_reactions, inverse_of: :status, dependent: :destroy
   has_many :bookmarks, inverse_of: :status, dependent: :destroy
   has_many :reblogs, foreign_key: 'reblog_of_id', class_name: 'Status', inverse_of: :reblog, dependent: :destroy
   has_many :reblogged_by_accounts, through: :reblogs, class_name: 'Account', source: :account
@@ -323,6 +326,34 @@ class Status < ApplicationRecord
     update_status_stat!(key => [public_send(key) - 1, 0].max)
   end
 
+  def emoji_reactions_grouped_by_name(account = nil)
+    (Oj.load(status_stat&.emoji_reactions || '', mode: :strict) || []).tap do |emoji_reactions|
+      if account.present?
+        emoji_reactions.each do |emoji_reaction|
+          emoji_reaction['me'] = emoji_reaction['account_ids'].include?(account.id.to_s)
+          emoji_reaction['account_ids'] -= account.excluded_from_timeline_account_ids.map(&:to_s)
+          emoji_reaction['count'] = emoji_reaction['account_ids'].size
+        end
+      end
+    end
+  end
+
+  def generate_emoji_reactions_grouped_by_name
+    records = emoji_reactions.group(:name).order(Arel.sql('MIN(created_at) ASC')).select('name, min(custom_emoji_id) as custom_emoji_id, count(*) as count, array_agg(account_id::text order by created_at) as account_ids')
+    Oj.dump(ActiveModelSerializers::SerializableResource.new(records, each_serializer: REST::EmojiReactionsGroupedByNameSerializer, scope: nil, scope_name: :current_user))
+  end
+
+  def refresh_emoji_reactions_grouped_by_name!
+    generate_emoji_reactions_grouped_by_name.tap do |emoji_reactions|
+      update_status_stat!(emoji_reactions: emoji_reactions)
+    end
+  end
+
+  def generate_emoji_reactions_grouped_by_account
+    # TODO for serializer
+    EmojiReaction.where(status_id: id).group_by(&:account)
+  end
+
   def trendable?
     if attributes['trendable'].nil?
       account.trendable?
@@ -362,6 +393,10 @@ class Status < ApplicationRecord
 
     def pins_map(status_ids, account_id)
       StatusPin.select('status_id').where(status_id: status_ids).where(account_id: account_id).each_with_object({}) { |p, h| h[p.status_id] = true }
+    end
+
+    def emoji_reactions_map(status_ids, account_id)
+      EmojiReaction.select('status_id').where(status_id: status_ids).where(account_id: account_id).each_with_object({}) { |e, h| h[e.status_id] = true }
     end
 
     def reload_stale_associations!(cached_items)

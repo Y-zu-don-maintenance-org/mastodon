@@ -1,5 +1,8 @@
 import PropTypes from 'prop-types';
 
+import StatusEmojiReactionsBar from './status_emoji_reactions_bar';
+import AttachmentList from './attachment_list';
+
 import { injectIntl, defineMessages, FormattedMessage } from 'react-intl';
 
 import classNames from 'classnames';
@@ -163,6 +166,8 @@ class Status extends ImmutablePureComponent {
     onClick: PropTypes.func,
     onReply: PropTypes.func,
     onFavourite: PropTypes.func,
+    onEmojiReact: PropTypes.func,
+    onUnEmojiReact: PropTypes.func,
     onReblog: PropTypes.func,
     onDelete: PropTypes.func,
     onDirect: PropTypes.func,
@@ -198,6 +203,7 @@ class Status extends ImmutablePureComponent {
     }),
     contextType: PropTypes.string,
     ...WithOptionalRouterPropTypes,
+    withoutEmojiReactions: PropTypes.bool,
   };
 
   // Avoid checking props that are functions (and whose equality will always
@@ -677,6 +683,12 @@ class Status extends ImmutablePureComponent {
     const {statusContentProps, hashtagBar} = getHashtagBarForStatus(status);
     const expanded = !status.get('hidden') || status.get('spoiler_text').length === 0;
 
+    let emojiReactionsBar = null;
+    if (!this.props.withoutEmojiReactions && status.get('emoji_reactions')) {
+      const emojiReactions = status.get('emoji_reactions');
+      emojiReactionsBar = <StatusEmojiReactionsBar emojiReactions={emojiReactions} status={status} onEmojiReact={this.props.onEmojiReact} onUnEmojiReact={this.props.onUnEmojiReact} />;
+    }
+
     return (
       <HotKeys handlers={handlers}>
         <div className={classNames('status__wrapper', `status__wrapper-${status.get('visibility')}`, { 'status__wrapper-reply': !!status.get('in_reply_to_id'), unread, focusable: !this.props.muted })} tabIndex={this.props.muted ? null : 0} data-featured={featured ? 'true' : null} aria-label={textForScreenReader(intl, status, rebloggedByText)} ref={this.handleRef} data-nosnippet={status.getIn(['account', 'noindex'], true) || undefined}>
@@ -719,6 +731,8 @@ class Status extends ImmutablePureComponent {
             {quote(status, this.props.muted, quoteMuted, this.handleQuoteClick, this.handleExpandedQuoteToggle, identity, media, this.props, contextType)}
             
             {expanded && hashtagBar}
+
+            {emojiReactionsBar}
 
             <StatusActionBar scrollKey={scrollKey} status={status} account={account} onFilter={matchedFilters ? this.handleFilterClick : null} {...other} />
           </div>

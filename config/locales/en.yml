@@ -1459,9 +1459,13 @@ en:
       sign_up:
         subject: "%{name} signed up"
     favourite:
-      body: 'Your post was favorited by %{name}:'
-      subject: "%{name} favorited your post"
-      title: New favorite
+      body: 'Your post was favourited by %{name}:'
+      subject: "%{name} favourited your post"
+      title: New favourite
+    emoji_reaction:
+      body: 'Your post was reacted with emoji by %{name}:'
+      subject: "%{name} reacted your post with emoji"
+      title: New emoji reaction
     follow:
       body: "%{name} is now following you!"
       subject: "%{name} is now following you"

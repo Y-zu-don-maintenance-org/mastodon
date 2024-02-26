@@ -1436,6 +1436,10 @@ ja:
       body: "%{name}さんにお気に入り登録された、あなたのトゥートがあります:"
       subject: "%{name}さんにお気に入りに登録されました"
       title: 新たなお気に入り登録
+    emoji_reaction:
+      body: "%{name}さんに絵文字リアクションされた、あなたの投稿があります:"
+      subject: "%{name}さんに絵文字リアクションされました"
+      title: 新たな絵文字リアクション
     follow:
       body: "%{name}さんにフォローされています！"
       subject: "%{name}さんにフォローされています"

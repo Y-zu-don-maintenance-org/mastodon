@@ -46,6 +46,8 @@ class Account extends ImmutablePureComponent {
     minimal: PropTypes.bool,
     defaultAction: PropTypes.string,
     withBio: PropTypes.bool,
+    onActionClick: PropTypes.func,
+    children: PropTypes.object,
   };
 
   static defaultProps = {
@@ -73,7 +75,7 @@ class Account extends ImmutablePureComponent {
   };
 
   render () {
-    const { account, intl, hidden, withBio, defaultAction, size, minimal } = this.props;
+    const { account, intl, hidden, onActionClick, actionIcon, actionTitle, withBio, defaultAction, size, minimal, children } = this.props;
 
     if (!account) {
       return <EmptyAccount size={size} minimal={minimal} />;
@@ -156,11 +158,13 @@ class Account extends ImmutablePureComponent {
             </div>
           </Link>
 
-          {!minimal && (
-            <div className='account__relationship'>
-              {buttons}
-            </div>
-          )}
+          <div>
+            {children}
+          </div>
+
+          <div className='account__relationship'>
+            {buttons}
+          </div>
         </div>
 
         {withBio && (account.get('note').length > 0 ? (

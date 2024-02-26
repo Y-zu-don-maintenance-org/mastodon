@@ -10,6 +10,8 @@ namespace :api, format: false do
       scope module: :statuses do
         resources :reblogged_by, controller: :reblogged_by_accounts, only: :index
         resources :favourited_by, controller: :favourited_by_accounts, only: :index
+        resources :emoji_reactioned_by, controller: :emoji_reactioned_by_accounts, only: :index
+        resources :emoji_reactioned_by_slim, controller: :emoji_reactioned_by_accounts_slim, only: :index
         resource :reblog, only: :create
         post :unreblog, to: 'reblogs#destroy'
 
@@ -29,6 +31,9 @@ namespace :api, format: false do
         resource :source, only: :show
 
         post :translate, to: 'translations#create'
+
+        resources :emoji_reactions, only: [:create, :update, :destroy], constraints: { id: /[^\/]+/ }
+        post :emoji_unreaction, to: 'emoji_reactions#destroy'
       end
 
       member do

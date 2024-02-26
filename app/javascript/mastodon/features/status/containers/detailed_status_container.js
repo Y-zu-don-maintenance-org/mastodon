@@ -17,6 +17,8 @@ import {
   unfavourite,
   pin,
   unpin,
+  emojiReact,
+  unEmojiReact,
 } from '../../../actions/interactions';
 import { openModal } from '../../../actions/modal';
 import { initMuteModal } from '../../../actions/mutes';
@@ -98,6 +100,14 @@ const mapDispatchToProps = (dispatch, { intl }) => ({
     } else {
       dispatch(favourite(status));
     }
+  },
+
+  onEmojiReact (status, emoji) {
+    dispatch(emojiReact(status, emoji));
+  },
+
+  onUnEmojiReact (status, emoji) {
+    dispatch(unEmojiReact(status, emoji));
   },
 
   onPin (status) {

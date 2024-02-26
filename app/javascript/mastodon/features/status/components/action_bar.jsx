@@ -1,6 +1,7 @@
 import PropTypes from 'prop-types';
 import { PureComponent } from 'react';
 
+import EmojiPickerDropdown from '../../compose/containers/emoji_picker_dropdown_container';
 import { defineMessages, injectIntl } from 'react-intl';
 
 import classNames from 'classnames';
@@ -84,6 +85,7 @@ class ActionBar extends PureComponent {
     onReblog: PropTypes.func.isRequired,
     onQuote: PropTypes.func,
     onFavourite: PropTypes.func.isRequired,
+    onEmojiReact: PropTypes.func.isRequired,
     onBookmark: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
     onEdit: PropTypes.func.isRequired,
@@ -204,6 +206,10 @@ class ActionBar extends PureComponent {
   handleCopy = () => {
     const url = this.props.status.get('url');
     navigator.clipboard.writeText(url);
+  };
+
+  handleEmojiPick = (data) => {
+    this.props.onEmojiReact(this.props.status, data);
   };
 
   render () {
@@ -327,6 +333,7 @@ class ActionBar extends PureComponent {
         <div className='detailed-status__button'><IconButton className='star-icon' animate active={status.get('favourited')} title={intl.formatMessage(messages.favourite)} icon='star' iconComponent={status.get('favourited') ? StarIcon : StarBorderIcon} onClick={this.handleFavouriteClick} /></div>
         <div className='detailed-status__button'><IconButton disabled={!publicStatus} title={StatusActionBar.quoteTitle(intl, messages, publicStatus)} icon='format-quote' iconComponent={FormatQuoteIcon} onClick={this.handleQuoteClick} /></div>
         <div className='detailed-status__button'><IconButton className='bookmark-icon' disabled={!signedIn} active={status.get('bookmarked')} title={intl.formatMessage(messages.bookmark)} icon='bookmark' iconComponent={status.get('bookmarked') ? BookmarkIcon : BookmarkBorderIcon} onClick={this.handleBookmarkClick} /></div>
+        <div className='detailed-status__button'><EmojiPickerDropdown onPickEmoji={this.handleEmojiPick} /></div>
         <div className='detailed-status__action-bar-dropdown'>
           <DropdownMenuContainer icon='ellipsis-h' iconComponent={MoreHorizIcon} status={status} items={menu} direction='left' title={intl.formatMessage(messages.more)} />
         </div>

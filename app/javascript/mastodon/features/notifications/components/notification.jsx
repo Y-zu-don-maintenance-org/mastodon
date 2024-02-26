@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { injectIntl, FormattedMessage, defineMessages } from 'react-intl';
 
 import classNames from 'classnames';
+
 import { Link, withRouter } from 'react-router-dom';
 
 import ImmutablePropTypes from 'react-immutable-proptypes';
@@ -27,9 +28,11 @@ import { WithRouterPropTypes } from 'mastodon/utils/react_router';
 import FollowRequestContainer from '../containers/follow_request_container';
 
 import Report from './report';
+import EmojiView from '../../../components/emoji_view';
 
 const messages = defineMessages({
   favourite: { id: 'notification.favourite', defaultMessage: '{name} favorited your status' },
+  emojiReaction: { id: 'notification.emoji_reaction', defaultMessage: '{name} reacted your status with emoji' },
   follow: { id: 'notification.follow', defaultMessage: '{name} followed you' },
   ownPoll: { id: 'notification.own_poll', defaultMessage: 'Your poll has ended' },
   poll: { id: 'notification.poll', defaultMessage: 'A poll you have voted in has ended' },
@@ -183,6 +186,7 @@ class Notification extends ImmutablePureComponent {
         cachedMediaWidth={this.props.cachedMediaWidth}
         cacheMediaWidth={this.props.cacheMediaWidth}
         unread={this.props.unread}
+        withoutEmojiReactions={true}
       />
     );
   }
@@ -211,6 +215,41 @@ class Notification extends ImmutablePureComponent {
             updateScrollBottom={this.props.updateScrollBottom}
             cachedMediaWidth={this.props.cachedMediaWidth}
             cacheMediaWidth={this.props.cacheMediaWidth}
+            withoutEmojiReactions={true}
+          />
+        </div>
+      </HotKeys>
+    );
+  }
+
+  renderEmojiReaction (notification, link) {
+    const { intl, unread } = this.props;
+    const emoji_reaction = notification.get('emoji_reaction');
+
+    return (
+      <HotKeys handlers={this.getHandlers()}>
+        <div className={classNames('notification notification-emoji_reaction focusable', { unread })} tabIndex='0' aria-label={notificationForScreenReader(intl, intl.formatMessage(messages.emojiReaction, { name: notification.getIn(['account', 'acct']) }), notification.get('created_at'))}>
+          <div className='notification__message'>
+            <div className='notification__emoji_reaction-icon-wrapper'>
+              <EmojiView name={emoji_reaction.get('name')} url={emoji_reaction.get('url')} staticUrl={emoji_reaction.get('static_url')} className='star-icon' fixedWidth />
+            </div>
+
+            <span title={notification.get('created_at')}>
+              <FormattedMessage id='notification.emoji_reaction' defaultMessage='{name} reacted your status with emoji' values={{ name: link }} />
+            </span>
+          </div>
+
+          <StatusContainer
+            id={notification.get('status')}
+            account={notification.get('account')}
+            muted
+            withDismiss
+            hidden={!!this.props.hidden}
+            getScrollPosition={this.props.getScrollPosition}
+            updateScrollBottom={this.props.updateScrollBottom}
+            cachedMediaWidth={this.props.cachedMediaWidth}
+            cacheMediaWidth={this.props.cacheMediaWidth}
+            withoutEmojiReactions={true}
           />
         </div>
       </HotKeys>
@@ -241,6 +280,7 @@ class Notification extends ImmutablePureComponent {
             updateScrollBottom={this.props.updateScrollBottom}
             cachedMediaWidth={this.props.cachedMediaWidth}
             cacheMediaWidth={this.props.cacheMediaWidth}
+            withoutEmojiReactions={true}
           />
         </div>
       </HotKeys>
@@ -276,6 +316,7 @@ class Notification extends ImmutablePureComponent {
             updateScrollBottom={this.props.updateScrollBottom}
             cachedMediaWidth={this.props.cachedMediaWidth}
             cacheMediaWidth={this.props.cacheMediaWidth}
+            withoutEmojiReactions={true}
           />
         </div>
       </HotKeys>
@@ -311,6 +352,7 @@ class Notification extends ImmutablePureComponent {
             updateScrollBottom={this.props.updateScrollBottom}
             cachedMediaWidth={this.props.cachedMediaWidth}
             cacheMediaWidth={this.props.cacheMediaWidth}
+            withoutEmojiReactions={true}
           />
         </div>
       </HotKeys>
@@ -352,6 +394,7 @@ class Notification extends ImmutablePureComponent {
             updateScrollBottom={this.props.updateScrollBottom}
             cachedMediaWidth={this.props.cachedMediaWidth}
             cacheMediaWidth={this.props.cacheMediaWidth}
+            withoutEmojiReactions={true}
           />
         </div>
       </HotKeys>
@@ -421,6 +464,8 @@ class Notification extends ImmutablePureComponent {
       return this.renderMention(notification);
     case 'favourite':
       return this.renderFavourite(notification, link);
+    case 'emoji_reaction':
+      return this.renderEmojiReaction(notification, link);
     case 'reblog':
       return this.renderReblog(notification, link);
     case 'status':
