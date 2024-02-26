@@ -31,10 +31,9 @@ import NavigationPanel from './navigation_panel';
 
 import { place_tab_bar_at_bottom } from 'mastodon/initial_state';
 import { Link } from 'react-router-dom';
-import { Icon }  from 'mastodon/components/icon';
 import TabsBar from './tabs_bar';
 
-import { ReactComponent as EditIcon } from '@material-symbols/svg-600/outlined/edit.svg';
+import EditIcon from '@/material-icons/400-24px/edit.svg?react';
 
 const componentMap = {
   'COMPOSE': Compose,

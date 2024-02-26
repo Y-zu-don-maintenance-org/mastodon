@@ -394,4 +394,4 @@ class DetailedStatus extends ImmutablePureComponent {
 
 }
 
-export default connect(mapStateToProps)(withRouter(injectIntl(DetailedStatus)));
+export default withRouter(DetailedStatus);

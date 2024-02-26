@@ -434,8 +434,14 @@ class ActivityPub::Activity::Create < ActivityPub::Activity
   end
 
   def process_quote
-    return unless (@quote = quote_from_url(@object['quoteUrl']))
-
+    if @object.key?('quoteUrl')
+      url = @object['quoteUrl']
+    elsif @object.key?('quoteURL')
+      url = @object['quoteURL']
+    elsif @object.key?('_misskey_quote')
+      url = @object['_misskey_quote']
+    end
+    return unless (@quote = quote_from_url(url))
     %r{<br><br>RE:\s</span><a.*</a>}.match(@object['content']) do |m|
       @object['content'] = @object['content'].sub(m[0], "</span><span class=\"quote-inline\">#{m[0].sub(%r{</span>}, '')}</span>")
     end
