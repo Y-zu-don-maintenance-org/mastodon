@@ -23,7 +23,7 @@ module FormattingHelper
       status.text,
       status.local?,
       preloaded_accounts: [status.account] + (status.respond_to?(:active_mentions) ? status.active_mentions.map(&:account) : []),
-      quote: status.respond_to?(:quote) && status.quote
+      quote: status.respond_to?(:quote) && status.quote,
     )
   end
 
