@@ -3,6 +3,64 @@ Changelog
 
 All notable changes to this project will be documented in this file.
 
+## [4.1.22] - 2025-01-16
+
+### Security
+
+- Fix insufficient validation of account URIs ([GHSA-5wxh-3p65-r4g6](https://github.com/mastodon/mastodon/security/advisories/GHSA-5wxh-3p65-r4g6))
+
+### Fixed
+
+- Fix `libyaml` missing from `Dockerfile` build stage (#33591 by @vmstan)
+- Fix deletion of unconfirmed users with Webauthn set (#33186 by @ClearlyClaire)
+
+## [4.1.21] - 2024-12-03
+
+### Fixed
+
+- Fix inactive users' timelines being backfilled on follow and unsuspend (#33094 by @ClearlyClaire)
+- Fix direct inbox delivery pushing posts into inactive followers' timelines (#33067 by @ClearlyClaire)
+- Fix tl language native name (#32606 by @seav)
+
+### Security
+
+- Update dependencies
+
+## [4.1.20] - 2024-09-30
+
+### Security
+
+- Fix ReDoS vulnerability on some Ruby versions ([GHSA-jpxp-r43f-rhvx](https://github.com/mastodon/mastodon/security/advisories/GHSA-jpxp-r43f-rhvx))
+- Update dependencies
+
+### Changed
+
+- Change Mastodon to issue correct HTTP signatures by default (#31994 by @ClearlyClaire)
+
+### Fixed
+
+- Fix replies collection being cached improperly
+- Fix security context sometimes not being added in LD-Signed activities (#31871 by @ClearlyClaire)
+- Fix error when encountering reblog of deleted post in feed rebuild (#32001 by @ClearlyClaire)
+
+## [4.1.19] - 2024-08-16
+
+### Fixed
+
+- Fix incorrect rate limit on PUT requests ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/31356))
+- Fix presence of `ß` in adjacent word preventing mention and hashtag matching ([adamniedzielski](https://github.com/mastodon/mastodon/pull/31122))
+- Fix processing of webfinger responses with multiple `self` links ([adamniedzielski](https://github.com/mastodon/mastodon/pull/31110))
+- Fix status processing failing halfway when a remote post has a malformed `replies` attribute ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/31246))
+- Fix division by zero on some video/GIF files ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/30600))
+- Fix hashtag regexp matching some link anchors ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/30190))
+- Fix local account search on LDAP login being case-sensitive ([raucao](https://github.com/mastodon/mastodon/pull/30113))
+- Fix development environment admin account not being auto-approved ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/29958))
+- Fix report reason selector in moderation interface not unselecting rules when changing category ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/29026))
+- Fix already-invalid reports failing to resolve ([ClearlyClaire](https://github.com/mastodon/mastodon/pull/29027))
+- Fix OCR when using S3/CDN for assets ([vmstan](https://github.com/mastodon/mastodon/pull/28551))
+- Fix error when encountering malformed `Tag` objects from Kbin ([ShadowJonathan](https://github.com/mastodon/mastodon/pull/28235))
+- Fix not all allowed image formats showing in file picker when uploading custom emoji ([june128](https://github.com/mastodon/mastodon/pull/28076))
+
 ## [4.1.18] - 2024-07-04
 
 ### Security
