@@ -149,6 +149,11 @@ namespace :tests do
         exit(1)
       end
 
+      unless Status.find(9001).quote.acceptable? && Status.find(9002).quote.acceptable?
+        puts 'Quotes not migrated as expected'
+        exit(1)
+      end
+
       unless Setting.local_live_feed_access == 'authenticated'
         puts 'Local live feed access not migrated as expected'
         exit(1)
@@ -195,6 +200,12 @@ namespace :tests do
           (token, application_id, scopes, resource_owner_id, created_at)
         VALUES
           ('secret', 2, 'write:accounts read:me', 4, now());
+
+        INSERT INTO "statuses"
+          (id, text, local, account_id, quote_id, created_at, updated_at)
+        VALUES
+          (9001, 'This is a quote status', true, 1, 1, now(), now()),
+          (9002, 'This is a remote quote status', false, 1, 2, now(), now());
       SQL
     end
 
