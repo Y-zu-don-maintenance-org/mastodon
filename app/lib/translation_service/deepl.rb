@@ -42,8 +42,10 @@ class TranslationService::DeepL < TranslationService
     subtags.join('-')
   end
 
+  TIMEOUT = Request::TIMEOUT.merge(read_timeout: 30, write_timeout: 30, read_deadline: 60).freeze
+
   def request(verb, path, **)
-    req = Request.new(verb, "#{base_url}#{path}", **)
+    req = Request.new(verb, "#{base_url}#{path}", timeout_options: TIMEOUT, **)
     req.add_headers(Authorization: "DeepL-Auth-Key #{@api_key}")
     req.perform do |res|
       case res.code
