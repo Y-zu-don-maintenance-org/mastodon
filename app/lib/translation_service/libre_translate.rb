@@ -27,8 +27,10 @@ class TranslationService::LibreTranslate < TranslationService
 
   private
 
+  TIMEOUT = Request::TIMEOUT.merge(read_timeout: 30, write_timeout: 30, read_deadline: 60).freeze
+
   def request(verb, path, **)
-    req = Request.new(verb, "#{@base_url}#{path}", allow_local: true, **)
+    req = Request.new(verb, "#{@base_url}#{path}", allow_local: true, timeout_options: TIMEOUT, **)
     req.add_headers('Content-Type': 'application/json')
     req.perform do |res|
       case res.code
