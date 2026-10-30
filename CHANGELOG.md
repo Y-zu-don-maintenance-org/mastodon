@@ -2,6 +2,90 @@
 
 All notable changes to this project will be documented in this file.
 
+## [4.5.20] - 2026-10-29
+
+### Security
+
+- Fix insufficient ActivityPub identifier verification ([GHSA-288h-6j8h-6x5j](https://github.com/mastodon/mastodon/security/advisories/GHSA-288h-6j8h-6x5j))
+- Updated dependencies, in particular to address security advisories in Ruby, NodeJS, and `sanitize`
+
+### Fixed
+
+- Fix inefficiency in some hashtag timeline queries (#41132 by @hugogameiro)
+- Fix error in `dev:populate_sample_data` task (#40995 and #41051 by @isidzukuri and @mjankowski)
+
+## [4.5.19] - 2026-10-01
+
+### Security
+
+- Update dependencies
+
+### Added
+
+- Add logging of account data removal (#40572 by @ClearlyClaire)
+
+### Changed
+
+- Change account self-deletion page to always ask to confirm username (#40576 and #40733 by @ClearlyClaire)
+
+### Fixed
+
+- Fix stuck sidekiq jobs by updating dependency sidekiq
+- Fix server error on registration for wrong DOB (#40607 by @sudeeptarlekar)
+- Fix quotes disclaimer disappearing on posts with no quote (#40587 by @crafkaz)
+- Fix `POST /api/v1/accounts` still being accessible when `SSO_ACCOUNT_SIGN_UP` is set (#40681 by @ClearlyClaire)
+- Fix reported statuses not being deleted after account deletion (#40650 by @ClearlyClaire)
+- Fix rate limits not normalizing submitted e-mail addresses (#40658 by @Gargron)
+- Fix moderators being able to issue a warning on moderators of higher position (#40646 by @ClearlyClaire)
+- Fix `PreviewCardsStatus` records not being deleted on account deletion (#40624 by @ClearlyClaire)
+- Fix replies order (#40481 by @OmmyZhang)
+
+## [4.5.18] - 2026-09-15
+
+### Security
+
+- Temporarily disable HEIF support
+
+### Fixes
+
+- Fix canonical email blocks interfering with freezing or approving users (#40463 by @ClearlyClaire)
+- Fix account deletion not deleting generated annual reports (#40394 by @ClearlyClaire)
+- Fix notifications not being cleaned up when notification requests are deleted in bulk (#40393 by @ClearlyClaire)
+
+## [4.5.17] - 2026-09-01
+
+### Security
+
+- Update dependencies
+- Fix password authentication bypass in 2FA auth for LDAP/PAM/SSO accounts ([GHSA-vx32-x96w-qq65](https://github.com/mastodon/mastodon/security/advisories/GHSA-vx32-x96w-qq65))
+- Fix Denial of Service when processing pathological JSON-LD activities ([GHSA-vgm8-frgh-rh2v](https://github.com/mastodon/mastodon/security/advisories/GHSA-vgm8-frgh-rh2v))
+- Fix disabled staff accounts still having access to admin API ([GHSA-62j4-hvj7-px3f](https://github.com/mastodon/mastodon/security/advisories/GHSA-62j4-hvj7-px3f))
+
+### Fixes
+
+- Fix `config/` directory missing from Bootsnap precompilation options in Dockerfile (#40255 by @ClearlyClaire)
+- Fix various off-by-one errors in statistics time ranges (#40193 by @ClearlyClaire)
+
+## [4.5.16] - 2026-08-13
+
+### Changed
+
+- Change `mastodon:setup` task warning about trademark to match `masto` but ignore subdomains (#40143 by @ClearlyClaire)
+
+### Fixed
+
+- Fix connection errors when processing `fediverse:creator` preventing creation of preview cards (#40135 by @ClearlyClaire)
+- Fix Web UI being inaccessible with URLs ending with `.zip` (#40134 by @ClearlyClaire)
+- Fix domain block impact queries being rejected (#40122 by @ClearlyClaire)
+
+## [4.5.15] - 2026-08-06
+
+### Fixed
+
+- Fix typo in embedded quote handling code (#40049 by @shleeable)
+- Fix account merging worker incorrectly merging `Appeal` and `AccountWarning` records (#39982 by @shleeable)
+- Fix off-by-one in handling of updated remote posts allowing up to 5 attachments (#39978 by @shleeable)
+
 ## [4.5.14] - 2026-07-27
 
 ### Security
